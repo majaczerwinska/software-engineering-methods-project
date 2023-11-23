@@ -414,6 +414,10 @@ paths:
           description: Invalid ID supplied
         '404':
           description: Order not found
+
+
+
+
   /user:
     post:
       tags:
@@ -624,6 +628,154 @@ paths:
           description: Invalid userID supplied
         '404':
           description: User not found
+
+
+  /track:
+    post:
+      tags:
+        - track
+      summary: Creates a new track
+      description: This allows for new track creation.
+      operationId: addTrack
+      requestBody:
+        description: Created track object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Track'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Track'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Track'
+      responses:
+        '200':
+          description: Successfully added new track
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Track'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Track'
+        '405':
+          description: Invalid input for new track
+  /track/{trackID}:
+    put:
+      tags:
+        - track
+      summary: Update track details
+      description: This allows users to update track details
+      operationId: updateTrack
+      parameters:
+        - name: trackID
+          in: path
+          description: id of the track that is being updated
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Update an existent track
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Track'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Track'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Track'
+      responses:
+        '204':
+          description: Track successfully updated
+        '400':
+          description: Invalid Track info supplied
+        '404':
+          description: Track object not found
+    delete:
+      tags:
+        - track
+      summary: Deletes a track
+      description: This allows removing tracks.
+      operationId: deleteTrack
+      parameters:
+        - name: trackID
+          in: path
+          description: The if of the track that needs to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Track successfully deleted
+        '400':
+          description: Invalid trackID supplied
+        '404':
+          description: Track not found
+  /track/findAllTrackForMember/{userId}:
+    get:
+      tags:
+        - track
+      summary: Finds all track for PC member
+      description: Finds all track which the user is assigned as a PC member
+      operationId: findAllTrackForMember
+      parameters:
+        - name: userId
+          in: path
+          description: id of the PC member
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation for getting all tracks for a PC member
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Track'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Track'
+        '400':
+          description: Invalid useID value
+  /track/findAllTrackForChair/{userId}:
+    get:
+      tags:
+        - track
+      summary: Finds all track for PC chair
+      description: Finds all track which the user is assigned as a PC chair
+      operationId: findAllTrackForChair
+      parameters:
+        - name: userId
+          in: path
+          description: id of the PC chair
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation for getting all tracks for a PC chair
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Track'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Track'
+        '400':
+          description: Invalid useID value
+
+
 components:
   schemas:
     Order:
