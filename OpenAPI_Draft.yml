@@ -418,9 +418,9 @@ paths:
     post:
       tags:
         - user
-      summary: Create user
-      description: This can only be done by the logged in user.
-      operationId: createUser
+      summary: Creates a new account
+      description: This allows for new account creation.
+      operationId: createAccount
       requestBody:
         description: Created user object
         content:
@@ -435,7 +435,7 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         default:
-          description: successful operation
+          description: Operation executed successfully
           content:
             application/json:
               schema:
@@ -443,32 +443,84 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/User'
-  /user/createWithList:
-    post:
+  /user/{userID}:
+    put:
       tags:
         - user
-      summary: Creates list of users with given input array
-      description: Creates list of users with given input array
-      operationId: createUsersWithListInput
+      summary: Update user account
+      description: This allows to update the account information of a user.
+      operationId: updateAccount
+      parameters:
+        - name: userID
+          in: path
+          description: userID that need to be deleted
+          required: true
+          schema:
+            type: integer
       requestBody:
+        description: Update an existent userAccount
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
       responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
-        default:
-          description: successful operation
+        '204':
+          description: User account successfully updated
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+
+  /user/delete/{userID}:
+    delete:
+      tags:
+        - user
+      summary: Deletes an account
+      description: This allows for account deletion.
+      operationId: deleteAccount
+      parameters:
+        - name: userID
+          in: path
+          description: The userID that needs to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User successfully deleted
+        '400':
+          description: Invalid userID supplied
+        '404':
+          description: User not found
+
+  /user/{userID}/invitations:
+    get:
+      tags:
+        - user
+      summary: Shows user invitations
+      description: This allows to show the current invitations for events of the user.
+      operationId: getUserInvitations
+      parameters:
+        - name: userID
+          in: path
+          description: The userID of a user whose invitations we want to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User invitations successfully shown
+        '400':
+          description: Invalid userID supplied
+        '404':
+          description: User not found
+
   /user/login:
     get:
       tags:
@@ -523,7 +575,7 @@ paths:
       responses:
         default:
           description: successful operation
-  /user/{username}:
+  /user/logIn:
     get:
       tags:
         - user
@@ -551,34 +603,6 @@ paths:
           description: Invalid username supplied
         '404':
           description: User not found
-    put:
-      tags:
-        - user
-      summary: Update user
-      description: This can only be done by the logged in user.
-      operationId: updateUser
-      parameters:
-        - name: username
-          in: path
-          description: name that need to be deleted
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Update an existent user in the store
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        default:
-          description: successful operation
     delete:
       tags:
         - user
@@ -684,29 +708,27 @@ components:
           type: integer
           format: int64
           example: 10
-        username:
-          type: string
-          example: theUser
         firstName:
           type: string
-          example: John
+          example: Marieke
         lastName:
           type: string
-          example: James
+          example: Smith
         email:
           type: string
-          example: john@email.com
+          example: pete@email.com
         password:
           type: string
           example: '12345'
-        phone:
+        affiliation:
           type: string
-          example: '12345'
-        userStatus:
-          type: integer
-          description: User Status
-          format: int32
-          example: 1
+          example: 'Fireman'
+        personalWebsite:
+          type: string
+          example: "myPersonalWebsite.com"
+        preferredCommunication:
+          type: string
+          example: "e-mail"
       xml:
         name: user
     Tag:
