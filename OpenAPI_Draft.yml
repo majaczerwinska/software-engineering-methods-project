@@ -476,7 +476,6 @@ paths:
           description: Invalid username supplied
         '404':
           description: User not found
-
   /user/delete/{userID}:
     delete:
       tags:
@@ -498,7 +497,6 @@ paths:
           description: Invalid userID supplied
         '404':
           description: User not found
-
   /user/{userID}/invitations:
     get:
       tags:
@@ -520,52 +518,49 @@ paths:
           description: Invalid userID supplied
         '404':
           description: User not found
-
   /user/login:
-    get:
+    post:
       tags:
         - user
       summary: Logs user into the system
-      description: ''
+      description: This allows a user to log into the system.
       operationId: loginUser
-      parameters:
-        - name: username
-          in: query
-          description: The user name for login
-          required: false
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: The password for login in clear text
-          required: false
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
       responses:
         '200':
           description: successful operation
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
-            X-Expires-After:
-              description: date in UTC when token expires
-              schema:
-                type: string
-                format: date-time
-          content:
-            application/xml:
-              schema:
-                type: string
-            application/json:
-              schema:
-                type: string
+#          headers:
+#            X-Rate-Limit:
+#              description: calls per hour allowed by the user
+#              schema:
+#                type: integer
+#                format: int32
+#            X-Expires-After:
+#              description: date in UTC when token expires
+#              schema:
+#                type: string
+#                format: date-time
+#          content:
+#            application/xml:
+#              schema:
+#                type: string
+#            application/json:
+#              schema:
+#                type: string
         '400':
           description: Invalid username/password supplied
   /user/logout:
-    get:
+    post:
       tags:
         - user
       summary: Logs out current logged in user session
@@ -575,52 +570,69 @@ paths:
       responses:
         default:
           description: successful operation
-  /user/logIn:
+  /user/{userID}/events:
     get:
       tags:
         - user
-      summary: Get user by user name
+      summary: Get events a user is supposed to attend
       description: ''
-      operationId: getUserByName
+      operationId: getUserEvents
       parameters:
-        - name: username
+        - name: userID
           in: path
-          description: 'The name that needs to be fetched. Use user1 for testing. '
+          description: 'UserID of a user for whom we want to retrieve events they are supposed to attend'
           required: true
           schema:
-            type: string
+            type: integer
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
             application/xml:
               schema:
-                $ref: '#/components/schemas/User'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
         '400':
-          description: Invalid username supplied
+          description: Invalid userID supplied
         '404':
           description: User not found
-    delete:
-      tags:
-        - user
-      summary: Delete user
-      description: This can only be done by the logged in user.
-      operationId: deleteUser
-      parameters:
-        - name: username
-          in: path
-          description: The name that needs to be deleted
-          required: true
-          schema:
-            type: string
-      responses:
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
+  /user/{userID}/events/history:
+    tags:
+      - user
+    summary: Get user's event history
+    description: This allows to retrieve events user has attended in the past.
+    operationId: getUserEventHistory
+    parameters:
+      - name: userID
+        in: path
+        description: UserID of a user for whom we want to retrieve event history
+        required: true
+        schema:
+          type: integer
+    responses:
+      '200':
+        description: successful operation
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Event'
+          application/xml:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Event'
+      '400':
+        description: Invalid userID supplied
+      '404':
+        description: User not found
 components:
   schemas:
     Order:
