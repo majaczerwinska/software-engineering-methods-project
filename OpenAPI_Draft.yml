@@ -220,7 +220,7 @@ paths:
         '404':
           description: Pet not found
       security:
-        - api_key: []
+        - api_key: [ ]
         - petstore_auth:
             - write:pets
             - read:pets
@@ -593,36 +593,37 @@ paths:
         '404':
           description: User not found
   /user/{userID}/events/history:
-    tags:
-      - user
-    summary: Get user's event history
-    description: This allows to retrieve events user has attended in the past.
-    operationId: getUserEventHistory
-    parameters:
-      - name: userID
-        in: path
-        description: UserID of a user for whom we want to retrieve event history
-        required: true
-        schema:
-          type: integer
-    responses:
-      '200':
-        description: successful operation
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Event'
-          application/xml:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Event'
-      '400':
-        description: Invalid userID supplied
-      '404':
-        description: User not found
+    get:
+      tags:
+        - user
+      summary: Get user's event history
+      description: This allows to retrieve events user has attended in the past.
+      operationId: getUserEventHistory
+      parameters:
+        - name: userID
+          in: path
+          description: UserID of a user for whom we want to retrieve event history
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid userID supplied
+        '404':
+          description: User not found
 components:
   schemas:
     Order:
@@ -736,6 +737,8 @@ components:
         name: user
     Event:
       type: object
+      xml: 
+        name: event
     Track:
       type: object
       properties:
@@ -760,6 +763,10 @@ components:
             - full-paper
             - short-paper
             - position-paper
+        eventId:
+          type: integer
+          format: int64
+          example: 5
         PC_Chairs:
           type: array
           description: list of user who have permission to edit this track
