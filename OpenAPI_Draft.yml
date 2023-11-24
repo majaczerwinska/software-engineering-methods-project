@@ -8,12 +8,6 @@ tags:
   - name: user
     description: Operations about user
   - name: event
-    description: event related endpoints
-  - name: track
-    description: track related endpoints
-  - name: attendee
-    description: attendee related endpoints
-
 paths:
   /event/{eventID}/getTracks:
     get:
@@ -25,6 +19,7 @@ paths:
       operationId: getTracksByEventID
       parameters:
         - name: eventID
+          required: true
           in: path
           description: the ID of the event under inquiry.
           schema:
@@ -49,7 +44,7 @@ paths:
           description: Invalid event ID was provided.
         '404':
           description: No event with the provided ID exists.
-  /event/{id}/getAllInvitations:
+  /event/{eventID}/getAllInvitations:
     get:
       tags:
         - event
@@ -59,6 +54,7 @@ paths:
       operationId: getInvitesByEventID
       parameters:
         - name: eventID
+          required: true
           in: path
           description: the ID of the event under inquiry.
           schema:
@@ -92,6 +88,7 @@ paths:
       operationId: registerAttendeeByEventID
       parameters:
         - name: eventID
+          required: true
           in: path
           description: the ID of the event under inquiry.
           schema:
@@ -123,6 +120,7 @@ paths:
       operationId: updateAttendeeByEventID
       parameters:
         - name: eventID
+          required: true
           in: path
           description: the ID of the event under inquiry.
           schema:
@@ -161,22 +159,12 @@ paths:
       operationId: deleteAttendeeByEventID
       parameters:
         - name: eventID
+          required: true
           in: path
           description: the ID of the event under inquiry.
           schema:
             type: integer
             format: int64
-      requestBody:
-        description: the soon-to-be-deleted attendee's userID.
-        content:
-          application/json:
-            schema:
-              type: integer
-              format: int64
-          application/xml:
-            schema:
-              type: integer
-              format: int64
 
       responses:
         '200':
@@ -195,6 +183,7 @@ paths:
       operationId: sendInviteByEventID
       parameters:
         - name: eventID
+          required: true
           in: path
           description: the ID of the event under inquiry.
           schema:
@@ -757,20 +746,20 @@ components:
       type: object
       properties:
         id:
-          required: true
           type: integer
           format: int64
           example: 4321234
         startDate:
-          type: date
+          type: string
+          format: date
           example: 2001-07-04 12:08
         endDate:
-          type: date
+          type: string
+          format: date
           example: 2001-08-05 15:23
-        isCanceled:
+        isCancelled:
           type: boolean
         name:
-          required: true
           type: string
           example: Open conference for paper review
         description:
