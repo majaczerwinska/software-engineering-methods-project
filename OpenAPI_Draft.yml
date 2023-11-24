@@ -15,6 +15,7 @@ info:
   termsOfService: http://swagger.io/terms/
   contact:
     email: apiteam@swagger.io
+  version: 0.0.0
 tags:
   - name: pet
     description: Everything about your Pets
@@ -28,6 +29,7 @@ tags:
       url: http://swagger.io
   - name: user
     description: Operations about user
+  - name: event
 paths:
   /pet:
     put:
@@ -622,6 +624,8 @@ paths:
 
   /event:
     put:
+      tags:
+        - event
       summary: Update an existing event
       description: Update an existing event by Id
       operationId: updateEvent
@@ -648,6 +652,8 @@ paths:
       security:
         - api_key: [ ]
     post:
+      tags:
+        - event
       summary: Add a new event
       description: Add a new event
       operationId: addEvent
@@ -670,6 +676,8 @@ paths:
       security:
         - api_key: [ ]
     get:
+      tags:
+        - event
       summary: Finds Events
       description: Finds Events
       operationId: findEvent
@@ -713,6 +721,8 @@ paths:
         - api_key: [ ]
   /event/{eventId}:
     get:
+      tags:
+        - event
       summary: Find event by ID
       description: Returns a single event
       operationId: getEventById
@@ -738,6 +748,8 @@ paths:
       security:
         - api_key: [ ]
     delete:
+      tags:
+        - event
       summary: Deletes an event
       description: delete an event
       operationId: deleteEvent
@@ -1020,16 +1032,16 @@ components:
       type: object
       properties:
         event_id:
-	  type: integer
+          type: integer
           format: int64
           example: 10
         user_id:
-	  type: integer
+          type: integer
           format: int64
           example: 10
         role:
-          type: Role
-          nexample: general_chair
+          $ref: '#/components/schemas/Role'
+          example: general_chair
     Track:
       type: object
       properties:
