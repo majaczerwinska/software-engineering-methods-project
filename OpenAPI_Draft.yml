@@ -414,6 +414,210 @@ paths:
           description: Invalid ID supplied
         '404':
           description: Order not found
+  /event/{eventID}/getTracks:
+    get:
+      tags:
+        - event
+        - track
+      summary: Returns all tracks corresponding to an event.
+      description: For the supplied event id, if the corresponding event exists, then all track objects corresponding to that event are return.
+      operationId: getTracksByEventID
+      parameters:
+        - name: eventID
+          in: path
+          description: the ID of the event under inquiry.
+          schema:
+            type: integer
+            format: int64
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Track'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Track'
+        '400':
+          description: Invalid event ID was provided.
+        '404':
+          description: No event with the provided ID exists.
+  /event/{id}/getAllInvitations:
+    get:
+      tags:
+        - event
+        - attendee
+      summary: Returns all invitations for the given event.
+      description: For the supplied event id, if the corresponding event exists, then return all of the invite objects corresponding to the event.
+      operationId: getInvitesByEventID
+      parameters:
+        - name: eventID
+          in: path
+          description: the ID of the event under inquiry.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendee'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendee'
+        '400':
+          description: Invalid event ID was provided.
+        '404':
+          description: No event with the provided ID exists.
+  /event/{eventID}/attendees:
+    post:
+      tags:
+        - event
+        - attendee
+      summary: Records a new attendee to the specified event.
+      description: For the supplied event id, if the corresponding event exists, then the described attendee is registered under the specified event. This action is only performed when the attendee object supplied is valid.
+      operationId: registerAttendeeByEventID
+      parameters:
+        - name: eventID
+          in: path
+          description: the ID of the event under inquiry.
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: the attendee object to be added.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Attendee'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Attendee'
+
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid event ID or attendee object were provided.
+        '404':
+          description: No event with the provided ID exists.
+    put:
+      tags:
+        - event
+        - attendee
+      summary: Updates the status of an attendee to the specified event.
+      description: For the supplied event id, if the corresponding event exists, then the attendee's attributes are updated according to the supplied object.
+      operationId: updateAttendeeByEventID
+      parameters:
+        - name: eventID
+          in: path
+          description: the ID of the event under inquiry.
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: the attendee object to be added.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Attendee'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Attendee'
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendee'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Attendee'
+        '400':
+          description: Invalid event ID or attendee object were provided.
+        '404':
+          description: No event with the provided ID exists.
+    delete:
+      tags:
+        - event
+        - attendee
+      summary: Deletes an attendee's participation in a particular event
+      description: For the supplied event id, if the corresponding event exists, then the attendee object corresponding to the supplied userID and eventID is deleted.
+      operationId: deleteAttendeeByEventID
+      parameters:
+        - name: eventID
+          in: path
+          description: the ID of the event under inquiry.
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: the soon-to-be-deleted attendee's userID.
+        content:
+          application/json:
+            schema:
+              type: integer
+              format: int64
+          application/xml:
+            schema:
+              type: integer
+              format: int64
+
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid event ID or userID were provided.
+        '404':
+          description: The user specified with the userID never attended the event specified by the eventID.
+  /event/{eventID}/sendInvite:
+    post:
+      tags:
+        - event
+        - attendee
+      summary: Send an attendance invitation for an event to a user.
+      description: For the supplied event id and user id, if their corresponding objects exist, then an inivitation is sent to the user.
+      operationId: sendInviteByEventID
+      parameters:
+        - name: eventID
+          in: path
+          description: the ID of the event under inquiry.
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: the attendee object to be added.
+        content:
+          application/json:
+            schema:
+              type: integer
+              format: int64
+          application/xml:
+            schema:
+              type: integer
+              format: int64
+
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid event ID or attendee object were provided.
+        '404':
+          description: No event with the provided ID exists.
   /user:
     post:
       tags:
@@ -593,36 +797,37 @@ paths:
         '404':
           description: User not found
   /user/{userID}/events/history:
-    tags:
-      - user
-    summary: Get user's event history
-    description: This allows to retrieve events user has attended in the past.
-    operationId: getUserEventHistory
-    parameters:
-      - name: userID
-        in: path
-        description: UserID of a user for whom we want to retrieve event history
-        required: true
-        schema:
-          type: integer
-    responses:
-      '200':
-        description: successful operation
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Event'
-          application/xml:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Event'
-      '400':
-        description: Invalid userID supplied
-      '404':
-        description: User not found
+    get:
+      tags:
+        - user
+      summary: Get user's event history
+      description: This allows to retrieve events user has attended in the past.
+      operationId: getUserEventHistory
+      parameters:
+        - name: userID
+          in: path
+          description: UserID of a user for whom we want to retrieve event history
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid userID supplied
+        '404':
+          description: User not found
 components:
   schemas:
     Order:
@@ -733,6 +938,33 @@ components:
           example: "e-mail"
       xml:
         name: user
+    Event:
+      type: object
+      properties:
+        id:
+          required: true
+          type: integer
+          format: int64
+          example: 4321234
+        startDate:
+          type: date
+          example: 2001-07-04 12:08
+        endDate:
+          type: date
+          example: 2001-08-05 15:23
+        isCanceled:
+          type: boolean
+        name:
+          required: true
+          type: string
+          example: Open conference for paper review
+        description:
+          nullable: true
+          type: string
+          example: this is a conference that deals with submitting papers to review.
+      xml:
+        name: event
+
     Tag:
       type: object
       properties:
