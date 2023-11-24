@@ -615,16 +615,6 @@ components:
         - sub_reviewer
         - author
         - attendee
-    Tag:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-      xml:
-        name: tag
     ApiResponse:
       type: object
       properties:
@@ -646,6 +636,7 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/User'
+  securitySchemes:
     api_key:
       type: apiKey
       name: api_key
