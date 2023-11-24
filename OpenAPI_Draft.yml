@@ -30,6 +30,12 @@ tags:
   - name: user
     description: Operations about user
   - name: event
+    description: event related endpoints
+  - name: track
+    description: track related endpoints
+  - name: attendee
+    description: attendee related endpoints
+
 paths:
   /pet:
     put:
