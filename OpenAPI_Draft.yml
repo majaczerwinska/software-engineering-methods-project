@@ -8,22 +8,13 @@ info:
     That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
 
     _If you're looking for the Swagger 2.0/OAS 2.0 version of Petstore, then click [here](https://editor.swagger.io/?url=https://petstore.swagger.io/v2/swagger.yaml). Alternatively, you can load via the `Edit > Load Petstore OAS 2.0` menu option!_
-    
+
     Some useful links:
     - [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
     - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
   termsOfService: http://swagger.io/terms/
   contact:
     email: apiteam@swagger.io
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.11
-externalDocs:
-  description: Find out more about Swagger
-  url: http://swagger.io
-servers:
-  - url: https://petstore3.swagger.io/api/v3
 tags:
   - name: pet
     description: Everything about your Pets
@@ -629,6 +620,140 @@ paths:
         '404':
           description: User not found
 
+  /event:
+    put:
+      summary: Update an existing event
+      description: Update an existing event by Id
+      operationId: updateEvent
+      requestBody:
+        description: Update an existent event
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Event not found
+        '405':
+          description: Validation exception
+      security:
+        - api_key: [ ]
+    post:
+      summary: Add a new event
+      description: Add a new event
+      operationId: addEvent
+      requestBody:
+        description: Create a new event
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '405':
+          description: Invalid input
+      security:
+        - api_key: [ ]
+    get:
+      summary: Finds Events
+      description: Finds Events
+      operationId: findEvent
+      parameters:
+        - name: start
+          in: query
+          description: Start date
+          required: false
+          explode: true
+          schema:
+            type: string
+            format: date
+        - name: end
+          in: query
+          description: End date
+          required: false
+          explode: true
+          schema:
+            type: string
+            format: date
+        - name: cancelled
+          in: query
+          description: Whether the event is cancelled
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid query values
+      security:
+        - api_key: [ ]
+  /event/{eventId}:
+    get:
+      summary: Find event by ID
+      description: Returns a single event
+      operationId: getEventById
+      parameters:
+        - name: eventId
+          in: path
+          description: ID of event to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Event not found
+      security:
+        - api_key: [ ]
+    delete:
+      summary: Deletes an event
+      description: delete an event
+      operationId: deleteEvent
+      parameters:
+        - name: eventId
+          in: path
+          description: Event id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid event value
+      security:
+        - api_key: [ ]
 
   /track:
     post:
@@ -889,8 +1014,22 @@ components:
         name: user
     Event:
       type: object
-      xml: 
+      xml:
         name: event
+    Attendee:
+      type: object
+      properties:
+        event_id:
+	  type: integer
+          format: int64
+          example: 10
+        user_id:
+	  type: integer
+          format: int64
+          example: 10
+        role:
+          type: Role
+          nexample: general_chair
     Track:
       type: object
       properties:
@@ -937,7 +1076,15 @@ components:
             $ref: '#/components/schemas/User'
       xml:
         name: track
-
+    Role:
+      type: string
+      enum:
+        - general_chair
+        - pc_chair
+        - pc_member
+        - sub_reviewer
+        - author
+        - attendee
     Tag:
       type: object
       properties:
