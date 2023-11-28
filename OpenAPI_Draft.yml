@@ -537,6 +537,115 @@ paths:
       security:
         - api_key: [ ]
 
+  /invitations/{inviter}:
+    post:
+      tags:
+        - invitations
+      summary: Creates a new invitation.
+      description: If the invitation object is valid, create a new invitation.
+      operationId: createInvitation
+      parameters:
+        - name: inviter
+          required: true
+          in: query
+          description: the ID of the inviting user.
+      requestBody:
+        description: The invitation object to be added.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invitation'
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid event ID or invitation object were provided.
+        '401':
+          description: Unauthorized Access.
+        '404':
+          description: No event with the provided ID exists.
+  /invitations:
+    get:
+      tags:
+        - invitations
+      summary: Returns all invitations corresponding to a user and/or event id if specified, otherwise return all invitations.
+      description: For the user id, if the corresponding user exists, then all invitation objects corresponding to that user are returned.
+      operationId: getInvitation
+      parameters:
+        - name: userID
+          required: false
+          in: query
+          description: the ID of the user under inquiry.
+          schema:
+            type: integer
+            format: int64
+        - name: eventID
+          required: false
+          in: query
+          description: the ID of the event under inquiry.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invitation'
+        '400':
+          description: Invalid event ID was provided.
+        '400':
+          description: Invalid event ID was provided.
+        '401':
+          description: Unauthorized Access.
+        '404':
+          description: No event with the provided ID exists.
+    post:
+      tags:
+        - invitations
+      summary: Accepts an invitation.
+      description: If the invitation object is valid, it accepts the invitation.
+      operationId: acceptInvitation
+      requestBody:
+        description: The invitation object to be accepted.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invitation'
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid event ID or invitation object were provided.
+        '401':
+          description: Unauthorized Access.
+        '404':
+          description: No event with the provided ID exists.
+    delete:
+      tags:
+        - invitations
+      summary: Rejects or revokes an invitation.
+      description: If the invitation object is valid, it deletes the invitation.
+      operationId: deleteInvitation
+      requestBody:
+        description: The invitation object to be deleted.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invitation'
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid event ID or invitation object were provided.
+        '401':
+          description: Unauthorized Access.
+        '404':
+          description: No event with the provided ID exists.
+
 components:
   schemas:
     User:
@@ -600,6 +709,28 @@ components:
           format: int64
           example: 10
         user_id:
+          type: integer
+          format: int64
+          example: 10
+        track_id:
+          type: integer
+          format: int64
+          example: 10
+        role:
+          $ref: '#/components/schemas/Role'
+          example: general_chair
+    Invitation:
+      type: object
+      properties:
+        event_id:
+          type: integer
+          format: int64
+          example: 10
+        user_id:
+          type: integer
+          format: int64
+          example: 10
+        track_id:
           type: integer
           format: int64
           example: 10
