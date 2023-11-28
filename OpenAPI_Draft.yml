@@ -41,6 +41,8 @@ paths:
           description: UnauthorizedError
         '404':
           description: No event with the provided ID exists.
+      security:
+        - api_key: [ ]
   /event/{eventID}/getAllInvitations:
     get:
       tags:
@@ -589,6 +591,8 @@ paths:
           description: UnauthorizedError
         '405':
           description: Invalid input for new track
+      security:
+        - api_key: [ ]
     put:
       tags:
         - track
@@ -617,6 +621,8 @@ paths:
           description: UnauthorizedError
         '404':
           description: Track object not found
+      security:
+        - api_key: [ ]
     delete:
       tags:
         - track
@@ -639,6 +645,8 @@ paths:
           description: UnauthorizedError
         '404':
           description: Track not found
+      security:
+        - api_key: [ ]
   /track/{trackID}:
     get:
       tags:
@@ -671,6 +679,8 @@ paths:
           description: UnauthorizedError
         '404':
           description: Track id not found
+      security:
+        - api_key: [ ]
 
 
 components:
