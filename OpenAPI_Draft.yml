@@ -359,6 +359,20 @@ paths:
           schema:
             type: boolean
             default: false
+        - name: name
+          in: query
+          description: Name
+          required: false
+          explode: true
+          schema:
+            type: string
+        - name: userID
+          in: query
+          description: User who participated in the event
+          required: false
+          explode: true
+          schema:
+            type: integer
       responses:
         '200':
           description: successful operation
