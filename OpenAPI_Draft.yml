@@ -9,47 +9,13 @@ tags:
     description: Operations about user
   - name: event
 paths:
-  /event/{eventID}/getTracks:
-    get:
-      tags:
-        - event
-        - track
-      summary: Returns all tracks corresponding to an event.
-      description: For the supplied event id, if the corresponding event exists, then all track objects corresponding to that event are return.
-      operationId: getTracksByEventID
-      parameters:
-        - name: eventID
-          required: true
-          in: path
-          description: the ID of the event under inquiry.
-          schema:
-            type: integer
-            format: int64
-
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Track'
-        '400':
-          description: Invalid event ID was provided.
-        '401':
-          description: UnauthorizedError
-        '404':
-          description: No event with the provided ID exists.
-      security:
-        - api_key: [ ]
-  /event/{eventID}/getAllInvitations:
+  /event/{eventID}/attendee:
     get:
       tags:
         - event
         - attendee
-      summary: Returns all invitations for the given event.
-      description: For the supplied event id, if the corresponding event exists, then return all of the invite objects corresponding to the event.
+      summary: Returns all invitations for the given event, optionally filtered by roles or by track.
+      description: For the supplied event id, if the corresponding event exists, then return all of the invite objects corresponding to the event. Additional filtering is applied by role or by track ID if specified.
       operationId: getInvitesByEventID
       parameters:
         - name: eventID
@@ -59,6 +25,22 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: roles
+          required: false
+          in: query
+          description: inclusive role filters
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Role'
+        - name: trackID
+          required: false
+          in: query
+          description: track identifier for the filter
+          schema:
+            type: integer
+            format: int64
+
       responses:
         '200':
           description: successful operation
@@ -75,46 +57,17 @@ paths:
                   $ref: '#/components/schemas/Attendee'
         '400':
           description: Invalid event ID was provided.
+        '401':
+          description: Unauthorized access.
         '404':
           description: No event with the provided ID exists.
-  /event/{eventID}/attendees:
-    post:
-      tags:
-        - event
-        - attendee
-      summary: Records a new attendee to the specified event.
-      description: For the supplied event id, if the corresponding event exists, then the described attendee is registered under the specified event. This action is only performed when the attendee object supplied is valid.
-      operationId: registerAttendeeByEventID
-      parameters:
-        - name: eventID
-          required: true
-          in: path
-          description: the ID of the event under inquiry.
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        description: the attendee object to be added.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Attendee'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Attendee'
-
-      responses:
-        '200':
-          description: successful operation
-        '400':
-          description: Invalid event ID or attendee object were provided.
-        '404':
-          description: No event with the provided ID exists.
+      security:
+        - api_key: []
     put:
       tags:
         - event
         - attendee
-      summary: Updates the status of an attendee to the specified event.
+      summary: Updates the role of an attendee in the specified event.
       description: For the supplied event id, if the corresponding event exists, then the attendee's attributes are updated according to the supplied object.
       operationId: updateAttendeeByEventID
       parameters:
@@ -147,8 +100,14 @@ paths:
                 $ref: '#/components/schemas/Attendee'
         '400':
           description: Invalid event ID or attendee object were provided.
+        '401':
+          description: Unauthorized access.
         '404':
           description: No event with the provided ID exists.
+        '405':
+          description: Validation error.
+      security:
+        - api_key: [ ]
     delete:
       tags:
         - event
@@ -170,43 +129,12 @@ paths:
           description: successful operation
         '400':
           description: Invalid event ID or userID were provided.
+        '401':
+          description: Unauthorized access.
         '404':
           description: The user specified with the userID never attended the event specified by the eventID.
-  /event/{eventID}/sendInvite:
-    post:
-      tags:
-        - event
-        - attendee
-      summary: Send an attendance invitation for an event to a user.
-      description: For the supplied event id and user id, if their corresponding objects exist, then an inivitation is sent to the user.
-      operationId: sendInviteByEventID
-      parameters:
-        - name: eventID
-          required: true
-          in: path
-          description: the ID of the event under inquiry.
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        description: the attendee object to be added.
-        content:
-          application/json:
-            schema:
-              type: integer
-              format: int64
-          application/xml:
-            schema:
-              type: integer
-              format: int64
-
-      responses:
-        '200':
-          description: successful operation
-        '400':
-          description: Invalid event ID or attendee object were provided.
-        '404':
-          description: No event with the provided ID exists.
+      security:
+        - api_key: [ ]
 
   /user:
     post:
