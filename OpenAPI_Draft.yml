@@ -35,13 +35,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Track'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Track'
         '400':
           description: Invalid event ID was provided.
+        '401':
+          description: UnauthorizedError
         '404':
           description: No event with the provided ID exists.
   /event/{eventID}/getAllInvitations:
@@ -578,12 +575,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Track'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Track'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Track'
       responses:
         '200':
           description: Successfully added new track
@@ -594,9 +585,10 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Track'
+        '401':
+          description: UnauthorizedError
         '405':
           description: Invalid input for new track
-  /track/{trackID}:
     put:
       tags:
         - track
@@ -616,17 +608,13 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Track'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Track'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Track'
       responses:
         '204':
           description: Track successfully updated
         '400':
           description: Invalid Track info supplied
+        '401':
+          description: UnauthorizedError
         '404':
           description: Track object not found
     delete:
@@ -647,68 +635,43 @@ paths:
           description: Track successfully deleted
         '400':
           description: Invalid trackID supplied
+        '401':
+          description: UnauthorizedError
         '404':
           description: Track not found
-  /track/findAllTrackForMember/{userId}:
+  /track/{trackID}:
     get:
       tags:
         - track
-      summary: Finds all track for PC member
-      description: Finds all track which the user is assigned as a PC member
-      operationId: findAllTrackForMember
+      summary: get track by id
+      description: returns track with id == trackID
+      operationId: getTrack
       parameters:
-        - name: userId
+        - name: trackID
           in: path
-          description: id of the PC member
+          description: id of the track that is being fetching
           required: true
           schema:
             type: integer
+      requestBody:
+        description: Fetch an existent track
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Track'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Track'
       responses:
         '200':
-          description: successful operation for getting all tracks for a PC member
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Track'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Track'
+          description: Track successfully fetched
         '400':
-          description: Invalid useID value
-  /track/findAllTrackForChair/{userId}:
-    get:
-      tags:
-        - track
-      summary: Finds all track for PC chair
-      description: Finds all track which the user is assigned as a PC chair
-      operationId: findAllTrackForChair
-      parameters:
-        - name: userId
-          in: path
-          description: id of the PC chair
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: successful operation for getting all tracks for a PC chair
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Track'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Track'
-        '400':
-          description: Invalid userID value
+          description: Invalid Track id supplied
+        '401':
+          description: UnauthorizedError
+        '404':
+          description: Track id not found
+
 
 components:
   schemas:
