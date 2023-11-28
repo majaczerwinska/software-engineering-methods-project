@@ -237,7 +237,9 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/User'
-  /user/{userID}:
+      security:
+        - api_key: [ ]
+
     put:
       tags:
         - user
@@ -270,7 +272,9 @@ paths:
           description: Invalid username supplied
         '404':
           description: User not found
-  /user/delete/{userID}:
+      security:
+        - api_key: [ ]
+  /user/{userID}:
     delete:
       tags:
         - user
@@ -291,6 +295,8 @@ paths:
           description: Invalid userID supplied
         '404':
           description: User not found
+      security:
+        - api_key: [ ]
   /user/{userID}/invitations:
     get:
       tags:
@@ -312,6 +318,8 @@ paths:
           description: Invalid userID supplied
         '404':
           description: User not found
+      security:
+        - api_key: [ ]
   /user/login:
     post:
       tags:
@@ -343,81 +351,8 @@ paths:
                     description: JWT token for authentication
         '400':
           description: Invalid username/password supplied
-  /user/logout:
-    post:
-      tags:
-        - user
-      summary: Logs out current logged in user session
-      description: ''
-      operationId: logoutUser
-      parameters: [ ]
-      responses:
-        '200':
-          description: Successful logout
-  /user/{userID}/events:
-    get:
-      tags:
-        - user
-      summary: Get events a user is supposed to attend
-      description: ''
-      operationId: getUserEvents
-      parameters:
-        - name: userID
-          in: path
-          description: 'UserID of a user for whom we want to retrieve events they are supposed to attend'
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Event'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Event'
-        '400':
-          description: Invalid userID supplied
-        '404':
-          description: User not found
-  /user/{userID}/events/history:
-    get:
-      tags:
-        - user
-      summary: Get user's event history
-      description: This allows to retrieve events user has attended in the past.
-      operationId: getUserEventHistory
-      parameters:
-        - name: userID
-          in: path
-          description: UserID of a user for whom we want to retrieve event history
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Event'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Event'
-        '400':
-          description: Invalid userID supplied
-        '404':
-          description: User not found
+      security:
+        - api_key: [ ]
 
   /event:
     put:
@@ -699,9 +634,6 @@ components:
         email:
           type: string
           example: pete@email.com
-        password:
-          type: string
-          example: '12345'
         affiliation:
           type: string
           example: 'Fireman'
