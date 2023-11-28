@@ -174,13 +174,6 @@ paths:
       summary: Update user account
       description: This allows to update the account information of a user.
       operationId: updateAccount
-      parameters:
-        - name: userID
-          in: path
-          description: userID that need to be deleted
-          required: true
-          schema:
-            type: integer
       requestBody:
         description: Update an existent userAccount
         content:
@@ -459,13 +452,6 @@ paths:
       summary: Update track details
       description: This allows users to update track details
       operationId: updateTrack
-      parameters:
-        - name: trackID
-          in: path
-          description: id of the track that is being updated
-          required: true
-          schema:
-            type: integer
       requestBody:
         description: Update an existent track
         content:
@@ -481,36 +467,6 @@ paths:
           description: UnauthorizedError
         '404':
           description: Track object not found
-      security:
-        - api_key: [ ]
-    delete:
-      tags:
-        - track
-      summary: Deletes a track
-      description: This allows removing tracks.
-      operationId: deleteTrack
-      parameters:
-        - name: trackID
-          in: path
-          description: The if of the track that needs to be deleted
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        description: remove an existent track
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Track'
-      responses:
-        '204':
-          description: Track successfully deleted
-        '400':
-          description: Invalid trackID supplied
-        '401':
-          description: UnauthorizedError
-        '404':
-          description: Track not found
       security:
         - api_key: [ ]
   /track/{trackID}:
@@ -542,7 +498,30 @@ paths:
           description: Track id not found
       security:
         - api_key: [ ]
-
+    delete:
+      tags:
+        - track
+      summary: Deletes a track
+      description: This allows removing tracks.
+      operationId: deleteTrack
+      parameters:
+        - name: trackID
+          in: path
+          description: id of the track that is being fetching
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Track successfully deleted
+        '400':
+          description: Invalid trackID supplied
+        '401':
+          description: UnauthorizedError
+        '404':
+          description: Track not found
+      security:
+        - api_key: [ ]
 
 components:
   schemas:
