@@ -531,20 +531,13 @@ paths:
       security:
         - api_key: [ ]
 
-  /invitations/{inviter}:
+  /invitations:
     post:
       tags:
         - invitations
       summary: Creates a new invitation.
       description: If the invitation object is valid, create a new invitation.
       operationId: createInvitation
-      parameters:
-        - name: inviter
-          required: true
-          in: path
-          description: the ID of the inviting user.
-          schema:
-            type: integer
       requestBody:
         description: The invitation object to be added.
         content:
@@ -553,25 +546,31 @@ paths:
               $ref: '#/components/schemas/Invitation'
       responses:
         '200':
-          description: successful operation
+          description: Successful operation.
         '400':
-          description: Invalid event ID or invitation object were provided.
+          description: Invalid invitation object was provided.
         '401':
           description: Unauthorized Access.
-        '404':
-          description: No event with the provided ID exists.
-  /invitations:
+        # '404':
+        #   description: No event with the provided ID exists.
     get:
       tags:
         - invitations
-      summary: Returns all invitations corresponding to a user and/or event id if specified, otherwise return all invitations.
-      description: For the user id, if the corresponding user exists, then all invitation objects corresponding to that user are returned.
-      operationId: getInvitation
+      summary: Retrieve all invitations matching a userID, trackID and/or eventID.
+      description: Returns all invitations corresponding to a userID, trackID, and/or eventID if specified, otherwise return all invitations.
+      operationId: getInvitations
       parameters:
         - name: userID
           required: false
           in: query
           description: the ID of the user under inquiry.
+          schema:
+            type: integer
+            format: int64
+        - name: trackID
+          required: false
+          in: query
+          description: the ID of the track under inquiry.
           schema:
             type: integer
             format: int64
@@ -582,9 +581,16 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: invitationID
+          required: false
+          in: query
+          description: the ID of the invitation under inquiry. If specified, other optional parameters are unnecessary.
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
-          description: successful operation
+          description: Successful operation.
           content:
             application/json:
               schema:
@@ -592,53 +598,79 @@ paths:
                 items:
                   $ref: '#/components/schemas/Invitation'
         '400':
-          description: Invalid event ID was provided.
+          description: Invalid parameters were specified.
         '401':
           description: Unauthorized Access.
         '404':
-          description: No event with the provided ID exists.
+          description: No invitation matching the parameters exists.
+  /invitations/accept/{invitationID}:
     post:
       tags:
         - invitations
       summary: Accepts an invitation.
-      description: If the invitation object is valid, it accepts the invitation.
+      description: If an invitation with the specified invitation ID exists, it accepts the invitation.
       operationId: acceptInvitation
-      requestBody:
-        description: The invitation object to be accepted.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Invitation'
+      parameters:
+        - name: invitationID
+          in: path
+          description: id of the invitation to be accepted.
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: successful operation
         '400':
-          description: Invalid event ID or invitation object were provided.
+          description: Invalid invitationID was provided.
         '401':
           description: Unauthorized Access.
         '404':
-          description: No event with the provided ID exists.
+          description: No invitation with the provided ID exists.
+  /invitations/{invitationID}:
     delete:
       tags:
         - invitations
       summary: Rejects or revokes an invitation.
-      description: If the invitation object is valid, it deletes the invitation.
+      description: If an invitation with the specified invitation ID exists, it deletes the invitation.
       operationId: deleteInvitation
-      requestBody:
-        description: The invitation object to be deleted.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Invitation'
+      parameters:
+        - name: invitationID
+          in: path
+          description: id of the invitation to be deleted.
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: successful operation
         '400':
-          description: Invalid event ID or invitation object were provided.
+          description: Invalid invitationID was provided.
         '401':
           description: Unauthorized Access.
         '404':
-          description: No event with the provided ID exists.
+          description: No invitation with the provided ID exists.
+    get:
+      tags:
+        - invitations
+      summary: Gets an invitation.
+      description: If an invitation with the specified invitation ID exists, it gets the invitation.
+      operationId: getInvitation
+      parameters:
+        - name: invitationID
+          in: path
+          description: id of the invitation to be retrieved.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid invitationID was provided.
+        '401':
+          description: Unauthorized Access.
+        '404':
+          description: No invitation with the provided ID exists.
 
 components:
   schemas:
@@ -694,6 +726,10 @@ components:
     Attendee:
       type: object
       properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
         event_id:
           type: integer
           format: int64
@@ -712,6 +748,10 @@ components:
     Invitation:
       type: object
       properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
         event_id:
           type: integer
           format: int64
