@@ -557,8 +557,10 @@ paths:
       parameters:
         - name: inviter
           required: true
-          in: query
+          in: path
           description: the ID of the inviting user.
+          schema:
+            type: integer
       requestBody:
         description: The invitation object to be added.
         content:
@@ -605,8 +607,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Invitation'
-        '400':
-          description: Invalid event ID was provided.
         '400':
           description: Invalid event ID was provided.
         '401':
