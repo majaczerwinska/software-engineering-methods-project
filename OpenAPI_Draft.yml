@@ -139,12 +139,14 @@ paths:
             schema:
               $ref: '#/components/schemas/User'
       responses:
-        default:
+        '200':
           description: Operation executed successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized access.
       security:
         - api_key: [ ]
 
@@ -165,6 +167,8 @@ paths:
           description: User account successfully updated
         '400':
           description: Invalid username supplied
+        '401':
+          description: Unauthorized access.
         '404':
           description: User not found
       security:
@@ -188,6 +192,8 @@ paths:
           description: User successfully deleted
         '400':
           description: Invalid userID supplied
+        '401':
+          description: Unauthorized access.
         '404':
           description: User not found
       security:
@@ -211,6 +217,8 @@ paths:
           description: User invitations successfully shown
         '400':
           description: Invalid userID supplied
+        '401':
+          description: Unauthorized access.
         '404':
           description: User not found
       security:
@@ -246,6 +254,8 @@ paths:
                     description: JWT token for authentication
         '400':
           description: Invalid username/password supplied
+        '401':
+          description: Unauthorized access.
       security:
         - api_key: [ ]
 
