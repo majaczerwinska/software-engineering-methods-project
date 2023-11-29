@@ -50,11 +50,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Attendee'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Attendee'
         '400':
           description: Invalid event ID was provided.
         '401':
@@ -84,18 +79,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Attendee'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Attendee'
 
       responses:
         '200':
           description: successful operation
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Attendee'
-            application/xml:
               schema:
                 $ref: '#/components/schemas/Attendee'
         '400':
@@ -149,20 +138,11 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
       responses:
         default:
           description: Operation executed successfully
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-            application/xml:
               schema:
                 $ref: '#/components/schemas/User'
       security:
@@ -178,12 +158,6 @@ paths:
         description: Update an existent userAccount
         content:
           application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
             schema:
               $ref: '#/components/schemas/User'
       responses:
@@ -683,8 +657,6 @@ components:
         preferredCommunication:
           type: string
           example: "e-mail"
-      xml:
-        name: user
     Event:
       type: object
       properties:
@@ -709,8 +681,6 @@ components:
           nullable: true
           type: string
           example: this is a conference that deals with submitting papers to review.
-      xml:
-        name: event
     Attendee:
       type: object
       properties:
@@ -778,21 +748,13 @@ components:
         PC_Chairs:
           type: array
           description: list of user who have permission to edit this track
-          xml:
-            name: PC_Chairs
-            wrapped: true
           items:
             $ref: '#/components/schemas/User'
         PC_Members:
           description: list of user who have permission to give reviews
           type: array
-          xml:
-            name: PC_Members
-            wrapped: true
           items:
             $ref: '#/components/schemas/User'
-      xml:
-        name: track
     Role:
       type: string
       enum:
@@ -813,8 +775,6 @@ components:
           type: string
         message:
           type: string
-      xml:
-        name: '##default'
   requestBodies:
     UserArray:
       description: List of user object
