@@ -298,6 +298,8 @@ paths:
                 $ref: '#/components/schemas/Event'
         '400':
           description: Invalid ID supplied
+        '401':
+          description: Unauthorized access.
         '404':
           description: Event not found
         '405':
@@ -324,6 +326,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Event'
+        '401':
+          description: Unauthorized access.
         '405':
           description: Invalid input
       security:
@@ -384,6 +388,8 @@ paths:
                   $ref: '#/components/schemas/Event'
         '400':
           description: Invalid query values
+        '401':
+          description: Unauthorized access.
       security:
         - api_key: [ ]
   /event/{eventId}:
@@ -410,6 +416,8 @@ paths:
                 $ref: '#/components/schemas/Event'
         '400':
           description: Invalid ID supplied
+        '401':
+          description: Unauthorized access.
         '404':
           description: Event not found
       security:
@@ -431,6 +439,8 @@ paths:
       responses:
         '400':
           description: Invalid event value
+        '401':
+          description: Unauthorized access.
       security:
         - api_key: [ ]
 
