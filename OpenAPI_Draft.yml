@@ -740,7 +740,11 @@ components:
         description:
           type: string
           example: "track 1 is ..., aims to ..."
-        deadline:
+        submit_deadline:
+          type: string
+          description: the deadline for all paper submissions
+          example: "2022/11/24, 21:59"
+        review_deadline:
           type: string
           description: the deadline for all paper submissions
           example: "2022/11/24, 21:59"
@@ -755,16 +759,6 @@ components:
           type: integer
           format: int64
           example: 5
-        PC_Chairs:
-          type: array
-          description: list of user who have permission to edit this track
-          items:
-            $ref: '#/components/schemas/User'
-        PC_Members:
-          description: list of user who have permission to give reviews
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
     Role:
       type: string
       enum:
