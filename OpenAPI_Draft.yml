@@ -1,0 +1,823 @@
+openapi: 3.0.3
+info:
+  title: User Microservice
+  description: |-
+    This is the User Microservice for the EasyConf scenario in CSE2115
+  version: 0.0.0
+tags:
+  - name: user
+    description: Operations about user
+  - name: event
+paths:
+  /event/{eventID}/attendee:
+    get:
+      tags:
+        - event
+        - attendee
+      summary: Returns all invitations for the given event, optionally filtered by roles or by track.
+      description: For the supplied event id, if the corresponding event exists, then return all of the invite objects corresponding to the event. Additional filtering is applied by role or by track ID if specified.
+      operationId: getInvitesByEventID
+      parameters:
+        - name: eventID
+          required: true
+          in: path
+          description: the ID of the event under inquiry.
+          schema:
+            type: integer
+            format: int64
+        - name: roles
+          required: false
+          in: query
+          description: inclusive role filters
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Role'
+        - name: trackID
+          required: false
+          in: query
+          description: track identifier for the filter
+          schema:
+            type: integer
+            format: int64
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendee'
+        '400':
+          description: Invalid event ID was provided.
+        '401':
+          description: Unauthorized access.
+        '404':
+          description: No event with the provided ID exists.
+      security:
+        - api_key: []
+    put:
+      tags:
+        - event
+        - attendee
+      summary: Updates the role of an attendee in the specified event.
+      description: For the supplied event id, if the corresponding event exists, then the attendee's attributes are updated according to the supplied object.
+      operationId: updateAttendeeByEventID
+      parameters:
+        - name: eventID
+          required: true
+          in: path
+          description: the ID of the event under inquiry.
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: the attendee object to be added.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Attendee'
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendee'
+        '400':
+          description: Invalid event ID or attendee object were provided.
+        '401':
+          description: Unauthorized access.
+        '404':
+          description: No event with the provided ID exists.
+        '405':
+          description: Validation error.
+      security:
+        - api_key: [ ]
+    delete:
+      tags:
+        - event
+        - attendee
+      summary: Deletes an attendee's participation in a particular event
+      description: For the supplied event id, if the corresponding event exists, then the attendee object corresponding to the supplied userID and eventID is deleted.
+      operationId: deleteAttendeeByEventID
+      parameters:
+        - name: eventID
+          required: true
+          in: path
+          description: the ID of the event under inquiry.
+          schema:
+            type: integer
+            format: int64
+
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid event ID or userID were provided.
+        '401':
+          description: Unauthorized access.
+        '404':
+          description: The user specified with the userID never attended the event specified by the eventID.
+      security:
+        - api_key: [ ]
+
+  /user:
+    post:
+      tags:
+        - user
+      summary: Creates a new account
+      description: This allows for new account creation.
+      operationId: createAccount
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Operation executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized access.
+      security:
+        - api_key: [ ]
+
+    put:
+      tags:
+        - user
+      summary: Update user account
+      description: This allows to update the account information of a user.
+      operationId: updateAccount
+      requestBody:
+        description: Update an existent userAccount
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '204':
+          description: User account successfully updated
+        '400':
+          description: Invalid username supplied
+        '401':
+          description: Unauthorized access.
+        '404':
+          description: User not found
+      security:
+        - api_key: [ ]
+  /user/{userID}:
+    delete:
+      tags:
+        - user
+      summary: Deletes an account
+      description: This allows for account deletion.
+      operationId: deleteAccount
+      parameters:
+        - name: userID
+          in: path
+          description: The userID that needs to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User successfully deleted
+        '400':
+          description: Invalid userID supplied
+        '401':
+          description: Unauthorized access.
+        '404':
+          description: User not found
+      security:
+        - api_key: [ ]
+    get:
+      tags:
+        - user
+      summary: Gets an account by userID
+      description: This allows for getting the account of a specific user by a userID.
+      operationId: getAccountByID
+      parameters:
+        - name: userID
+          in: path
+          description: The userID of the user account
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User account found sucessfully
+        '400':
+          description: Invalid userID supplied
+        '401':
+          description: Unauthorized access.
+        '404':
+          description: User not found
+      security:
+        - api_key: [ ]
+  /user/byEmail/{email}:
+    get:
+      tags:
+        - user
+      summary: Gets an account by email
+      description: This allows for getting the account of a specific user by email.
+      operationId: getAccountByEmail
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User account found sucessfully
+        '400':
+          description: Invalid userID supplied
+        '401':
+          description: Unauthorized access.
+        '404':
+          description: User not found
+      security:
+        - api_key: [ ]
+
+  /event:
+    put:
+      tags:
+        - event
+      summary: Update an existing event
+      description: Update an existing event by Id
+      operationId: updateEvent
+      requestBody:
+        description: Update an existent event
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized access.
+        '404':
+          description: Event not found
+        '405':
+          description: Validation exception
+      security:
+        - api_key: [ ]
+    post:
+      tags:
+        - event
+      summary: Add a new event
+      description: Add a new event
+      operationId: addEvent
+      requestBody:
+        description: Create a new event
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '401':
+          description: Unauthorized access.
+        '405':
+          description: Invalid input
+      security:
+        - api_key: [ ]
+    get:
+      tags:
+        - event
+      summary: Finds Events
+      description: Finds Events
+      operationId: findEvent
+      parameters:
+        - name: start
+          in: query
+          description: Start date
+          required: false
+          explode: true
+          schema:
+            type: string
+            format: date
+        - name: end
+          in: query
+          description: End date
+          required: false
+          explode: true
+          schema:
+            type: string
+            format: date
+        - name: cancelled
+          in: query
+          description: Whether the event is cancelled
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            default: false
+        - name: name
+          in: query
+          description: Name
+          required: false
+          explode: true
+          schema:
+            type: string
+        - name: userID
+          in: query
+          description: User who participated in the event
+          required: false
+          explode: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid query values
+        '401':
+          description: Unauthorized access.
+      security:
+        - api_key: [ ]
+  /event/{eventId}:
+    get:
+      tags:
+        - event
+      summary: Find event by ID
+      description: Returns a single event
+      operationId: getEventById
+      parameters:
+        - name: eventId
+          in: path
+          description: ID of event to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized access.
+        '404':
+          description: Event not found
+      security:
+        - api_key: [ ]
+    delete:
+      tags:
+        - event
+      summary: Deletes an event
+      description: delete an event
+      operationId: deleteEvent
+      parameters:
+        - name: eventId
+          in: path
+          description: Event id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid event value
+        '401':
+          description: Unauthorized access.
+      security:
+        - api_key: [ ]
+
+  /track:
+    post:
+      tags:
+        - track
+      summary: Creates a new track
+      description: This allows for new track creation.
+      operationId: addTrack
+      requestBody:
+        description: Created track object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Track'
+      responses:
+        '200':
+          description: Successfully added new track
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Track'
+        '401':
+          description: UnauthorizedError
+        '405':
+          description: Invalid input for new track
+      security:
+        - api_key: [ ]
+    put:
+      tags:
+        - track
+      summary: Update track details
+      description: This allows users to update track details
+      operationId: updateTrack
+      requestBody:
+        description: Update an existent track
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Track'
+      responses:
+        '204':
+          description: Track successfully updated
+        '400':
+          description: Invalid Track info supplied
+        '401':
+          description: UnauthorizedError
+        '404':
+          description: Track object not found
+      security:
+        - api_key: [ ]
+  /track/{trackID}:
+    get:
+      tags:
+        - track
+      summary: get track by id
+      description: returns track with id == trackID
+      operationId: getTrack
+      parameters:
+        - name: trackID
+          in: path
+          description: id of the track that is being fetching
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Track successfully fetched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Track'
+        '400':
+          description: Invalid Track id supplied
+        '401':
+          description: UnauthorizedError
+        '404':
+          description: Track id not found
+      security:
+        - api_key: [ ]
+    delete:
+      tags:
+        - track
+      summary: Deletes a track
+      description: This allows removing tracks.
+      operationId: deleteTrack
+      parameters:
+        - name: trackID
+          in: path
+          description: id of the track that is being fetching
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Track successfully deleted
+        '400':
+          description: Invalid trackID supplied
+        '401':
+          description: UnauthorizedError
+        '404':
+          description: Track not found
+      security:
+        - api_key: [ ]
+
+  /invitations:
+    post:
+      tags:
+        - invitations
+      summary: Creates a new invitation.
+      description: If the invitation object is valid, create a new invitation.
+      operationId: createInvitation
+      requestBody:
+        description: The invitation object to be added.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invitation'
+      responses:
+        '200':
+          description: Successful operation.
+        '400':
+          description: Invalid invitation object was provided.
+        '401':
+          description: Unauthorized Access.
+        # '404':
+        #   description: No event with the provided ID exists.
+    get:
+      tags:
+        - invitations
+      summary: Retrieve all invitations matching a userID, trackID and/or eventID.
+      description: Returns all invitations corresponding to a userID, trackID, and/or eventID if specified, otherwise return all invitations.
+      operationId: getInvitations
+      parameters:
+        - name: userID
+          required: false
+          in: query
+          description: the ID of the user under inquiry.
+          schema:
+            type: integer
+            format: int64
+        - name: trackID
+          required: false
+          in: query
+          description: the ID of the track under inquiry.
+          schema:
+            type: integer
+            format: int64
+        - name: eventID
+          required: false
+          in: query
+          description: the ID of the event under inquiry.
+          schema:
+            type: integer
+            format: int64
+        - name: invitationID
+          required: false
+          in: query
+          description: the ID of the invitation under inquiry. If specified, other optional parameters are unnecessary.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invitation'
+        '400':
+          description: Invalid parameters were specified.
+        '401':
+          description: Unauthorized Access.
+        '404':
+          description: No invitation matching the parameters exists.
+  /invitations/accept/{invitationID}:
+    post:
+      tags:
+        - invitations
+      summary: Accepts an invitation.
+      description: If an invitation with the specified invitation ID exists, it accepts the invitation.
+      operationId: acceptInvitation
+      parameters:
+        - name: invitationID
+          in: path
+          description: id of the invitation to be accepted.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid invitationID was provided.
+        '401':
+          description: Unauthorized Access.
+        '404':
+          description: No invitation with the provided ID exists.
+  /invitations/{invitationID}:
+    delete:
+      tags:
+        - invitations
+      summary: Rejects or revokes an invitation.
+      description: If an invitation with the specified invitation ID exists, it deletes the invitation.
+      operationId: deleteInvitation
+      parameters:
+        - name: invitationID
+          in: path
+          description: id of the invitation to be deleted.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid invitationID was provided.
+        '401':
+          description: Unauthorized Access.
+        '404':
+          description: No invitation with the provided ID exists.
+    get:
+      tags:
+        - invitations
+      summary: Gets an invitation.
+      description: If an invitation with the specified invitation ID exists, it gets the invitation.
+      operationId: getInvitation
+      parameters:
+        - name: invitationID
+          in: path
+          description: id of the invitation to be retrieved.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid invitationID was provided.
+        '401':
+          description: Unauthorized Access.
+        '404':
+          description: No invitation with the provided ID exists.
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        firstName:
+          type: string
+          example: Marieke
+        lastName:
+          type: string
+          example: Smith
+        email:
+          type: string
+          example: pete@email.com
+        affiliation:
+          type: string
+          example: 'Fireman'
+        personalWebsite:
+          type: string
+          example: "myPersonalWebsite.com"
+        preferredCommunication:
+          type: string
+          example: "e-mail"
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 4321234
+        startDate:
+          type: string
+          format: date
+          example: 2001-07-04 12:08
+        endDate:
+          type: string
+          format: date
+          example: 2001-08-05 15:23
+        isCancelled:
+          type: boolean
+        name:
+          type: string
+          example: Open conference for paper review
+        description:
+          nullable: true
+          type: string
+          example: this is a conference that deals with submitting papers to review.
+    Attendee:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        event_id:
+          type: integer
+          format: int64
+          example: 10
+        user_id:
+          type: integer
+          format: int64
+          example: 10
+        track_id:
+          type: integer
+          format: int64
+          example: 10
+        role:
+          $ref: '#/components/schemas/Role'
+          example: general_chair
+    Invitation:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        event_id:
+          type: integer
+          format: int64
+          example: 10
+        user_id:
+          type: integer
+          format: int64
+          example: 10
+        track_id:
+          type: integer
+          format: int64
+          example: 10
+        role:
+          $ref: '#/components/schemas/Role'
+          example: general_chair
+    Track:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        title:
+          type: string
+          example: "track Title 1"
+        description:
+          type: string
+          example: "track 1 is ..., aims to ..."
+        submit_deadline:
+          type: string
+          description: the deadline for all paper submissions
+          example: "2022/11/24, 21:59"
+        review_deadline:
+          type: string
+          description: the deadline for all paper submissions
+          example: "2022/11/24, 21:59"
+        paperType:
+          type: string
+          description: the required paper type for this track
+          enum:
+            - full-paper
+            - short-paper
+            - position-paper
+        eventId:
+          type: integer
+          format: int64
+          example: 5
+    Role:
+      type: string
+      enum:
+        - general_chair
+        - pc_chair
+        - pc_member
+        - sub_reviewer
+        - author
+        - attendee
+        - invited
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+  requestBodies:
+    UserArray:
+      description: List of user object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
+  securitySchemes:
+    api_key:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
