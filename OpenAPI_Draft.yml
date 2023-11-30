@@ -198,23 +198,22 @@ paths:
           description: User not found
       security:
         - api_key: [ ]
-  /user/{userID}/invitations:
     get:
       tags:
         - user
-      summary: Shows user invitations
-      description: This allows to show the current invitations for events of the user.
-      operationId: getUserInvitations
+      summary: Gets an account by userID
+      description: This allows for getting the account of a specific user by a userID.
+      operationId: getAccountByID
       parameters:
         - name: userID
           in: path
-          description: The userID of a user whose invitations we want to retrieve
+          description: The userID of the user account
           required: true
           schema:
             type: integer
       responses:
         '204':
-          description: User invitations successfully shown
+          description: User account found sucessfully
         '400':
           description: Invalid userID supplied
         '401':
@@ -223,39 +222,28 @@ paths:
           description: User not found
       security:
         - api_key: [ ]
-  /user/login:
-    post:
+  /user/byEmail/{email}:
+    get:
       tags:
         - user
-      summary: Logs user into the system
-      description: This allows a user to log into the system.
-      operationId: loginUser
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
+      summary: Gets an account by email
+      description: This allows for getting the account of a specific user by email.
+      operationId: getAccountByEmail
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    description: JWT token for authentication
+        '204':
+          description: User account found sucessfully
         '400':
-          description: Invalid username/password supplied
+          description: Invalid userID supplied
         '401':
           description: Unauthorized access.
+        '404':
+          description: User not found
       security:
         - api_key: [ ]
 
