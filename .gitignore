@@ -5,6 +5,10 @@ gradle-app.setting
 !gradle/wrapper/gradle-wrapper.jar
 **/build/
 .gradletasknamecache
+bin/
+.project
+.settings
+.classpath
 
 ### Java ###
 # Compiled class file
