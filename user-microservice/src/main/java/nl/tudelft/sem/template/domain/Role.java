@@ -11,24 +11,24 @@ import javax.persistence.*;
 @Entity
 public class Role {
 
-  @Id
-  @Column(nullable = false, unique = true)
-  private Long id;
+    @Id
+    @Column(nullable = false, unique = true)
+    private Long id;
 
-  @Column(nullable = false, unique = false)
-  private Long userId;
+    @Column(nullable = false, unique = false)
+    private Long userId;
 
-  @Column(nullable = false, unique = false)
-  private Long eventId;
+    @Column(nullable = false, unique = false)
+    private Long eventId;
 
-  @Column(nullable = true, unique = false)
-  private JsonNullable<Long> trackId = JsonNullable.undefined();
+    @Column(nullable = true, unique = false)
+    private JsonNullable<Long> trackId = JsonNullable.undefined();
 
-  @Enumerated(EnumType.ORDINAL)
-  @Column(nullable = false, unique = false)
-  private RoleTitle role;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(nullable = false, unique = false)
+    private RoleTitle role;
 
-  @Column(nullable = false, unique = false)
-  private Boolean confirmed;
+    @Column(nullable = false, unique = false)
+    private Boolean confirmed;
 }
 

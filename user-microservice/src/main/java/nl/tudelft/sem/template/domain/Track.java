@@ -15,28 +15,28 @@ import java.util.Objects;
 @Entity
 public class Track {
 
-  @Id
-  @Column(nullable = false, unique = true)
-  private Long id;
+    @Id
+    @Column(nullable = false, unique = true)
+    private Long id;
 
-  @Column(nullable = false, unique = false)
-  private String title;
+    @Column(nullable = false, unique = false)
+    private String title;
 
-  @Column(nullable = false, unique = false)
-  private String description;
+    @Column(nullable = false, unique = false)
+    private String description;
 
-  @Enumerated(EnumType.ORDINAL)
-  @Column(nullable = false, unique = false)
-  private PaperType paperType;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(nullable = false, unique = false)
+    private PaperType paperType;
 
-  @Column(nullable = false, unique = false)
-  private String submitDeadline;
+    @Column(nullable = false, unique = false)
+    private String submitDeadline;
 
-  @Column(nullable = false, unique = false)
-  private String reviewDeadline;
+    @Column(nullable = false, unique = false)
+    private String reviewDeadline;
 
-  @Column(nullable = false, unique = false)
-  private Long eventId;
+    @Column(nullable = false, unique = false)
+    private Long eventId;
 
 }
 

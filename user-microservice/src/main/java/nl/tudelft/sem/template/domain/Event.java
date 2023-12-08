@@ -21,25 +21,25 @@ import java.util.Objects;
 @Entity
 public class Event {
 
-  @Id
-  @Column(nullable = false, unique = true)
-  private Long id;
+    @Id
+    @Column(nullable = false, unique = true)
+    private Long id;
 
-  @Column(nullable = false, unique = false)
-  private String title;
+    @Column(nullable = false, unique = false)
+    private String title;
 
-  @Column(nullable = true, unique = false)
-  private JsonNullable<String> description = JsonNullable.undefined();
+    @Column(nullable = true, unique = false)
+    private JsonNullable<String> description = JsonNullable.undefined();
 
-  @Column(nullable = false, unique = false)
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-  private LocalDate startDate;
+    @Column(nullable = false, unique = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate startDate;
 
-  @Column(nullable = false, unique = false)
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-  private LocalDate endDate;
+    @Column(nullable = false, unique = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate endDate;
 
-  @Column(nullable = false, unique = false)
-  private Boolean isCancelled;
+    @Column(nullable = false, unique = false)
+    private Boolean isCancelled;
 }
 

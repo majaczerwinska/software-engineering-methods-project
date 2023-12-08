@@ -11,11 +11,11 @@ import javax.annotation.Generated;
 
 public enum PaperType {
   
-  FULL_PAPER,
-  
-  SHORT_PAPER,
-  
-  POSITION_PAPER
+    FULL_PAPER,
+
+    SHORT_PAPER,
+
+    POSITION_PAPER
 
 }
 

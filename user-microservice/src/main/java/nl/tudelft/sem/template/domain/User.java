@@ -16,27 +16,27 @@ import java.util.Objects;
 @Entity
 public class User {
 
-  @Id
-  @Column(nullable = false, unique = true)
-  private Long id;
+    @Id
+    @Column(nullable = false, unique = true)
+    private Long id;
 
-  @Column(nullable = false, unique = false)
-  private String firstName;
+    @Column(nullable = false, unique = false)
+    private String firstName;
 
-  @Column(nullable = false, unique = false)
-  private String lastName;
+    @Column(nullable = false, unique = false)
+    private String lastName;
 
-  @Column(nullable = false, unique = false)
-  private String email;
+    @Column(nullable = false, unique = false)
+    private String email;
 
-  @Column(nullable = false, unique = false)
-  private String affiliation;
+    @Column(nullable = false, unique = false)
+    private String affiliation;
 
-  @Column(nullable = false, unique = false)
-  private String personalWebsite;
+    @Column(nullable = false, unique = false)
+    private String personalWebsite;
 
-  @Column(nullable = false, unique = false)
-  private String preferredCommunication;
+    @Column(nullable = false, unique = false)
+    private String preferredCommunication;
 
 }
 
