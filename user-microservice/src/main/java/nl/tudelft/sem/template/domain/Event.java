@@ -1,12 +1,11 @@
 package nl.tudelft.sem.template.domain;
 
 import org.openapitools.jackson.nullable.JsonNullable;
+import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.time.LocalDate;
 
 @Entity
 public class Event {
@@ -21,12 +20,12 @@ public class Event {
     @Column
     private JsonNullable<String> description = JsonNullable.undefined();
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(nullable = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate startDate;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(nullable = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate endDate;
 
     @Column(nullable = false)

@@ -1,8 +1,11 @@
 package nl.tudelft.sem.template.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
 import org.openapitools.jackson.nullable.JsonNullable;
-
-import javax.persistence.*;
 
 @Entity
 public class Role {
