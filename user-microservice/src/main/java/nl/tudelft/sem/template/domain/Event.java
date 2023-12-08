@@ -1,11 +1,11 @@
 package nl.tudelft.sem.template.domain;
 
-import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.LocalDate;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.openapitools.jackson.nullable.JsonNullable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 public class Event {
