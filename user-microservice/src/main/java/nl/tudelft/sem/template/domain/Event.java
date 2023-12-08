@@ -1,10 +1,10 @@
 package nl.tudelft.sem.template.domain;
 
 import java.time.LocalDate;
-import org.openapitools.jackson.nullable.JsonNullable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
