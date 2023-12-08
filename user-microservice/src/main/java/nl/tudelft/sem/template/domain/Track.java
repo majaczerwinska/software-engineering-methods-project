@@ -2,10 +2,6 @@ package nl.tudelft.sem.template.domain;
 
 import javax.persistence.*;
 
-/**
- * Track
- */
-
 @Entity
 public class Track {
 

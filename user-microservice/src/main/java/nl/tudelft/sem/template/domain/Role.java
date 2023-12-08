@@ -4,10 +4,6 @@ import org.openapitools.jackson.nullable.JsonNullable;
 
 import javax.persistence.*;
 
-/**
- * Attendee
- */
-
 @Entity
 public class Role {
 

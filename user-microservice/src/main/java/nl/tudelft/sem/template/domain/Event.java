@@ -8,10 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.LocalDate;
 
-/**
- * Event
- */
-
 @Entity
 public class Event {
 
@@ -25,12 +21,12 @@ public class Event {
     @Column
     private JsonNullable<String> description = JsonNullable.undefined();
 
-    @Column(nullable = false)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Column(nullable = false)
     private LocalDate startDate;
 
-    @Column(nullable = false)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Column(nullable = false)
     private LocalDate endDate;
 
     @Column(nullable = false)
