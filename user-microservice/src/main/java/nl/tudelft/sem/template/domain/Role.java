@@ -15,20 +15,20 @@ public class Role {
     @Column(nullable = false, unique = true)
     private Long id;
 
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false)
     private Long userId;
 
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false)
     private Long eventId;
 
-    @Column(nullable = true, unique = false)
+    @Column
     private JsonNullable<Long> trackId = JsonNullable.undefined();
 
     @Enumerated(EnumType.ORDINAL)
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false)
     private RoleTitle role;
 
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false)
     private Boolean confirmed;
 }
 
