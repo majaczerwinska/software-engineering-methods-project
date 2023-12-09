@@ -14,21 +14,21 @@ public class Event {
     @Column(nullable = false, unique = true)
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
-
-    @Column
-    private JsonNullable<String> description = JsonNullable.undefined();
-
-    @Column(nullable = false)
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate startDate;
-
-    @Column(nullable = false)
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate endDate;
-
-    @Column(nullable = false)
-    private Boolean isCancelled;
+//    @Column(nullable = false)
+//    private String title;
+//
+//    @Column
+//    private JsonNullable<String> description = JsonNullable.undefined();
+//
+//    @Column(nullable = false)
+//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+//    private LocalDate startDate;
+//
+//    @Column(nullable = false)
+//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+//    private LocalDate endDate;
+//
+//    @Column(nullable = false)
+//    private Boolean isCancelled;
 }
 

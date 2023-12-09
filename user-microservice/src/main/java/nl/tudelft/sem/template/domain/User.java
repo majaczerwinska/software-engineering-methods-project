@@ -11,23 +11,23 @@ public class User {
     @Column(nullable = false, unique = true)
     private Long id;
 
-    @Column(nullable = false)
-    private String firstName;
-
-    @Column(nullable = false)
-    private String lastName;
-
-    @Column(nullable = false)
-    private String email;
-
-    @Column(nullable = false)
-    private String affiliation;
-
-    @Column(nullable = false)
-    private String personalWebsite;
-
-    @Column(nullable = false)
-    private String preferredCommunication;
+//    @Column(nullable = false)
+//    private String firstName;
+//
+//    @Column(nullable = false)
+//    private String lastName;
+//
+//    @Column(nullable = false)
+//    private String email;
+//
+//    @Column(nullable = false)
+//    private String affiliation;
+//
+//    @Column(nullable = false)
+//    private String personalWebsite;
+//
+//    @Column(nullable = false)
+//    private String preferredCommunication;
 
 }
 
