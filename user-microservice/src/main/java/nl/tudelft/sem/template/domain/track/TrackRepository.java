@@ -26,7 +26,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     /**
      * find track that have this title in the input event.
      *
-     * @param title the title to look for
+     * @param t     the title to look for
      * @param event the event where the track belongs to
      * @return track that have this title in the input event
      */
@@ -37,7 +37,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     /**
      * find list of track that have this title.
      *
-     * @param title the title to look for
+     * @param t     the title to look for
      * @return list of track that have this title
      */
     @Query("SELECT t FROM Track t WHERE t.title = :ti")
@@ -91,7 +91,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     /**
      * check if event with input title exist in the input event.
      *
-     * @param title the title to check for
+     * @param t     the title to check for
      * @return true if event with input title exist in the input event
      */
     @Query("SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END FROM Track t WHERE t.title = :title AND t.event = :event")
@@ -100,7 +100,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     /**
      * check if event with input title exist.
      *
-     * @param title the title to check for
+     * @param t     the title to check for
      * @return true if event with input title exist
      */
     @Query("SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END FROM Track t WHERE t.title = :title")
