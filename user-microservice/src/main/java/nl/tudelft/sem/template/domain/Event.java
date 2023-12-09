@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.domain;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nl.tudelft.sem.template.domain.track.Track;
 import org.openapitools.jackson.nullable.JsonNullable;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;

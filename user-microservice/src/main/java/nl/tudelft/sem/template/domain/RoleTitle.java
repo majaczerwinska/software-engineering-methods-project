@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.domain;
 
 public enum RoleTitle {
-  
+
     GENERAL_CHAIR,
 
     PC_CHAIR,
