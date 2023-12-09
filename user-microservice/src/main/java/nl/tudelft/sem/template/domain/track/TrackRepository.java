@@ -1,14 +1,13 @@
 package nl.tudelft.sem.template.domain.track;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import nl.tudelft.sem.template.domain.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * A DDD repository for querying and persisting user aggregate roots.
@@ -16,6 +15,8 @@ import java.util.Optional;
 @Repository
 public interface TrackRepository extends JpaRepository<Track, String> {
     /**
+     * find track that have this id.
+     *
      * @param id the id to look for
      * @return track that have this id
      */
@@ -23,6 +24,8 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     Optional<Track> findById(@Param("id") String id);
 
     /**
+     * find track that have this title in the input event.
+     *
      * @param title the title to look for
      * @param event the event where the track belongs to
      * @return track that have this title in the input event
@@ -32,6 +35,8 @@ public interface TrackRepository extends JpaRepository<Track, String> {
 
 
     /**
+     * find list of track that have this title.
+     *
      * @param title the title to look for
      * @return list of track that have this title
      */
@@ -39,6 +44,8 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     List<Track> findByTitle(@Param("title") String title);
 
     /**
+     * find list of track that have submission deadline before the input date.
+     *
      * @param date the latest date for giving submission
      * @return list of track that have submission deadline before the input date
      */
@@ -46,6 +53,8 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     List<Track> findBySubmitDeadline(@Param("latestDate") Date date);
 
     /**
+     * find list of track that have review deadline before the input date.
+     *
      * @param date the latest date for giving review
      * @return list of track that have review deadline before the input date
      */
@@ -53,6 +62,8 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     List<Track> findByReviewDeadline(@Param("date") Date date);
 
     /**
+     * find list of track that have the keyword in its description.
+     *
      * @param keyword the word that should be i the description
      * @return list of track that have the keyword in its description
      */
@@ -60,6 +71,8 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     List<Track> findByDescriptionContaining(@Param("keyword") String keyword);
 
     /**
+     * find list of track that in the event.
+     *
      * @param event the event where the track belongs to
      * @return list of track that in the event
      */
@@ -67,6 +80,8 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     List<Track> findByEvent(@Param("event") Event event);
 
     /**
+     * check if event with input id exist.
+     *
      * @param id the id to check for
      * @return true if event with input id exist
      */
@@ -74,6 +89,8 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     boolean existsById(@Param("id") long id);
 
     /**
+     * check if event with input title exist in the input event.
+     *
      * @param title the title to check for
      * @return true if event with input title exist in the input event
      */
@@ -81,6 +98,8 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     boolean existsByTitleInEvent(@Param("title") String title, @Param("event") Event event);
 
     /**
+     * check if event with input title exist.
+     *
      * @param title the title to check for
      * @return true if event with input title exist
      */

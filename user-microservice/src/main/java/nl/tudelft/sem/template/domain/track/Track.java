@@ -1,15 +1,29 @@
 package nl.tudelft.sem.template.domain.track;
 
+import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.util.Date;
+import java.util.Objects;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import nl.tudelft.sem.template.domain.Event;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import javax.persistence.*;
-import java.util.Date;
-import java.util.Objects;
-
-import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
-
+/**
+ * track can be created inside an event.
+ */
 @Table(name = "track")
 public class Track {
     @Id
@@ -43,36 +57,44 @@ public class Track {
 
 
     /**
-     * empty Constructor: to avoid error
+     * empty Constructor: to avoid error.
      */
     public Track() {
     }
 
     /**
-     * @param title          the title of this track
-     * @param description    the detailed info about this track
-     * @param paperType      the allowed paper type for submission for this track
-     * @param submitDeadline the deadline for submission in this track
-     * @param reviewDeadline the deadline for giving reviews in this track
-     * @param event          the event this track belongs to
+     * a constructor for Track.
+     * where the deadlines can be inputted as the latest time,
+     * if the user does not specify.
+     *
+     * @param t    the title of this track
+     * @param d    the detailed info about this track
+     * @param p    the allowed paper type for submission for this track
+     * @param s    the deadline for submission in this track
+     * @param r    the deadline for giving reviews in this track
+     * @param e    the event this track belongs to
      */
-    public Track(String title, String description, PaperType paperType, Date submitDeadline, Date reviewDeadline, Event event) {
-        this.title = title;
-        this.description = description;
-        this.paperType = paperType;
-        this.submitDeadline = submitDeadline;
-        this.reviewDeadline = reviewDeadline;
-        this.event = event;
+    public Track(String t, String d, PaperType p, Date s, Date r, Event e) {
+        this.title = t;
+        this.description = d;
+        this.paperType = p;
+        this.submitDeadline = s;
+        this.reviewDeadline = r;
+        this.event = e;
     }
 
     /**
-     * @return the id of this track
+     * method for getting the id of this track.
+     *
+     * @return the id of this track.
      */
     public Long getId() {
         return id;
     }
 
     /**
+     * method for changing the id of this track.
+     *
      * @param id to set id for this track
      */
     private void setId(Long id) {
@@ -80,6 +102,8 @@ public class Track {
     }
 
     /**
+     * method for getting the title of this track.
+     *
      * @return the title for this track
      */
     public String getTitle() {
@@ -87,6 +111,8 @@ public class Track {
     }
 
     /**
+     * method for changing the id of this track.
+     *
      * @param title for this track
      */
     public void setTitle(String title) {
@@ -94,6 +120,8 @@ public class Track {
     }
 
     /**
+     * method for getting the description of this track.
+     *
      * @return the description for this track
      */
     public String getDescription() {
@@ -101,6 +129,8 @@ public class Track {
     }
 
     /**
+     * method for changing the description of this track.
+     *
      * @param description for this track
      */
     public void setDescription(String description) {
@@ -108,6 +138,8 @@ public class Track {
     }
 
     /**
+     * method for getting the paper type of this track.
+     *
      * @return the allowed paper type for submission for this track
      */
     public PaperType getPaperType() {
@@ -115,6 +147,8 @@ public class Track {
     }
 
     /**
+     * method for changing the paper type of this track.
+     *
      * @param paperType that is allowed for this track
      */
     public void setPaperType(PaperType paperType) {
@@ -122,6 +156,8 @@ public class Track {
     }
 
     /**
+     * method for getting the deadline for submission of this track.
+     *
      * @return the deadline for submission for this track
      */
     public Date getSubmitDeadline() {
@@ -129,6 +165,8 @@ public class Track {
     }
 
     /**
+     * method for changing the deadline for submission of this track.
+     *
      * @param submitDeadline for this track
      */
     public void setSubmitDeadline(Date submitDeadline) {
@@ -136,6 +174,8 @@ public class Track {
     }
 
     /**
+     * method for getting the deadline for review of this track.
+     *
      * @return the deadline for review for this track
      */
     public Date getReviewDeadline() {
@@ -143,6 +183,8 @@ public class Track {
     }
 
     /**
+     * method for getting the deadline for reviewing of this track.
+     *
      * @param reviewDeadline for this track
      */
     public void setReviewDeadline(Date reviewDeadline) {
@@ -150,6 +192,8 @@ public class Track {
     }
 
     /**
+     * method for getting the event of this track.
+     *
      * @return the event this track belongs to
      */
     public Event getEvent() {
@@ -157,6 +201,8 @@ public class Track {
     }
 
     /**
+     * method for change the event of this track.
+     *
      * @param event which this track belongs to
      */
     public void setEvent(Event event) {
@@ -164,18 +210,26 @@ public class Track {
     }
 
     /**
+     * method check the quality between this track and a unknown object.
+     *
      * @param o the object where this will be compared to
      * @return the result of the test for equality
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Track)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Track)) {
+            return false;
+        }
         Track track = (Track) o;
         return title.equals(track.title) && event.equals(track.event);
     }
 
     /**
+     * mothod to generate a unique int for this entity.
+     *
      * @return a unique int for this entity and the hashcode will be stored as the id of this entity
      */
     @Override
@@ -184,14 +238,16 @@ public class Track {
     }
 
     /**
-     * @return in the MULTI_LINE_STYLE, e.g.:
-     * Track"memory address of this task"[
-     * id= 1
-     * title = TrackName;
-     * description = TrackInfo;
-     * paperType = FULL_PAPER;
-     * ...
-     * ]
+     * e.g.
+     * * Track"memory address of this task"[
+     * * id= 1
+     * * title = TrackName;
+     * * description = TrackInfo;
+     * * paperType = FULL_PAPER;
+     * * ...
+     * * ]
+     *
+     * @return in the MULTI_LINE_STYLE
      */
     @Override
     public String toString() {

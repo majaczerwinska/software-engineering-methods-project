@@ -1,16 +1,26 @@
 package nl.tudelft.sem.template.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import nl.tudelft.sem.template.domain.track.Track;
 import org.openapitools.jackson.nullable.JsonNullable;
 
-import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
-
+/**
+ * the class for an event which can be created by users.
+ */
 @Entity
 public class Event {
-
     @Id
     @Column(name = "id", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,4 +46,5 @@ public class Event {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "task", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Track> trackList;
+
 }
