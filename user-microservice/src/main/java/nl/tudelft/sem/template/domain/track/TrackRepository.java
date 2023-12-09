@@ -30,8 +30,8 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @param event the event where the track belongs to
      * @return track that have this title in the input event
      */
-    @Query("SELECT t FROM Track t WHERE t.title = :title AND t.event = :event")
-    Optional<Track> findByTitleAndEvent(@Param("title") String title, @Param("event") Event event);
+    @Query("SELECT t FROM Track t WHERE t.title = :ti AND t.event = :event")
+    Optional<Track> findByTitleAndEvent(@Param("ti") String t, @Param("event") Event event);
 
 
     /**
@@ -40,8 +40,8 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @param title the title to look for
      * @return list of track that have this title
      */
-    @Query("SELECT t FROM Track t WHERE t.title = :title")
-    List<Track> findByTitle(@Param("title") String title);
+    @Query("SELECT t FROM Track t WHERE t.title = :ti")
+    List<Track> findByTitle(@Param("ti") String t);
 
     /**
      * find list of track that have submission deadline before the input date.
@@ -95,7 +95,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @return true if event with input title exist in the input event
      */
     @Query("SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END FROM Track t WHERE t.title = :title AND t.event = :event")
-    boolean existsByTitleInEvent(@Param("title") String title, @Param("event") Event event);
+    boolean existsByTitleInEvent(@Param("title") String t, @Param("event") Event event);
 
     /**
      * check if event with input title exist.
@@ -104,5 +104,5 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @return true if event with input title exist
      */
     @Query("SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END FROM Track t WHERE t.title = :title")
-    boolean existsByTitle(@Param("title") String title);
+    boolean existsByTitle(@Param("title") String t);
 }
