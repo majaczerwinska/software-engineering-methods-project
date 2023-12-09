@@ -14,20 +14,20 @@ public class Role {
     @Column(nullable = false, unique = true)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
-
-    @Column(nullable = false)
-    private Long eventId;
-
-    @Column
-    private JsonNullable<Long> trackId = JsonNullable.undefined();
-
-    @Enumerated(EnumType.ORDINAL)
-    @Column(nullable = false)
-    private RoleTitle role;
-
-    @Column(nullable = false)
-    private Boolean confirmed;
+//    @Column(nullable = false)
+//    private Long userId;
+//
+//    @Column(nullable = false)
+//    private Long eventId;
+//
+//    @Column
+//    private JsonNullable<Long> trackId = JsonNullable.undefined();
+//
+//    @Enumerated(EnumType.ORDINAL)
+//    @Column(nullable = false)
+//    private RoleTitle roleTitle;
+//
+//    @Column(nullable = false)
+//    private Boolean confirmed;
 }
 
