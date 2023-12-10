@@ -1,6 +1,5 @@
-package nl.tudelft.sem.template.event;
+package nl.tudelft.sem.template.example.domain.event;
 
-import nl.tudelft.sem.template.model.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

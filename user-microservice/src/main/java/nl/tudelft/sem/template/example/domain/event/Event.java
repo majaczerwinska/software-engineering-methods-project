@@ -36,20 +36,20 @@ public class Event extends HasEvents {
     @Convert(converter = LocalDateConverter.class)
     private LocalDate endDate;
 
-    // TODO: Add converter here and change type
     @Getter
     @Column(name = "is_cancelled", nullable = false)
-    private boolean isCancelled;
+    @Convert(converter = IsCancelledAttributeConverter.class)
+    private IsCancelled isCancelled;
 
     @Getter
     @Column(name = "name", nullable = false)
     @Convert(converter = EventNameAttributeConverter.class)
     private EventName name;
 
-    // TODO: Add converter here and change type
     @Getter
     @Column(name = "description", nullable = false)
-    private String description;
+    @Convert(converter = DescriptionAttributeConverter.class)
+    private Description description;
 
     /**
      * Equality is only based on the identifier.
