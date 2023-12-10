@@ -3,10 +3,11 @@ package nl.tudelft.sem.template.domain.track;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import java.util.Date;
 import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -18,79 +19,79 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.domain.Event;
+import nl.tudelft.sem.template.domain.HasEvents;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+
 /**
- * track can be created inside an event.
+ * A DDD entity representing a track in our domain.
  */
-@Table(name = "track")
-public class Track {
+@Entity
+@Table(name = "tracks")
+@NoArgsConstructor
+@Getter
+public class Track extends HasEvents {
     @Id
     @Column(name = "id", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title", nullable = false, unique = true)
-    private String title;
+    @Column(name = "title", nullable = false)
+    @Convert(converter = TitleAttributeConverter.class)
+    private Title title;
 
     @Column(name = "description", nullable = false)
-    private String description;
+    @Convert(converter = DescriptionAttributeConverter.class)
+    private Description description;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "paperType", nullable = false)
-    private PaperType paperType;
+    @Convert(converter = PaperRequirementAttributeConverter.class)
+    private PaperRequirement paperType;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "submitDeadline", nullable = false)
-    private Date submitDeadline;
+    @Convert(converter = DeadlineAttributeConverter.class)
+    private Deadline submitDeadline;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "reviewDeadline", nullable = false)
-    private Date reviewDeadline;
+    @Convert(converter = DeadlineAttributeConverter.class)
+    private Deadline reviewDeadline;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "eventId", referencedColumnName = "id")
     @JsonBackReference
     @Column(name = "event", nullable = false)
-    private Event event;
-
-
-    /**
-     * empty Constructor: to avoid error.
-     */
-    public Track() {
-    }
+    @Convert(converter = ParentEventAttributeConverter.class)
+    private ParentEvent event;
 
     /**
      * a constructor for Track.
      * where the deadlines can be inputted as the latest time,
      * if the user does not specify.
      *
-     * @param t    the title of this track
-     * @param d    the detailed info about this track
-     * @param p    the allowed paper type for submission for this track
-     * @param s    the deadline for submission in this track
-     * @param r    the deadline for giving reviews in this track
-     * @param e    the event this track belongs to
+     * @param title          the title of this track
+     * @param description    the detailed info about this track
+     * @param paperType      the allowed paper type for submission for this track
+     * @param submitDeadline the deadline for submission in this track
+     * @param reviewDeadline the deadline for giving reviews in this track
+     * @param event          the event this track belongs to
      */
-    public Track(String t, String d, PaperType p, Date s, Date r, Event e) {
-        this.title = t;
-        this.description = d;
-        this.paperType = p;
-        this.submitDeadline = s;
-        this.reviewDeadline = r;
-        this.event = e;
+    public Track(Title title, Description description, PaperRequirement paperType,
+                 Deadline submitDeadline, Deadline reviewDeadline, ParentEvent event) {
+        this.title = title;
+        this.description = description;
+        this.paperType = paperType;
+        this.submitDeadline = submitDeadline;
+        this.reviewDeadline = reviewDeadline;
+        this.event = event;
+        this.recordThat(new TrackWasCreatedEvent(event.toEvent(), this.id));
     }
 
-    /**
-     * method for getting the id of this track.
-     *
-     * @return the id of this track.
-     */
-    public Long getId() {
-        return id;
-    }
 
     /**
      * method for changing the id of this track.
@@ -102,48 +103,24 @@ public class Track {
     }
 
     /**
-     * method for getting the title of this track.
-     *
-     * @return the title for this track
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
      * method for changing the id of this track.
      *
      * @param title for this track
      */
-    public void setTitle(String title) {
+    public void setTitle(Title title) {
         this.title = title;
+        this.recordThat(new TitleWasChangedEvent(this));
     }
 
-    /**
-     * method for getting the description of this track.
-     *
-     * @return the description for this track
-     */
-    public String getDescription() {
-        return description;
-    }
 
     /**
      * method for changing the description of this track.
      *
      * @param description for this track
      */
-    public void setDescription(String description) {
+    public void setDescription(Description description) {
         this.description = description;
-    }
-
-    /**
-     * method for getting the paper type of this track.
-     *
-     * @return the allowed paper type for submission for this track
-     */
-    public PaperType getPaperType() {
-        return paperType;
+        this.recordThat(new DescriptionWasChangedEvent(this));
     }
 
     /**
@@ -151,62 +128,44 @@ public class Track {
      *
      * @param paperType that is allowed for this track
      */
-    public void setPaperType(PaperType paperType) {
+    public void setPaperType(PaperRequirement paperType) {
         this.paperType = paperType;
+        this.recordThat(new PaperRequirementWasChangedEvent(this));
     }
 
-    /**
-     * method for getting the deadline for submission of this track.
-     *
-     * @return the deadline for submission for this track
-     */
-    public Date getSubmitDeadline() {
-        return submitDeadline;
-    }
 
     /**
      * method for changing the deadline for submission of this track.
      *
      * @param submitDeadline for this track
      */
-    public void setSubmitDeadline(Date submitDeadline) {
+    public void setSubmitDeadline(Deadline submitDeadline) {
         this.submitDeadline = submitDeadline;
+        this.recordThat(new DeadlineWasChangedEvent(this));
     }
 
     /**
-     * method for getting the deadline for review of this track.
-     *
-     * @return the deadline for review for this track
-     */
-    public Date getReviewDeadline() {
-        return reviewDeadline;
-    }
-
-    /**
-     * method for getting the deadline for reviewing of this track.
+     * method for changing the deadline for reviewing of this track.
      *
      * @param reviewDeadline for this track
      */
-    public void setReviewDeadline(Date reviewDeadline) {
+    public void setReviewDeadline(Deadline reviewDeadline) {
         this.reviewDeadline = reviewDeadline;
+        this.recordThat(new DeadlineWasChangedEvent(this));
     }
 
-    /**
-     * method for getting the event of this track.
-     *
-     * @return the event this track belongs to
-     */
-    public Event getEvent() {
-        return event;
-    }
 
     /**
      * method for change the event of this track.
      *
      * @param event which this track belongs to
      */
-    public void setEvent(Event event) {
+    public void setEvent(ParentEvent event) {
+        Event temp = this.event.toEvent();
         this.event = event;
+        this.recordThat(new TrackWasRemovedEvent(temp, this.id));
+        this.recordThat(new ParentEventWasChangedEvent(this));
+        this.recordThat(new TrackWasCreatedEvent(event.toEvent(), this.id));
     }
 
     /**

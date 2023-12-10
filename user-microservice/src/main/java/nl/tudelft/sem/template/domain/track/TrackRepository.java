@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
- * A DDD repository for querying and persisting user aggregate roots.
+ * A DDD repository for querying and persisting track aggregate roots.
  */
 @Repository
 public interface TrackRepository extends JpaRepository<Track, String> {
