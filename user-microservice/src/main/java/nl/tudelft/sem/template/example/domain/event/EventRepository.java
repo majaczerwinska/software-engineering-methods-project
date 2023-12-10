@@ -16,7 +16,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * that events are associated with a user. This would imply adding a userId field in the Event class or
      * some relationship mapping in the Event class.
      */
-    List<Event> findAllByUserId(Long id);
+    //List<Event> findAllByUserId(Long id);
 
     //TODO: add more custom queries??
 
