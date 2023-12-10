@@ -6,14 +6,14 @@ package nl.tudelft.sem.template.example.domain.event;
 
 public class Description {
 
-    private final String description;
+    private final transient String text;
 
     public Description(String description) {
-        this.description = description;
+        this.text = description;
     }
 
     @Override
     public String toString() {
-        return description;
+        return text;
     }
 }
