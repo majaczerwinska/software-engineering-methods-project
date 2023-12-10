@@ -4,7 +4,7 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 /**
- * JPA Converter for the NetID value object.
+ * JPA Converter for the description value object.
  */
 @Converter
 public class DescriptionAttributeConverter implements AttributeConverter<Description, String> {

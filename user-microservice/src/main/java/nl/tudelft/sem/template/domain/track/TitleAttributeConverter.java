@@ -5,7 +5,7 @@ import javax.persistence.Converter;
 
 
 /**
- * JPA Converter for the NetID value object.
+ * JPA Converter for the title value object.
  */
 @Converter
 public class TitleAttributeConverter implements AttributeConverter<Title, String> {

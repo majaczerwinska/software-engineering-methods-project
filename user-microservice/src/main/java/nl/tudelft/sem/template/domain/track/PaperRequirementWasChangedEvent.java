@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.domain.track;
 
 /**
- * A DDD domain event indicating a title had changed.
+ * A DDD domain event indicating a paper requirement had changed.
  */
 public class PaperRequirementWasChangedEvent {
     private final Track track;

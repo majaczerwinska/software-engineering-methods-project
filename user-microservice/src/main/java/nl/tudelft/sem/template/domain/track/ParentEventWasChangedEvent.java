@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.domain.track;
 
 /**
- * A DDD domain event indicating a title had changed.
+ * A DDD domain event indicating parent event had changed.
  */
 public class ParentEventWasChangedEvent {
     private final Track track;

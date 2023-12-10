@@ -5,7 +5,7 @@ import javax.persistence.Converter;
 import nl.tudelft.sem.template.domain.Event;
 
 /**
- * JPA Converter for the NetID value object.
+ * JPA Converter for the parent event value object.
  */
 @Converter
 public class ParentEventAttributeConverter implements AttributeConverter<ParentEvent, Event> {

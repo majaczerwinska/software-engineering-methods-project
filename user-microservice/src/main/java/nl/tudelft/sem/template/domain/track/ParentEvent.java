@@ -4,7 +4,7 @@ import lombok.EqualsAndHashCode;
 import nl.tudelft.sem.template.domain.Event;
 
 /**
- * A DDD value object representing the paper requirement in our domain.
+ * A DDD value object representing the parent event in our domain.
  */
 @EqualsAndHashCode
 public class ParentEvent {
