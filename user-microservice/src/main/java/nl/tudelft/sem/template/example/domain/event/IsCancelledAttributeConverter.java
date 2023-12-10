@@ -4,7 +4,7 @@ import javax.persistence.AttributeConverter;
 
 public class IsCancelledAttributeConverter implements AttributeConverter<IsCancelled, Integer> {
     @Override
-    public Integer convertToDatabaseColumn(IsCancelled attribute){
+    public Integer convertToDatabaseColumn(IsCancelled attribute) {
         return attribute.getCancelStatus();
     }
 
