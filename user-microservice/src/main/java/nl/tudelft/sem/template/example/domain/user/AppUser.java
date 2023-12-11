@@ -1,9 +1,13 @@
 package nl.tudelft.sem.template.example.domain.user;
 
+import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.util.Objects;
 
 /**
  * A DDD entity representing an application user in our domain.
@@ -48,11 +52,10 @@ public class AppUser extends HasEvents {
     //    private Set<Event> events = new HashSet<>();
 
 
-
     /**
      * Create new application user.
      *
-     * @param email The Email for the new user
+     * @param email    The Email for the new user
      * @param password The password for the new user
      */
     public AppUser(Email email, HashedPassword password,

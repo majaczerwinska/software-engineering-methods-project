@@ -4,7 +4,7 @@ import nl.tudelft.sem.template.example.domain.user.AppUser;
 import nl.tudelft.sem.template.example.domain.user.Email;
 import nl.tudelft.sem.template.example.domain.user.HashedPassword;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * This controller is responsible for methods related to the User entity.
