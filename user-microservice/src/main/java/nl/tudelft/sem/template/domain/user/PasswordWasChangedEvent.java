@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain.user;
+package nl.tudelft.sem.template.domain.user;
 
 /**
  * A DDD domain event indicating a password had changed.

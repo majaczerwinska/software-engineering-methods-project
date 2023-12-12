@@ -61,7 +61,7 @@ public interface UserApi {
     )
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/nl/tudelft/sem/template/example/domain/user",
+        value = "/nl/tudelft/sem/template/domain/user",
         produces = { "application/json" },
         consumes = { "application/json" }
     )
@@ -109,7 +109,7 @@ public interface UserApi {
     )
     @RequestMapping(
         method = RequestMethod.DELETE,
-        value = "/nl/tudelft/sem/template/example/domain/user/{userID}"
+        value = "/nl/tudelft/sem/template/domain/user/{userID}"
     )
     default ResponseEntity<Void> deleteAccount(
         @Parameter(name = "userID", description = "The userID of the user that should be deleted.", required = true, in = ParameterIn.PATH) @PathVariable("userID") Integer userID
@@ -146,7 +146,7 @@ public interface UserApi {
     )
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/nl/tudelft/sem/template/example/domain/user/byEmail/{email}",
+        value = "/nl/tudelft/sem/template/domain/user/byEmail/{email}",
         produces = { "application/json" }
     )
     default ResponseEntity<User> getAccountByEmail(
@@ -193,7 +193,7 @@ public interface UserApi {
     )
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/nl/tudelft/sem/template/example/domain/user/{userID}",
+        value = "/nl/tudelft/sem/template/domain/user/{userID}",
         produces = { "application/json" }
     )
     default ResponseEntity<User> getAccountByID(
@@ -240,7 +240,7 @@ public interface UserApi {
     )
     @RequestMapping(
         method = RequestMethod.PUT,
-        value = "/nl/tudelft/sem/template/example/domain/user",
+        value = "/nl/tudelft/sem/template/domain/user",
         consumes = { "application/json" }
     )
     default ResponseEntity<Void> updateAccount(

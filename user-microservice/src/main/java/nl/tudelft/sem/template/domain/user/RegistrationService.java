@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain.user;
+package nl.tudelft.sem.template.domain.user;
 
 import org.springframework.stereotype.Service;
 
