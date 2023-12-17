@@ -7,10 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-
+import lombok.Setter;
 
 
 /**
@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 @IdClass(AttendeeId.class)
 @Table(name = "attendees")
 @NoArgsConstructor
+@AllArgsConstructor
 public class Attendee {
 
     // Contains the identifier for the user
@@ -40,15 +41,17 @@ public class Attendee {
     private Long trackId;
 
     @Getter
+    @Setter
     @Column(name = "role", nullable = false)
     @Convert(converter = RoleAttributeConverter.class)
     private Role role;
 
     // Indicates whether the conferred role was accepted.
     @Getter
+    @Setter
     @Column(name = "confirmed", nullable = false)
     @Convert(converter = ConfirmationAttributeConverter.class)
-    private Confirmation confirmed;
+    private Confirmation confirmation;
 
 
     /**

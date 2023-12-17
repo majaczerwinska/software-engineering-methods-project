@@ -26,14 +26,15 @@ public interface AttendeeRepository extends JpaRepository<Attendee, AttendeeId> 
 
     /**
      * Returns TRUE if and only if an Attendee instance exists with the given composite
-     * primary key valuation. Otherwise, returns FALSE. This method is useful to 'quickly'
-     * check whether an instance exists in the database without having to directly retrieve
-     * that particular instance.
+     * primary key valuation and that the instance is confirmed (not an invitation).
+     * Otherwise, returns FALSE. This method is useful to 'quickly' check whether an
+     * instance exists in the database without having to directly retrieve that particular
+     * instance.
      *
      * @param userId  the user identifier.
      * @param eventId the event identifier.
      * @param trackId the track identifier.
-     * @return TRUE if such an Attendee instance exists.
+     * @return TRUE if such a confirmed Attendee instance exists.
      */
     @Query("SELECT count(*) > 0 FROM attendees AS a "
             + "WHERE a.userId = :userId AND a.eventId = :eventId "
@@ -42,6 +43,24 @@ public interface AttendeeRepository extends JpaRepository<Attendee, AttendeeId> 
                    @Param("eventId") Long eventId,
                    @Param("trackId") Long trackId);
 
+    /**
+     * Returns TRUE if and only if an Attendee instance exists with the given composite
+     * primary key valuation and that the instance is unconfirmed (an invitation).
+     * Otherwise, returns FALSE. This method is useful to 'quickly' check whether an
+     * instance exists in the database without having to directly retrieve that particular
+     * instance.
+     *
+     * @param userId  the user identifier.
+     * @param eventId the event identifier.
+     * @param trackId the track identifier.
+     * @return TRUE if such a confirmed Attendee instance exists.
+     */
+    @Query("SELECT count(*) > 0 FROM attendees AS a "
+            + "WHERE a.userId = :userId AND a.eventId = :eventId "
+            + "AND a.trackId = :trackId AND a.confirmed = TRUE")
+    boolean existsConfirmed(@Param("userId") Long userId,
+                            @Param("eventId") Long eventId,
+                            @Param("trackId") Long trackId);
 
     @Query("SELECT * FROM attendees AS a "
             + "WHERE a.userId = :userId AND a.eventId = :eventId "
