@@ -31,7 +31,7 @@ public class UserService {
      */
     public AppUser createUser(AppUser appUser) {
         // Check if the appUser is null or has missing required fields
-        if (appUser == null || appUser.getEmail() == null ) {
+        if (appUser == null || appUser.getEmail() == null) {
             throw new IllegalArgumentException("Invalid user data");
         }
         // Save the user to the database
@@ -80,9 +80,11 @@ public class UserService {
     }
 
     /**
-     * Updates an existing user account and saves it in the repository
-     * @param updatedUser - the updated user account to be saved
-     * @return the updated user account that was saved
+     * Updates an existing user account and saves it in the repository.
+     *
+     * @param updatedUser - the updated user account to be saved.
+     *
+     * @return the updated user account that was saved.
      */
     public AppUser updateUser(AppUser updatedUser) {
         if (updatedUser == null || updatedUser.getId() <= 0) {
