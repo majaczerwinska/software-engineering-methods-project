@@ -5,7 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-//import javax.persistence.IdClass;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 
 
 @Entity
-//@IdClass(AttendeeId.class)
+@IdClass(AttendeeId.class)
 @Table(name = "attendees")
 @NoArgsConstructor
 public class Attendee {
@@ -27,24 +27,24 @@ public class Attendee {
     // Contains the identifier for the user
     @Id
     @Column(name = "userId", nullable = false)
-    private long userId;
+    private Long userId;
 
-    //Contains the identifier of the associated event.
+    // Contains the identifier of the associated event.
     @Id
     @Column(name = "eventId", nullable = false)
-    private long eventId;
+    private Long eventId;
 
-
-    //Contains the identifier of the associated track, if any.
+    // Contains the identifier of the associated track, if any.
     @Id
     @Column(name = "trackId", nullable = true)
-    private long trackId;
+    private Long trackId;
 
     @Getter
     @Column(name = "role", nullable = false)
     @Convert(converter = RoleAttributeConverter.class)
     private Role role;
 
+    // Indicates whether the conferred role was accepted.
     @Getter
     @Column(name = "confirmed", nullable = false)
     @Convert(converter = ConfirmationAttributeConverter.class)
@@ -64,9 +64,9 @@ public class Attendee {
         }
 
         Attendee that = (Attendee) o;
-        return (userId == that.userId)
-                && (eventId == that.eventId)
-                && (trackId == that.trackId);
+        return (Objects.equals(userId, that.userId))
+                && (Objects.equals(eventId, that.eventId))
+                && (Objects.equals(trackId, that.trackId));
     }
 
     @Override
