@@ -1,5 +1,9 @@
 package nl.tudelft.sem.template.example.controllers;
 
+import nl.tudelft.sem.template.domain.user.AppUser;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -23,5 +27,15 @@ public class UserController {
 //    public ResponseEntity<AppUser> deleteUser(@PathVariable("userID") int userID){
 //
 //    }
+//
+//    @GetMapping("/user/{userID}")
+//    public ResponseEntity<AppUser> getUserById(@PathVariable("userID") int userID){
+//    }
+//
+//    @GetMapping("user/byEmail/{email}")
+//    public ResponseEntity<AppUser> getUserByEmail(@PathVariable("email") String email){
+//
+//    }
+
 
 }
