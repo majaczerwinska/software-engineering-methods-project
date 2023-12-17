@@ -6,31 +6,59 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final transient UserRepository userRepository;
 
-    public UserService(UserRepository userRepository){
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public AppUser getUserById(int userID){
-        if(userRepository.findById(String.valueOf(userID)).isPresent()){
-            return userRepository.findById(String.valueOf(userID)).get();
+    /**
+     * Retrieves the user with the specified id.
+
+     * @param userId - id of a user
+     * @return - user with this id if exists, else null
+     */
+    public AppUser getUserById(int userId) {
+        if (userRepository.findById(String.valueOf(userId)).isPresent()) {
+            return userRepository.findById(String.valueOf(userId)).get();
         }
         return null;
     }
 
-    public AppUser getUserByEmail(Email email){
-        if(userRepository.findByEmail(email).isPresent()){
+    /**
+     * Retrieves the user with the specified email.
+
+     * @param email - email of a user
+     * @return - user with this email if exists, else null
+     */
+    public AppUser getUserByEmail(Email email) {
+        if (userRepository.findByEmail(email).isPresent()) {
             return userRepository.findByEmail(email).get();
         }
         return null;
     }
 
-    public boolean userExistsByEmail(Email email){
-        if(getUserByEmail(email) == null) return false;
+    /**
+     * Checks whether the user with the specified email exists.
+
+     * @param email - email of a user
+     * @return - true if exists, false otherwise
+     */
+    public boolean userExistsByEmail(Email email) {
+        if (getUserByEmail(email) == null) {
+            return false;
+        }
         return true;
+
     }
 
-    public void deleteUserById(int userID){
-        if(getUserById(userID) == null) return;
-        userRepository.delete(getUserById(userID));
+    /**
+     * Deletes the user with the specified id.
+
+     * @param userId - id of the to be deleted user
+     */
+    public void deleteUserById(int userId) {
+        if (getUserById(userId) == null) {
+            return;
+        }
+        userRepository.delete(getUserById(userId));
     }
 }
