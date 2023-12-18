@@ -22,6 +22,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "attendees")
+@Getter
 @NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -29,7 +30,6 @@ public class Attendee {
 
     // Contains the attendance identifier
     @Id
-    @Getter // For access in case we want to duplicate something.
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
@@ -48,14 +48,14 @@ public class Attendee {
     @Column(name = "trackId", nullable = true)
     private final Long trackId;
 
-    @Getter @Setter
+    @Setter
     @Column(name = "role", nullable = false)
     @Convert(converter = RoleAttributeConverter.class)
     @NonNull
     private Role role;
 
     // Indicates whether the conferred role was accepted.
-    @Getter @Setter
+    @Setter
     @Column(name = "confirmed", nullable = false)
     @Convert(converter = ConfirmationAttributeConverter.class)
     @NonNull

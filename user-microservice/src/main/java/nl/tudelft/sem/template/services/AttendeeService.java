@@ -285,7 +285,7 @@ public class AttendeeService {
 
         //Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId, trackId);
 
-        createAttendance(userId, eventId, trackId, RoleTitle.ATTENDEE);
+        createAttendance(userId, eventId, trackId, role);
         //TODO create an invitation
     }
 
@@ -297,9 +297,21 @@ public class AttendeeService {
      * @param eventId the event identifier
      * @param trackId the track identifier
      */
+    @Transactional
     public void accept(Long executorId, Long userId, Long eventId, Long trackId) {
 
         //Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId, trackId);
+        Optional<Attendee> retrievedAttendance = findAttendee(userId, eventId, trackId);
+
+        if (retrievedAttendance.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+
+        Attendee attendee = retrievedAttendance.get();
+        attendee.setConfirmation(new Confirmation(true));
+
+        repository.save(attendee);
+
         //TODO accept an invitation
     }
 
@@ -326,9 +338,10 @@ public class AttendeeService {
      * @param enroleeId the enrollee (user) identifier
      * @param eventId the event identifier
      */
+    @Transactional
     public void enroll(Long enroleeId, Long eventId, Long trackId, RoleTitle role) {
 
-        createAttendance(enroleeId, eventId, null, RoleTitle.ATTENDEE);
+        createAttendance(enroleeId, eventId, trackId, role);
         //TODO self-enroll in an event as an attendee.
     }
 
@@ -341,6 +354,7 @@ public class AttendeeService {
      */
     public void resign(Long userId, Long eventId, Long trackId) {
 
+        deleteAttendance(userId, eventId, trackId);
         //TODO self-resign from a particular attendance.
 
     }
@@ -382,7 +396,7 @@ public class AttendeeService {
 
         // Exception handling for when the repository can find the instance
         if (retrievedAttendance.isEmpty()) {
-            throw new NoSuchElementException("No such attendance can be found.");
+            throw new NoSuchElementException("No such attendance is found; cannot be modified.");
         }
 
         Attendee attendee = retrievedAttendance.get();
