@@ -13,8 +13,8 @@ public class UserService {
     /**
      * Retrieves the user with the specified id.
 
-     * @param userId - id of a user
-     * @return - user with this id if exists, else null
+     * @param userId id of a user
+     * @return user with this id if exists, else null
      */
     public AppUser getUserById(int userId) {
         if (userRepository.findById(String.valueOf(userId)).isPresent()) {
@@ -26,11 +26,11 @@ public class UserService {
     /**
      * Retrieves the user with the specified email.
 
-     * @param email - email of a user
-     * @return - user with this email if exists, else null
+     * @param email email of a user
+     * @return user with this email if exists, else null
      */
     public AppUser getUserByEmail(Email email) {
-        if (userRepository.findByEmail(email).isPresent()) {
+        if (userExistsByEmail(email)) {
             return userRepository.findByEmail(email).get();
         }
         return null;
@@ -39,24 +39,25 @@ public class UserService {
     /**
      * Checks whether the user with the specified email exists.
 
-     * @param email - email of a user
-     * @return - true if exists, false otherwise
+     * @param email email of a user
+     * @return true if exists, false otherwise
      */
     public boolean userExistsByEmail(Email email) {
-        if (getUserByEmail(email) == null) {
-            return false;
-        }
-        return true;
+        return userRepository.existsByEmail(email);
 
+    }
+
+    public boolean userExistsById(int userId) {
+        return userRepository.existsById(String.valueOf(userId));
     }
 
     /**
      * Deletes the user with the specified id.
 
-     * @param userId - id of the to be deleted user
+     * @param userId id of the to be deleted user
      */
     public void deleteUserById(int userId) {
-        if (getUserById(userId) == null) {
+        if (!userExistsById(userId)) {
             return;
         }
         userRepository.delete(getUserById(userId));
