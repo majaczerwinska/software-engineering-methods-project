@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain.event;
+package nl.tudelft.sem.template.domain.event;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,9 +24,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<Event> findById(Long id);
 
     boolean existsById(Long id);
-
-    @Override
-    Event save(Event event);
 
 
 }

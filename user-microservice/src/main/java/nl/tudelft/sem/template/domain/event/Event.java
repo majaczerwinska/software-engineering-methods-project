@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.domain.event;
+package nl.tudelft.sem.template.domain.event;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nl.tudelft.sem.template.example.domain.HasEvents;
+import nl.tudelft.sem.template.domain.HasEvents;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
 
 /**
