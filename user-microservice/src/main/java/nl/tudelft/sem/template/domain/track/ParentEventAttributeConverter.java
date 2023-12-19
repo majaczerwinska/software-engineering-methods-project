@@ -1,9 +1,10 @@
 package nl.tudelft.sem.template.domain.track;
 
-import nl.tudelft.sem.template.domain.event.Event;
-
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+import nl.tudelft.sem.template.domain.event.Event;
+
+
 
 /**
  * JPA Converter for the parent event value object.
