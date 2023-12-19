@@ -4,7 +4,7 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 /**
- * JPA Converter for the NetID value object.
+ * JPA Converter for the Email value object.
  */
 @Converter
 public class EmailAttributeConverter implements AttributeConverter<Email, String> {

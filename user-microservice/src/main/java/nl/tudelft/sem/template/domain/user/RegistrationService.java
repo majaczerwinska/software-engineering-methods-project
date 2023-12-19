@@ -8,35 +8,30 @@ import org.springframework.stereotype.Service;
 @Service
 public class RegistrationService {
     private final transient UserRepository userRepository;
-    private final transient PasswordHashingService passwordHashingService;
 
     /**
      * Instantiates a new UserService.
      *
      * @param userRepository  the user repository
-     * @param passwordHashingService the password encoder
      */
-    public RegistrationService(UserRepository userRepository, PasswordHashingService passwordHashingService) {
+    public RegistrationService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordHashingService = passwordHashingService;
     }
 
     /**
      * Register a new user.
      *
      * @param email    The NetID of the user
-     * @param password The password of the user
      * @throws Exception if the user already exists
      */
-    public AppUser registerUser(Email email, Password password,
-                                String name, String affiliation, String link, String communication) throws Exception {
+    public AppUser registerUser(Email email,
+                                UserName name, Affiliation affiliation,
+                                UserLink link, UserCommunication communication) throws Exception {
 
         if (checkEmailIsUnique(email)) {
-            // Hash password
-            HashedPassword hashedPassword = passwordHashingService.hash(password);
 
             // Create new account
-            AppUser user = new AppUser(email, hashedPassword, name, affiliation, link, communication);
+            AppUser user = new AppUser(email, name, affiliation, link, communication);
             userRepository.save(user);
 
             return user;

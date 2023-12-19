@@ -16,7 +16,7 @@ public class UserService {
      * @param userId - id of a user
      * @return - user with this id if exists, else null
      */
-    public AppUser getUserById(int userId) {
+    public AppUser getUserById(long userId) {
         if (userRepository.findById(String.valueOf(userId)).isPresent()) {
             return userRepository.findById(String.valueOf(userId)).get();
         }

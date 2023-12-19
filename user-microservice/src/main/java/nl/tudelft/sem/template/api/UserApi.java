@@ -6,8 +6,11 @@
 package nl.tudelft.sem.template.api;
 
 import nl.tudelft.sem.template.model.User;
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,8 +23,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.*;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
@@ -61,7 +68,7 @@ public interface UserApi {
     )
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/nl/tudelft/sem/template/domain/user",
+        value = "/user",
         produces = { "application/json" },
         consumes = { "application/json" }
     )
@@ -109,7 +116,7 @@ public interface UserApi {
     )
     @RequestMapping(
         method = RequestMethod.DELETE,
-        value = "/nl/tudelft/sem/template/domain/user/{userID}"
+        value = "/user/{userID}"
     )
     default ResponseEntity<Void> deleteAccount(
         @Parameter(name = "userID", description = "The userID of the user that should be deleted.", required = true, in = ParameterIn.PATH) @PathVariable("userID") Integer userID
@@ -146,7 +153,7 @@ public interface UserApi {
     )
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/nl/tudelft/sem/template/domain/user/byEmail/{email}",
+        value = "/user/byEmail/{email}",
         produces = { "application/json" }
     )
     default ResponseEntity<User> getAccountByEmail(
@@ -193,7 +200,7 @@ public interface UserApi {
     )
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/nl/tudelft/sem/template/domain/user/{userID}",
+        value = "/user/{userID}",
         produces = { "application/json" }
     )
     default ResponseEntity<User> getAccountByID(
@@ -240,7 +247,7 @@ public interface UserApi {
     )
     @RequestMapping(
         method = RequestMethod.PUT,
-        value = "/nl/tudelft/sem/template/domain/user",
+        value = "/user",
         consumes = { "application/json" }
     )
     default ResponseEntity<Void> updateAccount(
