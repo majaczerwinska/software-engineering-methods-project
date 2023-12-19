@@ -1,5 +1,8 @@
 package nl.tudelft.sem.template.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum RoleTitle {
     GENERAL_CHAIR("General Chair", 0, 0),
     PC_CHAIR("PC Chair", 1, 1),
@@ -20,18 +23,6 @@ public enum RoleTitle {
         this.precedence = precedence;
         this.permission = permission;
         this.title = title;
-    }
-
-    private int getPrecedence() {
-        return this.precedence;
-    }
-
-    private int getPermission() {
-        return this.permission;
-    }
-
-    private String getTitle() {
-        return this.title;
     }
 
     @Override
