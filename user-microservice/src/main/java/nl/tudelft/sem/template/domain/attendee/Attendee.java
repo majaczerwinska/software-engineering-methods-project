@@ -55,11 +55,31 @@ public class Attendee {
     private Role role;
 
     // Indicates whether the conferred role was accepted.
-    @Setter
     @Column(name = "confirmed", nullable = false)
     @Convert(converter = ConfirmationAttributeConverter.class)
     @NonNull
     private Confirmation confirmation;
+
+
+    /**
+     * A getter accessor method to bypass the value object {@link Confirmation}
+     * and directly extract the confirmation status.
+     *
+     * @return the confirmation status of the attendance
+     */
+    public Boolean isConfirmed() {
+        return this.confirmation.isConfirmed();
+    }
+
+    /**
+     * A setter accessor method to bypass the value object {@link Confirmation}
+     * and directly change the confirmation status of the entity.
+     *
+     * @param confirm the new confirmation status of the attendance.
+     */
+    public void setConfirmation(Boolean confirm) {
+        this.confirmation = new Confirmation(confirm);
+    }
 
 
     /**

@@ -21,6 +21,7 @@ public class AttendeeTests {
     static Attendee nullAttendee;
     static Attendee attendeeEquals;
     static Attendee attendeeEquals2;
+    static Attendee setterAttendee;
 
     /**
      * Setups teh variables for the tests.
@@ -36,6 +37,16 @@ public class AttendeeTests {
                 new Role(RoleTitle.ATTENDEE),
                 new Confirmation(true)
         );
+
+        setterAttendee = new Attendee(
+                6L,
+                4L,
+                4L,
+                5L,
+                new Role(RoleTitle.ATTENDEE),
+                new Confirmation(false)
+        );
+
 
         attendeeEquals = new Attendee(
                 5L,
@@ -67,12 +78,22 @@ public class AttendeeTests {
 
         //Check the confirmation
         assertNotNull(nullAttendee.getConfirmation());
-        assertEquals(nullAttendee.getConfirmation().isConfirmed(), true);
+        assertEquals(nullAttendee.isConfirmed(), true);
 
         //Check the role
         assertNotNull(nullAttendee.getRole());
         assertEquals(nullAttendee.getRole().getRoleTitle(), RoleTitle.ATTENDEE);
 
+    }
+
+    @Test
+    void setConfirmationTest() {
+
+        Confirmation cnf = setterAttendee.getConfirmation();
+        setterAttendee.setConfirmation(true);
+
+        assertNotEquals(cnf, setterAttendee.getConfirmation());
+        assertNotEquals(cnf.isConfirmed(), setterAttendee.isConfirmed());
     }
 
 

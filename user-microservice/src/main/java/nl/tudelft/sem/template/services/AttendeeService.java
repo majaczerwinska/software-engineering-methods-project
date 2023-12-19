@@ -195,7 +195,7 @@ public class AttendeeService {
         }
 
         // Exception handling for when the attendance is not confirmed (i.e. still an invitation)
-        if (!retrievedAttendee.get().getConfirmation().isConfirmed()) {
+        if (!retrievedAttendee.get().isConfirmed()) {
             throw new NoSuchElementException("No confirmed attendance can be found.");
         }
 
@@ -308,7 +308,7 @@ public class AttendeeService {
         }
 
         Attendee attendee = retrievedAttendance.get();
-        attendee.setConfirmation(new Confirmation(true));
+        attendee.setConfirmation(true);
 
         repository.save(attendee);
 
