@@ -1,5 +1,9 @@
 package nl.tudelft.sem.template.example;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.UserRepository;
@@ -8,10 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.*;
-
 public class UserRepositoryTest implements UserRepository {
     List<AppUser> users = new ArrayList<>();
+
     @Override
     public Optional<AppUser> findByEmail(Email email) {
         return Optional.empty();
@@ -20,6 +23,11 @@ public class UserRepositoryTest implements UserRepository {
     @Override
     public boolean existsByEmail(Email email) {
         return false;
+    }
+
+    @Override
+    public <S extends AppUser> Optional<S> findOne(Example<S> example) {
+        return Optional.empty();
     }
 
     @Override
@@ -34,6 +42,20 @@ public class UserRepositoryTest implements UserRepository {
 
     @Override
     public Page<AppUser> findAll(Pageable pageable) {
+        return null;
+    }
+    @Override
+    public <S extends AppUser> List<S> findAll(Example<S> example) {
+        return null;
+    }
+
+    @Override
+    public <S extends AppUser> List<S> findAll(Example<S> example, Sort sort) {
+        return null;
+    }
+
+    @Override
+    public <S extends AppUser> Page<S> findAll(Example<S> example, Pageable pageable) {
         return null;
     }
 
@@ -80,8 +102,8 @@ public class UserRepositoryTest implements UserRepository {
 
     @Override
     public Optional<AppUser> findById(String s) {
-        for(int i = 0; i < users.size(); i++){
-            if(users.get(i).getId() == Integer.parseInt(s)) {
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId() == Integer.parseInt(s)) {
                 AppUser user = users.get(i);
                 return Optional.ofNullable(user);
             }
@@ -91,8 +113,8 @@ public class UserRepositoryTest implements UserRepository {
 
     @Override
     public boolean existsById(String s) {
-        for(int i = 0; i < users.size(); i++){
-            if(users.get(i).getId() == Integer.parseInt(s)) {
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId() == Integer.parseInt(s)) {
                 return true;
             }
         }
@@ -121,26 +143,6 @@ public class UserRepositoryTest implements UserRepository {
 
     @Override
     public AppUser getOne(String s) {
-        return null;
-    }
-
-    @Override
-    public <S extends AppUser> Optional<S> findOne(Example<S> example) {
-        return Optional.empty();
-    }
-
-    @Override
-    public <S extends AppUser> List<S> findAll(Example<S> example) {
-        return null;
-    }
-
-    @Override
-    public <S extends AppUser> List<S> findAll(Example<S> example, Sort sort) {
-        return null;
-    }
-
-    @Override
-    public <S extends AppUser> Page<S> findAll(Example<S> example, Pageable pageable) {
         return null;
     }
 
