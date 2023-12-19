@@ -25,8 +25,8 @@ public class RegistrationService {
      * @throws Exception if the user already exists
      */
     public AppUser registerUser(Email email,
-                                UserName name, Affiliation affiliation,
-                                UserLink link, UserCommunication communication) throws Exception {
+                                Name name, UserAffiliation affiliation,
+                                Link link, Communication communication) throws Exception {
 
         if (checkEmailIsUnique(email)) {
 

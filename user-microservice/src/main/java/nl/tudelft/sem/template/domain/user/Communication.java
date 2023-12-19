@@ -3,10 +3,10 @@ package nl.tudelft.sem.template.domain.user;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
-public class UserCommunication {
+public class Communication {
     private final transient String userCommunication;
 
-    public UserCommunication(String userCommunication) {
+    public Communication(String userCommunication) {
         // validate NetID
         this.userCommunication = userCommunication;
     }

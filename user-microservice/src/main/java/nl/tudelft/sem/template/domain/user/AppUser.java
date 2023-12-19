@@ -30,17 +30,17 @@ public class AppUser extends HasEvents {
     @Convert(converter = EmailAttributeConverter.class)
     private Email email;
 
-    @Column(name = "username", nullable = false)
-    private UserName name;
+    @Column(name = "name", nullable = false)
+    private Name name;
 
     @Column(name = "affiliation")
-    private Affiliation affiliation;
+    private UserAffiliation affiliation;
 
     @Column(name = "link")
-    private UserLink link;
+    private Link link;
 
     @Column(name = "communication")
-    private UserCommunication communication;
+    private Communication communication;
 
     //    @ManyToMany
     //    @JoinTable(
@@ -57,7 +57,7 @@ public class AppUser extends HasEvents {
      * @param email    The Email for the new user
      */
     public AppUser(Email email,
-                   UserName name, Affiliation affiliation, UserLink link, UserCommunication communication) {
+                   Name name, UserAffiliation affiliation, Link link, Communication communication) {
         this.email = email;
         this.recordThat(new UserWasCreatedEvent(email));
         this.name = name;
@@ -74,19 +74,19 @@ public class AppUser extends HasEvents {
         this.id = id;
     }
 
-    public void setCommunication(UserCommunication communication) {
+    public void setCommunication(Communication communication) {
         this.communication = communication;
     }
 
-    public void setName(UserName name) {
+    public void setName(Name name) {
         this.name = name;
     }
 
-    public void setAffiliation(Affiliation affiliation) {
+    public void setAffiliation(UserAffiliation affiliation) {
         this.affiliation = affiliation;
     }
 
-    public void setLink(UserLink link) {
+    public void setLink(Link link) {
         this.link = link;
     }
 

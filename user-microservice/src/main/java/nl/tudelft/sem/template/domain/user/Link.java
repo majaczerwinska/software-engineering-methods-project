@@ -3,16 +3,16 @@ package nl.tudelft.sem.template.domain.user;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
-public class UserName {
-    private final transient String userName;
+public class Link {
+    private final transient String userLink;
 
-    public UserName(String userName) {
+    public Link(String userLink) {
         // validate NetID
-        this.userName = userName;
+        this.userLink = userLink;
     }
 
     @Override
     public String toString() {
-        return userName;
+        return userLink;
     }
 }
