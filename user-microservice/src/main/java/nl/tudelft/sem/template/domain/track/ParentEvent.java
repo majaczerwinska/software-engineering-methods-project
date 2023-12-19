@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.domain.track;
 
 import lombok.EqualsAndHashCode;
-import nl.tudelft.sem.template.domain.Event;
+import nl.tudelft.sem.template.domain.event.Event;
 
 /**
  * A DDD value object representing the parent event in our domain.

@@ -1,6 +1,6 @@
 package nl.tudelft.sem.template.events;
 
-import nl.tudelft.sem.template.domain.Event;
+import nl.tudelft.sem.template.domain.event.Event;
 
 /**
  * A DDD domain event indicating a track had been created.
