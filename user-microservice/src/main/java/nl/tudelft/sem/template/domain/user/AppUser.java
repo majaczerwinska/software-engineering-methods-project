@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.domain.HasEvents;
+import nl.tudelft.sem.template.events.UserWasCreatedEvent;
 
 
 /**

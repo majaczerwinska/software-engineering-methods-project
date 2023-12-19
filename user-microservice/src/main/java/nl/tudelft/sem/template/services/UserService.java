@@ -1,5 +1,8 @@
-package nl.tudelft.sem.template.domain.user;
+package nl.tudelft.sem.template.services;
 
+import nl.tudelft.sem.template.domain.user.AppUser;
+import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.domain.user.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
