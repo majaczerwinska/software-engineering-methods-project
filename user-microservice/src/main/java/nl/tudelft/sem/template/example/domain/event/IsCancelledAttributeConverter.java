@@ -2,14 +2,14 @@ package nl.tudelft.sem.template.example.domain.event;
 
 import javax.persistence.AttributeConverter;
 
-public class IsCancelledAttributeConverter implements AttributeConverter<IsCancelled, Integer> {
+public class IsCancelledAttributeConverter implements AttributeConverter<IsCancelled, Boolean> {
     @Override
-    public Integer convertToDatabaseColumn(IsCancelled attribute) {
+    public Boolean convertToDatabaseColumn(IsCancelled attribute) {
         return attribute.getCancelStatus();
     }
 
     @Override
-    public IsCancelled convertToEntityAttribute(Integer dbData) {
+    public IsCancelled convertToEntityAttribute(Boolean dbData) {
         return new IsCancelled(dbData);
     }
 }

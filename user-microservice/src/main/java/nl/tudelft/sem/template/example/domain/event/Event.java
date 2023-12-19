@@ -48,8 +48,8 @@ public class Event extends HasEvents {
 
     @Getter
     @Column(name = "description", nullable = false)
-    @Convert(converter = DescriptionAttributeConverter.class)
-    private Description description;
+    @Convert(converter = EventDescriptionAttributeConverter.class)
+    private EventDescription eventDescription;
 
     /**
      * Equality is only based on the identifier.
