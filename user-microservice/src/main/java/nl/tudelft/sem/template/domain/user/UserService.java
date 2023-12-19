@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.domain.user;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +22,16 @@ public class UserService {
             return userRepository.findById(String.valueOf(userId)).get();
         }
         return null;
+    }
+
+    /**
+     * Retrieves a list of users with the specified name.
+     *
+     * @param name - name of users
+     * @return - list of users with the specified name
+     */
+    public List<AppUser> getUserByName(String name) {
+        return userRepository.findByName(new Name(name));
     }
 
     /**
