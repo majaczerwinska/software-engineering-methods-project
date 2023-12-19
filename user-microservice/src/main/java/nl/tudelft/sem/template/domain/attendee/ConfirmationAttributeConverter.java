@@ -2,6 +2,9 @@ package nl.tudelft.sem.template.domain.attendee;
 
 import javax.persistence.AttributeConverter;
 
+/**
+ * JPA Converter for the Confirmation value object.
+ */
 public class ConfirmationAttributeConverter implements AttributeConverter<Confirmation, String> {
     @Override
     public String convertToDatabaseColumn(Confirmation attribute) {

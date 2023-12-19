@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import nl.tudelft.sem.template.domain.HasEvents;
 
 /**
  * An DDD entity that represents an attendee/role in the domain.
@@ -26,7 +27,7 @@ import lombok.Setter;
 @NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class Attendee {
+public class Attendee extends HasEvents {
 
     // Contains the attendance identifier
     @Id

@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-
+/**
+ * A DDD repository for querying and persisting Attendee aggregate roots.
+ */
 @Repository
 //The redundancy of literals here is justified for the queries and the parameter alias.
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
