@@ -1,12 +1,14 @@
-package nl.tudelft.sem.template.domain.track;
+package nl.tudelft.sem.template.events;
+
+import nl.tudelft.sem.template.domain.track.Track;
 
 /**
  * A DDD domain event indicating parent event had changed.
  */
-public class ParentEventWasChangedEvent {
+public class TrackParentEventChangedEvent {
     private final Track track;
 
-    public ParentEventWasChangedEvent(Track track) {
+    public TrackParentEventChangedEvent(Track track) {
         this.track = track;
     }
 

@@ -23,6 +23,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.domain.Event;
 import nl.tudelft.sem.template.domain.HasEvents;
+import nl.tudelft.sem.template.events.TrackCreatedEvent;
+import nl.tudelft.sem.template.events.TrackDeadlineChangedEvent;
+import nl.tudelft.sem.template.events.TrackDescriptionChangedEvent;
+import nl.tudelft.sem.template.events.TrackPaperRequirementChangedEvent;
+import nl.tudelft.sem.template.events.TrackParentEventChangedEvent;
+import nl.tudelft.sem.template.events.TrackRemovedEvent;
+import nl.tudelft.sem.template.events.TrackTitleChangedEvent;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
@@ -89,7 +96,7 @@ public class Track extends HasEvents {
         this.submitDeadline = submitDeadline;
         this.reviewDeadline = reviewDeadline;
         this.event = event;
-        this.recordThat(new TrackWasCreatedEvent(event.toEvent(), this.id));
+        this.recordThat(new TrackCreatedEvent(event.toEvent(), this.id));
     }
 
 
@@ -109,7 +116,7 @@ public class Track extends HasEvents {
      */
     public void setTitle(Title title) {
         this.title = title;
-        this.recordThat(new TitleWasChangedEvent(this));
+        this.recordThat(new TrackTitleChangedEvent(this));
     }
 
 
@@ -120,7 +127,7 @@ public class Track extends HasEvents {
      */
     public void setDescription(Description description) {
         this.description = description;
-        this.recordThat(new DescriptionWasChangedEvent(this));
+        this.recordThat(new TrackDescriptionChangedEvent(this));
     }
 
     /**
@@ -130,7 +137,7 @@ public class Track extends HasEvents {
      */
     public void setPaperType(PaperRequirement paperType) {
         this.paperType = paperType;
-        this.recordThat(new PaperRequirementWasChangedEvent(this));
+        this.recordThat(new TrackPaperRequirementChangedEvent(this));
     }
 
 
@@ -141,7 +148,7 @@ public class Track extends HasEvents {
      */
     public void setSubmitDeadline(Deadline submitDeadline) {
         this.submitDeadline = submitDeadline;
-        this.recordThat(new DeadlineWasChangedEvent(this));
+        this.recordThat(new TrackDeadlineChangedEvent(this));
     }
 
     /**
@@ -151,7 +158,7 @@ public class Track extends HasEvents {
      */
     public void setReviewDeadline(Deadline reviewDeadline) {
         this.reviewDeadline = reviewDeadline;
-        this.recordThat(new DeadlineWasChangedEvent(this));
+        this.recordThat(new TrackDeadlineChangedEvent(this));
     }
 
 
@@ -163,9 +170,9 @@ public class Track extends HasEvents {
     public void setEvent(ParentEvent event) {
         Event temp = this.event.toEvent();
         this.event = event;
-        this.recordThat(new TrackWasRemovedEvent(temp, this.id));
-        this.recordThat(new ParentEventWasChangedEvent(this));
-        this.recordThat(new TrackWasCreatedEvent(event.toEvent(), this.id));
+        this.recordThat(new TrackRemovedEvent(temp, this.id));
+        this.recordThat(new TrackParentEventChangedEvent(this));
+        this.recordThat(new TrackCreatedEvent(event.toEvent(), this.id));
     }
 
     /**

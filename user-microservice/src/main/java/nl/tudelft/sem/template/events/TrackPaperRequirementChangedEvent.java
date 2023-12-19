@@ -1,12 +1,14 @@
-package nl.tudelft.sem.template.domain.track;
+package nl.tudelft.sem.template.events;
+
+import nl.tudelft.sem.template.domain.track.Track;
 
 /**
  * A DDD domain event indicating a paper requirement had changed.
  */
-public class PaperRequirementWasChangedEvent {
+public class TrackPaperRequirementChangedEvent {
     private final Track track;
 
-    public PaperRequirementWasChangedEvent(Track track) {
+    public TrackPaperRequirementChangedEvent(Track track) {
         this.track = track;
     }
 

@@ -1,16 +1,16 @@
-package nl.tudelft.sem.template.domain.track;
+package nl.tudelft.sem.template.events;
 
 import nl.tudelft.sem.template.domain.Event;
 
 /**
  * A DDD domain event indicating a track had been created.
  */
-public class TrackWasRemovedEvent {
+public class TrackCreatedEvent {
     private final Event event;
 
     private final Long trackId;
 
-    public TrackWasRemovedEvent(Event event, Long trackId) {
+    public TrackCreatedEvent(Event event, Long trackId) {
         this.event = event;
         this.trackId = trackId;
     }
