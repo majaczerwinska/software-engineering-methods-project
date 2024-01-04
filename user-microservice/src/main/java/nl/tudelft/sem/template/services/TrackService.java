@@ -52,7 +52,7 @@ public class TrackService {
         Optional<Track> track = trackRepository.findById(String.valueOf(id));
         // Exception handling for when no attendances can be found.
         if (track.isEmpty()) {
-            throw new NoSuchElementException("No track with this id can be found can be found.");
+            throw new NoSuchElementException("No track with this id can be found.");
         }
         trackRepository.delete(track.get());
         return track.get();
@@ -66,10 +66,14 @@ public class TrackService {
      */
     @Transactional
     public Track updateTrack(Track track) throws IllegalArgumentException {
-        if (track == null || track.getId() <= 0) {
+        Title title = track.getTitle();
+        if (track == null || track.getId() <= 0 || title.toString() == null) {
             throw new IllegalArgumentException("Invalid track data");
+        }else if (trackExistsByTitleInEvent(title, track.getEvent())){
+            throw new IllegalArgumentException("Track with this title already exist in this event.");
+        }else if (!trackExistById(track.getId())){
+            throw new IllegalArgumentException("Track with id:"+ track.getId().toString() + " does not exist.");
         }
-
         // Save the updated track to the database and return
         return trackRepository.save(track);
     }
@@ -83,7 +87,7 @@ public class TrackService {
     public Track getTrackById(long id) throws NoSuchElementException {
         Optional<Track> track = trackRepository.findById(String.valueOf(id));
         if (track.isEmpty()) {
-            throw new NoSuchElementException("no such track with this id: " + String.valueOf(id));
+            throw new NoSuchElementException("No such track with this id: " + String.valueOf(id));
         }
 
         return track.get();
@@ -108,7 +112,7 @@ public class TrackService {
     public List<Track> getTrackByTitle(Title title) throws NoSuchElementException {
         List<Track> tracks = trackRepository.findByTitle(title);
         if (tracks.isEmpty()) {
-            throw new NoSuchElementException("no such track with this title: " + title);
+            throw new NoSuchElementException("No such track with this title: " + title);
         }
         return tracks;
     }
