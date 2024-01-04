@@ -69,10 +69,10 @@ public class TrackService {
         Title title = track.getTitle();
         if (track == null || track.getId() <= 0 || title.toString() == null) {
             throw new IllegalArgumentException("Invalid track data");
-        }else if (trackExistsByTitleInEvent(title, track.getEvent())){
+        } else if (trackExistsByTitleInEvent(title, track.getEvent())) {
             throw new IllegalArgumentException("Track with this title already exist in this event.");
-        }else if (!trackExistById(track.getId())){
-            throw new IllegalArgumentException("Track with id:"+ track.getId().toString() + " does not exist.");
+        } else if (!trackExistById(track.getId())) {
+            throw new IllegalArgumentException("Track with id:" + track.getId().toString() + " does not exist.");
         }
         // Save the updated track to the database and return
         return trackRepository.save(track);
