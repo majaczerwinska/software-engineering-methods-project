@@ -142,6 +142,16 @@ public interface AttendeeRepository extends JpaRepository<Attendee, Long> {
                             @Param("eventId") Long eventId);
 
     /**
+     * Returns the list of all Attendee instances that either are or are not confirmed.
+     *
+     * @param confirmed the confirmation status of attendance with the given role
+     * @return a list of Attendee instances
+     */
+    @Query("SELECT a FROM Attendee a "
+            + "WHERE a.confirmation = :confirmed")
+    List<Attendee> find(@Param("confirmed") Confirmation confirmed);
+
+    /**
      * Returns the list of all Attendee instances that are related to the given
      * user identifier. Additionally, this method filters the instanced on the
      * basis of whether they were confirmed; in other words, the method can filter

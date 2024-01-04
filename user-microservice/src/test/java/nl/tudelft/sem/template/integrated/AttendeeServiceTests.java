@@ -134,6 +134,39 @@ public class AttendeeServiceTests {
         assertEquals(e.getMessage(), "No confirmed attendance can be found.");
     }
 
+
+    @Test
+    public void nonExistentRetrievalGetInvitationTest() {
+
+        // When-Then
+        Exception e = assertThrows(NoSuchElementException.class, () -> {
+                service.getInvitation(1L, 1L, 1L);
+            }
+        );
+        assertEquals(e.getMessage(), "No such attendance can be found.");
+    }
+
+    @Test
+    public void confirmedRetrievalGetInvitationTest() {
+
+        // Given
+        Long userId = 5L;
+        Long eventId = 10L;
+        Long trackId = 51L;
+        RoleTitle role = RoleTitle.AUTHOR;
+
+        // When
+        service.invite(userId, userId, eventId, trackId, role);
+        service.accept(userId, userId, eventId, trackId);
+
+        // Then
+        Exception e = assertThrows(NoSuchElementException.class, () -> {
+                service.getInvitation(userId, eventId, trackId);
+            }
+        );
+        assertEquals(e.getMessage(), "No unconfirmed attendance can be found.");
+    }
+
     @Test
     public void unconfirmedIsInvitedTest() {
 
@@ -321,6 +354,163 @@ public class AttendeeServiceTests {
     }
 
     @Test
+    public void getInvitationsEmptyTest() {
+
+        // Given
+        // nothing
+
+        // When
+        // nothing
+
+        // Then
+        Exception e = assertThrows(NoSuchElementException.class, () -> {
+                service.getInvitations();
+            }
+        );
+        assertEquals(e.getMessage(), "No unconfirmed attendances can be found.");
+
+    }
+
+    @Test
+    public void getInvitationsTest() {
+
+        // Given
+        Long userId = 5L;
+        Long eventId = 10L;
+        Long trackId = 51L;
+        RoleTitle role = RoleTitle.AUTHOR;
+
+        int num = 10;
+
+        // When
+        for (int i = 0; i < num; i++) {
+            switch (i % 3) {
+                case 0:
+                    service.invite(userId + i, userId + i, eventId, trackId, role);
+                    break;
+                case 1:
+                    service.invite(userId, userId, eventId + i, trackId, role);
+                    break;
+                case 2:
+                    service.invite(userId, userId, eventId, trackId + i, role);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + i % 3);
+            }
+        }
+
+        // Then
+        List<Attendee> retrieved = service.getInvitations();
+        assertEquals(retrieved.size(), num);
+    }
+
+    @Test
+    public void getInvitationByUserTest() {
+
+        // Given
+        Long userId = 5L;
+        Long eventId = 10L;
+        Long trackId = 51L;
+        RoleTitle role = RoleTitle.AUTHOR;
+
+        int num = 10;
+
+        // When
+        for (int i = 0; i < num; i++) {
+            service.invite(userId, userId, eventId, trackId + i, role);
+        }
+
+        // Then
+        Exception e = assertThrows(NoSuchElementException.class, () -> {
+                service.getInvitationByUser(userId + 1L);
+            }
+        );
+
+        assertEquals(e.getMessage(), "No unconfirmed attendance associated with this user can be found.");
+
+
+        // Then
+        List<Attendee> retrieved = service.getInvitationByUser(userId);
+        assertEquals(retrieved.size(), num);
+
+        for (int i = 0; i < num; i++) {
+            assertEquals(retrieved.get(i).getUserId(), userId);
+        }
+    }
+
+    @Test
+    public void getInvitationByEventTest() {
+
+        // Given
+        Long userId = 5L;
+        Long eventId = 10L;
+        Long trackId = 51L;
+        RoleTitle role = RoleTitle.AUTHOR;
+
+        int num = 10;
+
+        // When
+        for (int i = 0; i < num; i++) {
+            service.invite(userId + i, userId + i, eventId, trackId, role);
+        }
+
+        // Then
+        Exception e = assertThrows(NoSuchElementException.class, () -> {
+                service.getInvitationByEvent(eventId + 1L);
+            }
+        );
+
+        assertEquals(e.getMessage(), "No unconfirmed attendance associated with this event can be found.");
+
+
+        // Then
+        List<Attendee> retrieved = service.getInvitationByEvent(eventId);
+        assertEquals(retrieved.size(), num);
+
+        for (int i = 0; i < num; i++) {
+            assertEquals(retrieved.get(i).getEventId(), eventId);
+        }
+    }
+
+    @Test
+    public void getInvitationByTrackTest() {
+
+        // Given
+        Long userId = 5L;
+        Long eventId = 10L;
+        Long trackId = 51L;
+        RoleTitle role = RoleTitle.AUTHOR;
+
+        int num = 10;
+
+        // When
+        for (int i = 0; i < num; i++) {
+            service.invite(userId + i, userId + i, eventId, trackId, role);
+        }
+
+        // Then
+        assertThrows(NullPointerException.class, () -> {
+                service.getInvitationByTrack(null);
+            }
+        );
+        Exception e = assertThrows(NoSuchElementException.class, () -> {
+                service.getInvitationByTrack(trackId + 1L);
+            }
+        );
+
+        assertEquals(e.getMessage(), "No unconfirmed attendance associated with this track can be found.");
+
+
+        // Then
+        List<Attendee> retrieved = service.getInvitationByTrack(trackId);
+        assertEquals(retrieved.size(), num);
+
+        for (int i = 0; i < num; i++) {
+            assertEquals(retrieved.get(i).getTrackId(), trackId);
+        }
+    }
+
+    @Test
     public void modifyTitleTest() {
 
         // Given
@@ -346,6 +536,159 @@ public class AttendeeServiceTests {
 
         // Then
         assertEquals(attendee.getRole().getRoleTitle(), modifiedRole);
+    }
+
+    @Test
+    public void acceptTest() {
+
+        // Given
+        Long userId = 5L;
+        Long eventId = 10L;
+        Long trackId = 51L;
+        RoleTitle role = RoleTitle.AUTHOR;
+
+        // When
+        service.invite(userId, userId, eventId, trackId, role);
+        service.accept(userId, userId, eventId, trackId);
+        Attendee attendee = service.getAttendance(userId, eventId, trackId);
+
+        // Then
+        assertEquals(attendee.getUserId(), userId);
+    }
+
+    @Test
+    public void acceptConfirmedTest() {
+
+        // Given
+        Long userId = 5L;
+        Long eventId = 10L;
+        Long trackId = 51L;
+        RoleTitle role = RoleTitle.AUTHOR;
+
+        // When
+        service.invite(userId, userId, eventId, trackId, role);
+        service.accept(userId, userId, eventId, trackId);
+
+        // Then
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+                service.accept(userId, userId, eventId, trackId);
+            }
+        );
+        assertEquals(e.getMessage(), "Invitation has already been accepted.");
+    }
+
+    @Test
+    public void acceptNonExistentTest() {
+
+        // Given
+        Long userId = 5L;
+        Long eventId = 10L;
+        Long trackId = 51L;
+        RoleTitle role = RoleTitle.AUTHOR;
+
+        // When-Then
+        Exception e = assertThrows(NoSuchElementException.class, () -> {
+                service.accept(userId, userId, eventId, trackId);
+            }
+        );
+        assertEquals(e.getMessage(), "No invitation with associated userId, eventId, and trackId can be found.");
+    }
+
+    @Test
+    public void acceptNoExecutorTest() {
+
+        // Given
+        Long userId = 5L;
+        Long executorId = 6L;
+        Long eventId = 10L;
+        Long trackId = 51L;
+        RoleTitle role = RoleTitle.AUTHOR;
+
+        // When
+        service.invite(userId, userId, eventId, trackId, role);
+
+        // Then
+        Exception e = assertThrows(NoSuchElementException.class, () -> {
+                service.accept(executorId, userId, eventId, trackId);
+            }
+        );
+        assertEquals(e.getMessage(), "No executor with associated userId, eventId, and trackId can be found.");
+    }
+
+    @Test
+    public void rejectTest() {
+
+        // Given
+        Long userId = 5L;
+        Long eventId = 10L;
+        Long trackId = 51L;
+        RoleTitle role = RoleTitle.AUTHOR;
+
+        // When
+        service.invite(userId, userId, eventId, trackId, role);
+        service.reject(userId, userId, eventId, trackId);
+
+        // Then
+        assertFalse(service.isInvited(userId, eventId, trackId));
+    }
+
+    @Test
+    public void rejectConfirmedTest() {
+
+        // Given
+        Long userId = 5L;
+        Long eventId = 10L;
+        Long trackId = 51L;
+        RoleTitle role = RoleTitle.AUTHOR;
+
+        // When
+        service.invite(userId, userId, eventId, trackId, role);
+        service.accept(userId, userId, eventId, trackId);
+
+        // Then
+        Exception e = assertThrows(IllegalArgumentException.class, () -> {
+                service.reject(userId, userId, eventId, trackId);
+            }
+        );
+        assertEquals(e.getMessage(), "Invitation has already been accepted, use resign or remove instead.");
+    }
+
+    @Test
+    public void rejectNonExistentTest() {
+
+        // Given
+        Long userId = 5L;
+        Long eventId = 10L;
+        Long trackId = 51L;
+        RoleTitle role = RoleTitle.AUTHOR;
+
+        // When-Then
+        Exception e = assertThrows(NoSuchElementException.class, () -> {
+                service.reject(userId, userId, eventId, trackId);
+            }
+        );
+        assertEquals(e.getMessage(), "No invitation with associated userId, eventId, and trackId can be found.");
+    }
+
+    @Test
+    public void rejectNoExecutorTest() {
+
+        // Given
+        Long userId = 5L;
+        Long executorId = 6L;
+        Long eventId = 10L;
+        Long trackId = 51L;
+        RoleTitle role = RoleTitle.AUTHOR;
+
+        // When
+        service.invite(userId, userId, eventId, trackId, role);
+
+        // Then
+        Exception e = assertThrows(NoSuchElementException.class, () -> {
+                service.reject(executorId, userId, eventId, trackId);
+            }
+        );
+        assertEquals(e.getMessage(), "No executor with associated userId, eventId, and trackId can be found.");
     }
 
     @Test
