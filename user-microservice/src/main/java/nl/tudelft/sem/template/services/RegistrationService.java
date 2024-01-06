@@ -1,5 +1,13 @@
-package nl.tudelft.sem.template.domain.user;
+package nl.tudelft.sem.template.services;
 
+import nl.tudelft.sem.template.domain.user.AppUser;
+import nl.tudelft.sem.template.domain.user.Communication;
+import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.domain.user.EmailAlreadyInUseException;
+import nl.tudelft.sem.template.domain.user.Link;
+import nl.tudelft.sem.template.domain.user.Name;
+import nl.tudelft.sem.template.domain.user.UserAffiliation;
+import nl.tudelft.sem.template.domain.user.UserRepository;
 import org.springframework.stereotype.Service;
 
 /**

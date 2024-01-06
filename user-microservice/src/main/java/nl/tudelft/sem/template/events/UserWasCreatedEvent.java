@@ -1,4 +1,6 @@
-package nl.tudelft.sem.template.domain.user;
+package nl.tudelft.sem.template.events;
+
+import nl.tudelft.sem.template.domain.user.Email;
 
 /**
  * A DDD domain event that indicated a user was created.
