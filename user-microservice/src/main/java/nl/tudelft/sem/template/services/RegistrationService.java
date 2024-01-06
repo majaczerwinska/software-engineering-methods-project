@@ -39,7 +39,7 @@ public class RegistrationService {
         if (checkEmailIsUnique(email)) {
 
             // Create new account
-            AppUser user = new AppUser(email, name, affiliation, link, communication);
+            AppUser user = new AppUser(1L, email, name, affiliation, link, communication);
             userRepository.save(user);
 
             return user;

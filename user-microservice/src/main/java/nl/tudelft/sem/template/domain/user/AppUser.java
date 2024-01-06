@@ -1,14 +1,12 @@
 package nl.tudelft.sem.template.domain.user;
 
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.domain.HasEvents;
+import nl.tudelft.sem.template.domain.user.attributeConverters.EmailAttributeConverter;
 import nl.tudelft.sem.template.events.UserWasCreatedEvent;
 
 
@@ -24,8 +22,9 @@ public class AppUser extends HasEvents {
      * Identifier for the application user.
      */
     @Id
-    @Column(name = "id", nullable = false)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
+    private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
     @Convert(converter = EmailAttributeConverter.class)
@@ -57,8 +56,9 @@ public class AppUser extends HasEvents {
      *
      * @param email    The Email for the new user
      */
-    public AppUser(Email email,
+    public AppUser(Long id, Email email,
                    Name name, UserAffiliation affiliation, Link link, Communication communication) {
+        this.id = id;
         this.email = email;
         this.recordThat(new UserWasCreatedEvent(email));
         this.name = name;
@@ -71,7 +71,7 @@ public class AppUser extends HasEvents {
         this.email = email;
     }
 
-    private void setId(int id) {
+    private void setId(Long id) {
         this.id = id;
     }
 
@@ -102,12 +102,12 @@ public class AppUser extends HasEvents {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        AppUser appUser = (AppUser) o;
-        return id == (appUser.id);
+        AppUser that = (AppUser) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(email);
+        return Objects.hash(id);
     }
 }
