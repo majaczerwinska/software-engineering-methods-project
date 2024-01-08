@@ -11,6 +11,7 @@ import nl.tudelft.sem.template.domain.track.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 /**
  * A DDD service for track.
  */
@@ -36,8 +37,12 @@ public class TrackService {
      */
     @Transactional
     public Track createTrack(Track track) throws IllegalArgumentException {
-        if (track == null || track.getTitle() == null) {
-            throw new IllegalArgumentException("Invalid track data");
+        if (track == null) {
+            throw new IllegalArgumentException("Null reference for track");
+        } else if (track.getTitle() == null) {
+            throw new IllegalArgumentException("Null reference for track title");
+        } else if (trackRepository.existsById(String.valueOf(track.getId()))) {
+            throw new IllegalArgumentException("Track with id:" + track.getId() + " already exist.");
         }
         return trackRepository.save(track);
     }
@@ -50,13 +55,15 @@ public class TrackService {
      */
     @Transactional
     public Track deleteTrackById(long id) throws NoSuchElementException {
-        Optional<Track> track = trackRepository.findById(String.valueOf(id));
-        // Exception handling for when no attendances can be found.
-        if (track.isEmpty()) {
-            throw new NoSuchElementException("No track with this id can be found.");
+        if (id <= 0) {
+            throw new IllegalArgumentException("Invalid track id: " + id);
         }
-        trackRepository.delete(track.get());
-        return track.get();
+        if (!trackExistById(id)) {
+            throw new NoSuchElementException("Track with id:" + id + " does not exist.");
+        }
+        Track track = getTrackById(id);
+        trackRepository.delete(track);
+        return track;
     }
 
     /**
@@ -66,16 +73,14 @@ public class TrackService {
      * @return the updated track that was saved.
      */
     @Transactional
-    public Track updateTrack(Track track) throws IllegalArgumentException {
-        Title title = track.getTitle();
-        if (track == null || track.getId() <= 0 || title.toString() == null) {
-            throw new IllegalArgumentException("Invalid track data");
-        } else if (trackExistsByTitleInEvent(title, track.getEvent())) {
-            throw new IllegalArgumentException("Track with this title already exist in this event.");
+    public Track updateTrack(Track track) throws IllegalArgumentException, NoSuchElementException {
+        if (track.getTitle() == null) {
+            throw new IllegalArgumentException("Null reference for track title");
+        } else if (trackExistsByTitleInEvent(track.getTitle(), track.getEvent())) {
+            throw new IllegalArgumentException("Track with this title already exist in the event.");
         } else if (!trackExistById(track.getId())) {
-            throw new IllegalArgumentException("Track with id:" + track.getId().toString() + " does not exist.");
+            throw new NoSuchElementException("Track with id:" + track.getId().toString() + " does not exist.");
         }
-        // Save the updated track to the database and return
         return trackRepository.save(track);
     }
 
@@ -85,10 +90,13 @@ public class TrackService {
      * @param id - id of a track
      * @return - track with this id if exists, else null
      */
-    public Track getTrackById(long id) throws NoSuchElementException {
+    public Track getTrackById(long id) throws NoSuchElementException, IllegalArgumentException {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Invalid track ID");
+        }
         Optional<Track> track = trackRepository.findById(String.valueOf(id));
         if (track.isEmpty()) {
-            throw new NoSuchElementException("No such track with this id: " + String.valueOf(id));
+            throw new NoSuchElementException("Track with ID: " + id + " does not exist.");
         }
 
         return track.get();
@@ -113,7 +121,7 @@ public class TrackService {
     public List<Track> getTrackByTitle(Title title) throws NoSuchElementException {
         List<Track> tracks = trackRepository.findByTitle(title);
         if (tracks.isEmpty()) {
-            throw new NoSuchElementException("No such track with this title: " + title);
+            throw new NoSuchElementException("Track with title:" + title.toString() + " does not exist.");
         }
         return tracks;
     }
@@ -138,7 +146,7 @@ public class TrackService {
     public List<Track> getTrackByParentEvent(ParentEvent parentEvent) throws NoSuchElementException {
         List<Track> tracks = trackRepository.findByEvent(parentEvent);
         if (tracks.isEmpty()) {
-            throw new NoSuchElementException("no track within this event: " + parentEvent.toEvent().getName());
+            throw new NoSuchElementException("Track in event:" + parentEvent.toEvent().getName() + " does not exist.");
         }
         return tracks;
     }
@@ -153,10 +161,9 @@ public class TrackService {
     public Track getTrackByTitleInEvent(Title title, ParentEvent parentEvent) throws NoSuchElementException {
         Optional<Track> track = trackRepository.findByTitleAndEvent(title, parentEvent);
         if (track.isEmpty()) {
-            throw new NoSuchElementException("no such track with this title: " + title
-                    + " in event: " + parentEvent.toEvent().getName());
+            throw new NoSuchElementException("Track with title:" + title.toString()
+                    + " in event:" + parentEvent.toEvent().getName() + " does not exist.");
         }
-
         return track.get();
     }
 
