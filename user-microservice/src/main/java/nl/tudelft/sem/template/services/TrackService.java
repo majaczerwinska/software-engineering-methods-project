@@ -39,9 +39,11 @@ public class TrackService {
     public Track createTrack(Track track) throws IllegalArgumentException {
         if (track == null) {
             throw new IllegalArgumentException("Null reference for track");
-        } else if (track.getTitle() == null) {
+        }
+        if (track.getTitle() == null || track.getTitle().toString() == null) {
             throw new IllegalArgumentException("Null reference for track title");
-        } else if (trackRepository.existsById(String.valueOf(track.getId()))) {
+        }
+        if (trackRepository.existsById(String.valueOf(track.getId()))) {
             throw new IllegalArgumentException("Track with id:" + track.getId() + " already exist.");
         }
         return trackRepository.save(track);
@@ -76,9 +78,11 @@ public class TrackService {
     public Track updateTrack(Track track) throws IllegalArgumentException, NoSuchElementException {
         if (track.getTitle() == null) {
             throw new IllegalArgumentException("Null reference for track title");
-        } else if (trackExistsByTitleInEvent(track.getTitle(), track.getEvent())) {
+        }
+        if (trackExistsByTitleInEvent(track.getTitle(), track.getEvent())) {
             throw new IllegalArgumentException("Track with this title already exist in the event.");
-        } else if (!trackExistById(track.getId())) {
+        }
+        if (!trackExistById(track.getId())) {
             throw new NoSuchElementException("Track with id:" + track.getId().toString() + " does not exist.");
         }
         return trackRepository.save(track);
@@ -118,7 +122,10 @@ public class TrackService {
      * @param title - title of a track
      * @return - tracks with this title if exists, else null
      */
-    public List<Track> getTrackByTitle(Title title) throws NoSuchElementException {
+    public List<Track> getTrackByTitle(Title title) throws NoSuchElementException, IllegalArgumentException {
+        if (title == null || title.toString() == null) {
+            throw new IllegalArgumentException("Null reference for track title");
+        }
         List<Track> tracks = trackRepository.findByTitle(title);
         if (tracks.isEmpty()) {
             throw new NoSuchElementException("Track with title:" + title.toString() + " can not be found.");
@@ -143,7 +150,11 @@ public class TrackService {
      * @param parentEvent - parent event of a track
      * @return - tracks within this event if exists, else null
      */
-    public List<Track> getTrackByParentEvent(ParentEvent parentEvent) throws NoSuchElementException {
+    public List<Track> getTrackByParentEvent(ParentEvent parentEvent)
+            throws NoSuchElementException, IllegalArgumentException {
+        if (parentEvent == null || parentEvent.toEvent() == null) {
+            throw new IllegalArgumentException("Null reference for parent event");
+        }
         List<Track> tracks = trackRepository.findByEvent(parentEvent);
         if (tracks.isEmpty()) {
             throw new NoSuchElementException("Track does not exist in event:" + parentEvent.toEvent().getName());
