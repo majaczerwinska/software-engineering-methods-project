@@ -121,7 +121,7 @@ public class TrackService {
     public List<Track> getTrackByTitle(Title title) throws NoSuchElementException {
         List<Track> tracks = trackRepository.findByTitle(title);
         if (tracks.isEmpty()) {
-            throw new NoSuchElementException("Track with title:" + title.toString() + " does not exist.");
+            throw new NoSuchElementException("Track with title:" + title.toString() + " can not be found.");
         }
         return tracks;
     }
@@ -146,7 +146,7 @@ public class TrackService {
     public List<Track> getTrackByParentEvent(ParentEvent parentEvent) throws NoSuchElementException {
         List<Track> tracks = trackRepository.findByEvent(parentEvent);
         if (tracks.isEmpty()) {
-            throw new NoSuchElementException("Track in event:" + parentEvent.toEvent().getName() + " does not exist.");
+            throw new NoSuchElementException("Track does not exist in event:" + parentEvent.toEvent().getName());
         }
         return tracks;
     }
