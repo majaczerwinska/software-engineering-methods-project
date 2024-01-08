@@ -162,7 +162,7 @@ public class TrackService {
         Optional<Track> track = trackRepository.findByTitleAndEvent(title, parentEvent);
         if (track.isEmpty()) {
             throw new NoSuchElementException("Track with title:" + title.toString()
-                    + " in event:" + parentEvent.toEvent().getName() + " does not exist.");
+                    + " does not exist  in event: " + parentEvent.toEvent().getName());
         }
         return track.get();
     }
