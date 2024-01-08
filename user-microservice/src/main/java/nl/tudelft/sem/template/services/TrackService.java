@@ -46,9 +46,10 @@ public class TrackService {
      * Deletes the track with the specified id.
      *
      * @param id - id of the to be deleted track
+     * @return - the deleted track
      */
     @Transactional
-    public Track deleteTrackById(int id) throws NoSuchElementException {
+    public Track deleteTrackById(long id) throws NoSuchElementException {
         Optional<Track> track = trackRepository.findById(String.valueOf(id));
         // Exception handling for when no attendances can be found.
         if (track.isEmpty()) {
@@ -62,7 +63,7 @@ public class TrackService {
      * Updates an existing track account and saves it in the repository.
      *
      * @param track - the updated track account to be saved.
-     * @return the updated track account that was saved.
+     * @return the updated track that was saved.
      */
     @Transactional
     public Track updateTrack(Track track) throws IllegalArgumentException {
