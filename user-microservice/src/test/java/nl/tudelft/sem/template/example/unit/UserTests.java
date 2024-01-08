@@ -9,7 +9,11 @@ import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.Link;
 import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserAffiliation;
-import nl.tudelft.sem.template.domain.user.attributeConverters.*;
+import nl.tudelft.sem.template.domain.user.converters.CommunicationAttributeConverter;
+import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
+import nl.tudelft.sem.template.domain.user.converters.LinkAttributeConverter;
+import nl.tudelft.sem.template.domain.user.converters.NameAttributeConverter;
+import nl.tudelft.sem.template.domain.user.converters.UserAffiliationAttributeConverter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

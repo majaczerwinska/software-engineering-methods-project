@@ -1,8 +1,7 @@
-package nl.tudelft.sem.template.domain.user.attributeConverters;
-
-import nl.tudelft.sem.template.domain.user.Communication;
+package nl.tudelft.sem.template.domain.user.converters;
 
 import javax.persistence.AttributeConverter;
+import nl.tudelft.sem.template.domain.user.Communication;
 
 /**
  * JPA Converter for the Communication value object.

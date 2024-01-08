@@ -1,9 +1,8 @@
-package nl.tudelft.sem.template.domain.user.attributeConverters;
-
-import nl.tudelft.sem.template.domain.user.Email;
+package nl.tudelft.sem.template.domain.user.converters;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+import nl.tudelft.sem.template.domain.user.Email;
 
 /**
  * JPA Converter for the Email value object.

@@ -1,8 +1,8 @@
-package nl.tudelft.sem.template.domain.user.attributeConverters;
-
-import nl.tudelft.sem.template.domain.user.Link;
+package nl.tudelft.sem.template.domain.user.converters;
 
 import javax.persistence.AttributeConverter;
+import nl.tudelft.sem.template.domain.user.Link;
+
 
 public class LinkAttributeConverter implements AttributeConverter<Link, String> {
     @Override

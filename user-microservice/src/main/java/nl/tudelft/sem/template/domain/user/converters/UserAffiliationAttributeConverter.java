@@ -1,9 +1,7 @@
-package nl.tudelft.sem.template.domain.user.attributeConverters;
-
-import nl.tudelft.sem.template.domain.user.UserAffiliation;
-import nl.tudelft.sem.template.model.User;
+package nl.tudelft.sem.template.domain.user.converters;
 
 import javax.persistence.AttributeConverter;
+import nl.tudelft.sem.template.domain.user.UserAffiliation;
 
 public class UserAffiliationAttributeConverter implements AttributeConverter<UserAffiliation, String> {
     @Override

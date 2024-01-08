@@ -1,12 +1,17 @@
 package nl.tudelft.sem.template.domain.user;
 
 import java.util.Objects;
-import javax.persistence.*;
-
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.domain.HasEvents;
-import nl.tudelft.sem.template.domain.user.attributeConverters.EmailAttributeConverter;
+import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
 import nl.tudelft.sem.template.events.UserWasCreatedEvent;
 
 
