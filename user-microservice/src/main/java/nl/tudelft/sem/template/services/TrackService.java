@@ -134,17 +134,6 @@ public class TrackService {
     }
 
     /**
-     * Checks whether the track with the specified title exists.
-     *
-     * @param title - title of a track
-     * @return - true if exists, false otherwise
-     */
-    public boolean trackExistsByTitle(Title title) {
-        return trackRepository.existsByTitle(title);
-    }
-
-
-    /**
      * Retrieves all tracks within the specified event.
      *
      * @param parentEvent - parent event of a track
