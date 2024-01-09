@@ -8,16 +8,13 @@ import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.Link;
 import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserAffiliation;
-import nl.tudelft.sem.template.domain.user.UserService;
 import nl.tudelft.sem.template.example.controllers.UserController;
+import nl.tudelft.sem.template.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-
 
 public class UserControllerTest {
 
@@ -25,6 +22,9 @@ public class UserControllerTest {
     private UserRepositoryTest userRepository;
     private UserController userController;
 
+    /**
+     * Setting up the environment.
+     */
     @BeforeEach
     public void setup() {
         userRepository = new UserRepositoryTest();
@@ -49,7 +49,7 @@ public class UserControllerTest {
     }
 
     /**
-     * Test for a nonexistent user
+     * Test for a nonexistent user.
      */
     @Test
     public void getUserByIdUserNonexistent() {
@@ -57,7 +57,7 @@ public class UserControllerTest {
     }
 
     /**
-     * Test for a valid user
+     * Test for a valid user.
      */
     @Test
     public void getUserByIdUserExists() {
@@ -66,10 +66,10 @@ public class UserControllerTest {
         UserAffiliation userAffiliation = new UserAffiliation("test");
         Link link = new Link("test");
         Communication com = new Communication("communicateMe");
-        AppUser user = new AppUser(email, name, userAffiliation, link, com);
+        AppUser user = new AppUser(1L, email, name, userAffiliation, link, com);
         userRepository.save(user);
-        List<AppUser> ids = userRepository.findAll();
-        assertEquals(ids.get(0), userController.getUserById(0).getBody());
+        AppUser appUser = userRepository.findById(String.valueOf(1L)).get();
+        assertEquals(appUser, userController.getUserById(1L).getBody());
     }
 
 }

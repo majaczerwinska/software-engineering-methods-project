@@ -4,14 +4,21 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nl.tudelft.sem.template.domain.HasEvents;
+import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
+import nl.tudelft.sem.template.events.UserWasCreatedEvent;
 
 
 /**
  * A DDD entity representing an application user in our domain.
  */
+@Getter
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
@@ -20,28 +27,25 @@ public class AppUser extends HasEvents {
      * Identifier for the application user.
      */
     @Id
-    @Column(name = "id", nullable = false)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
+    private Long id;
 
-    @Column(name = "net_id", nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     @Convert(converter = EmailAttributeConverter.class)
     private Email email;
 
-    @Column(name = "password_hash", nullable = false)
-    @Convert(converter = HashedPasswordAttributeConverter.class)
-    private HashedPassword password;
-
-    @Column(name = "username", nullable = false)
-    private String name;
+    @Column(name = "name", nullable = false)
+    private Name name;
 
     @Column(name = "affiliation")
-    private String affiliation;
+    private UserAffiliation affiliation;
 
     @Column(name = "link")
-    private String link;
+    private Link link;
 
     @Column(name = "communication")
-    private String communication;
+    private Communication communication;
 
     //    @ManyToMany
     //    @JoinTable(
@@ -56,12 +60,11 @@ public class AppUser extends HasEvents {
      * Create new application user.
      *
      * @param email    The Email for the new user
-     * @param password The password for the new user
      */
-    public AppUser(Email email, HashedPassword password,
-                   String name, String affiliation, String link, String communication) {
+    public AppUser(Long id, Email email,
+                   Name name, UserAffiliation affiliation, Link link, Communication communication) {
+        this.id = id;
         this.email = email;
-        this.password = password;
         this.recordThat(new UserWasCreatedEvent(email));
         this.name = name;
         this.affiliation = affiliation;
@@ -69,56 +72,27 @@ public class AppUser extends HasEvents {
         this.communication = communication;
     }
 
-    public void changePassword(HashedPassword password) {
-        this.password = password;
-        this.recordThat(new PasswordWasChangedEvent(this));
-    }
-
-    public Email getEmail() {
-        return email;
-    }
-
     public void setEmail(Email email) {
         this.email = email;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    private void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getCommunication() {
-        return communication;
-    }
-
-    public void setCommunication(String communication) {
+    public void setCommunication(Communication communication) {
         this.communication = communication;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
+    public void setName(Name name) {
         this.name = name;
     }
 
-    public String getAffiliation() {
-        return affiliation;
-    }
-
-    public void setAffiliation(String affiliation) {
+    public void setAffiliation(UserAffiliation affiliation) {
         this.affiliation = affiliation;
     }
 
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
+    public void setLink(Link link) {
         this.link = link;
     }
 
@@ -133,12 +107,12 @@ public class AppUser extends HasEvents {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        AppUser appUser = (AppUser) o;
-        return id == (appUser.id);
+        AppUser that = (AppUser) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(email);
+        return Objects.hash(id);
     }
 }

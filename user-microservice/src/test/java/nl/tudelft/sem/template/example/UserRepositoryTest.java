@@ -3,9 +3,9 @@ package nl.tudelft.sem.template.example;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserRepository;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -23,6 +23,17 @@ public class UserRepositoryTest implements UserRepository {
     @Override
     public boolean existsByEmail(Email email) {
         return false;
+    }
+
+    @Override
+    public List<AppUser> findByName(Name name) {
+        List<AppUser> matching = new ArrayList<>();
+        for (AppUser user : users) {
+            if (user.getName().equals(name)) {
+                matching.add(user);
+            }
+        }
+        return matching;
     }
 
     @Override
@@ -44,6 +55,7 @@ public class UserRepositoryTest implements UserRepository {
     public Page<AppUser> findAll(Pageable pageable) {
         return null;
     }
+
     @Override
     public <S extends AppUser> List<S> findAll(Example<S> example) {
         return null;
@@ -66,6 +78,11 @@ public class UserRepositoryTest implements UserRepository {
 
     @Override
     public long count() {
+        return 0;
+    }
+
+    @Override
+    public <S extends AppUser> long count(Example<S> example) {
         return 0;
     }
 
@@ -144,11 +161,6 @@ public class UserRepositoryTest implements UserRepository {
     @Override
     public AppUser getOne(String s) {
         return null;
-    }
-
-    @Override
-    public <S extends AppUser> long count(Example<S> example) {
-        return 0;
     }
 
     @Override
