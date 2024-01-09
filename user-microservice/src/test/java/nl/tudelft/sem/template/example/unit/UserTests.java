@@ -1,14 +1,6 @@
 package nl.tudelft.sem.template.example.unit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
-import nl.tudelft.sem.template.domain.user.AppUser;
-import nl.tudelft.sem.template.domain.user.Communication;
-import nl.tudelft.sem.template.domain.user.Email;
-import nl.tudelft.sem.template.domain.user.Link;
-import nl.tudelft.sem.template.domain.user.Name;
-import nl.tudelft.sem.template.domain.user.UserAffiliation;
+import nl.tudelft.sem.template.domain.user.*;
 import nl.tudelft.sem.template.domain.user.converters.CommunicationAttributeConverter;
 import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
 import nl.tudelft.sem.template.domain.user.converters.LinkAttributeConverter;
@@ -16,6 +8,8 @@ import nl.tudelft.sem.template.domain.user.converters.NameAttributeConverter;
 import nl.tudelft.sem.template.domain.user.converters.UserAffiliationAttributeConverter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTests {
 
@@ -66,6 +60,8 @@ public class UserTests {
         // user1 and user2 are different users
         assertNotEquals(user1, user2);
 
+        assertNotEquals(user1, null);
+
         // user1 and user3 have the same attributes, except for their id's
         assertNotEquals(user1, user3);
     }
@@ -92,6 +88,14 @@ public class UserTests {
 
         // Check getEmail
         assertEquals("user1@example.com", user1.getEmail().toString());
+
+        // Check setId
+        user1.setId(1L);
+        assertEquals(1L, user1.getId());
+
+        // Check setEmail
+        user1.setEmail(new Email("email@gmail.com"));
+        assertEquals("email@gmail.com", user1.getEmail().toString());
 
         // Check setName
         user1.setName(new Name("New Name"));

@@ -76,7 +76,7 @@ public class AppUser extends HasEvents {
         this.email = email;
     }
 
-    private void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
