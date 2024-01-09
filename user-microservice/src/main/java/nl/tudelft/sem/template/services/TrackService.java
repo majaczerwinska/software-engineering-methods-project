@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.transaction.Transactional;
-
-import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.domain.track.Title;
 import nl.tudelft.sem.template.domain.track.Track;
 import nl.tudelft.sem.template.domain.track.TrackRepository;

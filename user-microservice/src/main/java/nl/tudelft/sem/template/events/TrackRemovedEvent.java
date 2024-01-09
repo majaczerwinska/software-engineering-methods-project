@@ -13,9 +13,11 @@ public class TrackRemovedEvent {
         this.parentEventId = parentEventId;
         this.trackId = trackId;
     }
+
     public Long getParentEventId() {
         return this.parentEventId;
     }
+
     public Long getTrackId() {
         return this.trackId;
     }
