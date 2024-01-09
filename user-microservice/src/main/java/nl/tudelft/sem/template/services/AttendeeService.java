@@ -186,7 +186,7 @@ public class AttendeeService {
      * @throws NoSuchElementException indicates that the attendance instance
      *          does not exist or is unconfirmed.
      */
-    public Attendee getAttendance(Long userId, Long eventId, Long trackId)
+    public Attendee getAttendance(Long userId, Long eventId, @Nullable Long trackId)
             throws NoSuchElementException {
 
         Optional<Attendee> retrievedAttendee = findAttendee(userId, eventId, trackId);
@@ -255,7 +255,7 @@ public class AttendeeService {
      * track identifier. If no such attendances exist, then a
      * {@link NoSuchElementException} is thrown.
      *
-     * @param trackId the user identifier, not nullable
+     * @param trackId the track identifier, not nullable
      * @return the list of attendances
      * @throws NoSuchElementException indicates that no such attendances
      *          exist.
