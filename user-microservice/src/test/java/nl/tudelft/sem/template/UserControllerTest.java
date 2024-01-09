@@ -1,25 +1,26 @@
-package nl.tudelft.sem.template.example;
+package nl.tudelft.sem.template;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import nl.tudelft.sem.template.controllers.UserController;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Communication;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.Link;
 import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserAffiliation;
-import nl.tudelft.sem.template.example.controllers.UserController;
+import nl.tudelft.sem.template.help.UserRepositoryTest;
 import nl.tudelft.sem.template.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 
 public class UserControllerTest {
 
     private UserService userService;
-    private UserRepositoryTest userRepository;
+    private  UserRepositoryTest userRepository;
     private UserController userController;
 
     /**

@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example;
+package nl.tudelft.sem.template.help;
 
 import java.util.ArrayList;
 import java.util.List;
