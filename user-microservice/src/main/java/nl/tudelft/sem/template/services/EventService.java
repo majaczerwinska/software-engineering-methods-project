@@ -32,32 +32,19 @@ public class EventService {
     // Private Methods
 
     /**
-     * Creates a new unconfirmed attendance instance, which is committed to the
-     * event repository. In case where such an attendance instance already exists,
-     * confirmed or not, the method throws an {@link IllegalArgumentException} to
-     * signify
-     * that no change has taken place.
+     * Creates a new event,
      *
      * <p>This method is to be used within the service
      * class; refer to the invitation-related methods for out-of-class invocations.
      *
-     * @param userId  the user identifier of the attendance to be created
-     * @param eventId the event identifier of the attendance to be created
-     * @param trackId the track identifier of the attendance to be created
-     * @param role    the role of the new attendance
-     * @throws IllegalArgumentException specifies that the attendance already
-     *                                  exists, and that no changes have been made
-     *                                  to the repository.
      */
     @Transactional
     public Event createEvent(LocalDate startDate, LocalDate endDate, boolean isCancelled, String name,
-            String description)
-            throws IllegalArgumentException {
+            String description) {
 
         Event event = new Event(startDate, endDate, new IsCancelled(isCancelled), new EventName(name),
                 new EventDescription(description));
 
-        // Commits the new attendance to the repository
         return repository.save(event);
     }
 }

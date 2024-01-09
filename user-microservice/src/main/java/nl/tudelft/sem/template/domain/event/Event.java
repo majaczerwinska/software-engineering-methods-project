@@ -60,6 +60,9 @@ public class Event extends HasEvents {
     @NonNull
     private EventDescription description;
 
+    /**
+     * Convert self into an API Model Event.
+     */
     public nl.tudelft.sem.template.model.Event toModelEvent() {
         nl.tudelft.sem.template.model.Event returnedEvent = new nl.tudelft.sem.template.model.Event();
         returnedEvent.setId(this.getId());
