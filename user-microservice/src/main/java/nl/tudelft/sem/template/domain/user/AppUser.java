@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
 import nl.tudelft.sem.template.events.UserWasCreatedEvent;
@@ -18,9 +19,12 @@ import nl.tudelft.sem.template.events.UserWasCreatedEvent;
 /**
  * A DDD entity representing an application user in our domain.
  */
-@Getter
+
+
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
 @NoArgsConstructor
 public class AppUser extends HasEvents {
     /**
@@ -36,15 +40,19 @@ public class AppUser extends HasEvents {
     private Email email;
 
     @Column(name = "name", nullable = false)
+    @Convert(converter = NameAttributeConverter.class)
     private Name name;
 
     @Column(name = "affiliation")
+    @Convert(converter =  UserAffiliationAttributeConverter.class)
     private UserAffiliation affiliation;
 
     @Column(name = "link")
+    @Convert(converter = LinkAttributeConverter.class)
     private Link link;
 
     @Column(name = "communication")
+    @Convert(converter = CommunicationAttributeConverter.class)
     private Communication communication;
 
     //    @ManyToMany

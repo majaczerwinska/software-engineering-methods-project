@@ -1,0 +1,73 @@
+package nl.tudelft.sem.template.domain.event;
+
+import java.time.LocalDate;
+import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import nl.tudelft.sem.template.domain.HasEvents;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
+
+/**
+ * A DDD entity representing an event in our domain.
+ */
+@Entity
+@Table(name = "events")
+@NoArgsConstructor
+public class Event extends HasEvents {
+    /**
+     * Identifier for the application event.
+     */
+    @Id
+    @Column(name = "id", nullable = false)
+    private long id;
+
+    @Getter
+    @Column(name = "start_date", nullable = false)
+    @Convert(converter = LocalDateConverter.class)
+    private LocalDate startDate;
+
+    @Getter
+    @Column(name = "end_date", nullable = false)
+    @Convert(converter = LocalDateConverter.class)
+    private LocalDate endDate;
+
+    @Getter
+    @Column(name = "is_cancelled", nullable = false)
+    @Convert(converter = IsCancelledAttributeConverter.class)
+    private IsCancelled isCancelled;
+
+    @Getter
+    @Column(name = "name", nullable = false)
+    @Convert(converter = EventNameAttributeConverter.class)
+    private EventName name;
+
+    @Getter
+    @Column(name = "description", nullable = false)
+    @Convert(converter = EventDescriptionAttributeConverter.class)
+    private EventDescription eventDescription;
+
+    /**
+     * Equality is only based on the identifier.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Event event = (Event) o;
+        return id == (event.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+}

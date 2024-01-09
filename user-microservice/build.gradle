@@ -92,18 +92,21 @@ jacocoTestCoverageVerification() {
 		rule {
 			enabled = true
 			element = 'CLASS'
-			includes = ['nl.tudelft.sem.template.*']
+			includes = ['nl.tudelft.sem.template.domain.attendee.*',
+						'nl.tudelft.sem.template.services.*']
+			excludes = ['nl.tudelft.sem.template.domain.attendee.AttendeeId.*']
 
 			limit {
 				counter = 'BRANCH'
 				value = 'COVEREDRATIO'
-				minimum = 0.0
+				minimum = 0.85
 			}
 		}
 	}
 }
 
 checkstyle {
+	//old version : toolVersion "8.37"
 	toolVersion "10.12.5"
 	configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
 	ignoreFailures = false
