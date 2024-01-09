@@ -17,7 +17,12 @@ public class UserRepositoryTest implements UserRepository {
 
     @Override
     public Optional<AppUser> findByEmail(Email email) {
-        return Optional.empty();
+        for (AppUser user : users) {
+            if (user.getEmail().equals(email)) {
+                return Optional.ofNullable(user);
+            }
+        }
+        return Optional.ofNullable(null);
     }
 
     @Override
@@ -88,7 +93,15 @@ public class UserRepositoryTest implements UserRepository {
 
     @Override
     public void deleteById(String s) {
-
+        AppUser appUser = null;
+        for (AppUser user : users) {
+            if (String.valueOf(user.getId()).equals(s)) {
+                appUser = user;
+            }
+        }
+        if (appUser != null) {
+            users.remove(appUser);
+        }
     }
 
     @Override
@@ -109,7 +122,7 @@ public class UserRepositoryTest implements UserRepository {
     @Override
     public <S extends AppUser> S save(S entity) {
         users.add(entity);
-        return null;
+        return entity;
     }
 
     @Override
@@ -120,12 +133,12 @@ public class UserRepositoryTest implements UserRepository {
     @Override
     public Optional<AppUser> findById(String s) {
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId() == Integer.parseInt(s)) {
+            if (users.get(i).getId() == Long.parseLong(s)) {
                 AppUser user = users.get(i);
                 return Optional.ofNullable(user);
             }
         }
-        return null;
+        return Optional.ofNullable(null);
     }
 
     @Override

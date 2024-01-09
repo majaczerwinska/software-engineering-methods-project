@@ -92,11 +92,11 @@ public class UserService {
      *
      * @param userId - id of the to be deleted user
      */
-    public void deleteUserById(int userId) {
+    public void deleteUserById(long userId) {
         if (getUserById(userId) == null) {
             return;
         }
-        userRepository.delete(getUserById(userId));
+        userRepository.deleteById(String.valueOf(userId));
     }
 
     /**
