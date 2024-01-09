@@ -38,3 +38,8 @@ bin/
 
 ### MacOS ###
 *.DS_Store
+
+.openapi-generator-ignore
+.openapi-generator/
+user-microservice/src/main/java/nl/tudelft/sem/template/README.md
+user-microservice/src/main/java/nl/tudelft/sem/template/pom.xml
