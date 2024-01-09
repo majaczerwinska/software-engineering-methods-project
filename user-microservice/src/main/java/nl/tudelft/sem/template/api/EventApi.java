@@ -8,9 +8,10 @@ package nl.tudelft.sem.template.api;
 import org.springframework.format.annotation.DateTimeFormat;
 import nl.tudelft.sem.template.model.Event;
 import java.time.LocalDate;
-
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,13 +25,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-12-05T18:45:04.605384300+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-09T18:13:40.845083812+01:00[Europe/Amsterdam]")
 @Validated
 @Tag(name = "Event Management", description = "end-points for features that help users create and manage events when permitted by their assigned role.")
 public interface EventApi {
@@ -112,7 +116,7 @@ public interface EventApi {
     )
     @RequestMapping(
         method = RequestMethod.DELETE,
-        value = "/nl/tudelft/sem/template/event/{eventID}"
+        value = "/event/{eventID}"
     )
     default ResponseEntity<Void> deleteEvent(
         @Parameter(name = "eventID", description = "ID of event to be deleted.", required = true, in = ParameterIn.PATH) @PathVariable("eventID") Long eventID
@@ -155,7 +159,7 @@ public interface EventApi {
     )
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/nl/tudelft/sem/template/event",
+        value = "/event",
         produces = { "application/json" }
     )
     default ResponseEntity<List<Event>> findEvent(
@@ -208,7 +212,7 @@ public interface EventApi {
     )
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/nl/tudelft/sem/template/event/{eventID}",
+        value = "/event/{eventID}",
         produces = { "application/json" }
     )
     default ResponseEntity<Event> getEventById(
@@ -257,7 +261,7 @@ public interface EventApi {
     )
     @RequestMapping(
         method = RequestMethod.PUT,
-        value = "/nl/tudelft/sem/template/event",
+        value = "/event",
         produces = { "application/json" },
         consumes = { "application/json" }
     )
