@@ -5,10 +5,16 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.domain.HasEvents;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
 
@@ -17,39 +23,43 @@ import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDa
  */
 @Entity
 @Table(name = "events")
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
+@RequiredArgsConstructor
+@AllArgsConstructor
+@Getter
 public class Event extends HasEvents {
     /**
      * Identifier for the application event.
      */
     @Id
-    @Column(name = "id", nullable = false)
-    private long id;
+    @Column(name = "id", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Getter
     @Column(name = "start_date", nullable = false)
+    @NonNull
     @Convert(converter = LocalDateConverter.class)
     private LocalDate startDate;
 
-    @Getter
     @Column(name = "end_date", nullable = false)
+    @NonNull
     @Convert(converter = LocalDateConverter.class)
     private LocalDate endDate;
 
-    @Getter
     @Column(name = "is_cancelled", nullable = false)
+    @NonNull
     @Convert(converter = IsCancelledAttributeConverter.class)
     private IsCancelled isCancelled;
 
-    @Getter
     @Column(name = "name", nullable = false)
+    @NonNull
     @Convert(converter = EventNameAttributeConverter.class)
     private EventName name;
 
-    @Getter
     @Column(name = "description", nullable = false)
     @Convert(converter = EventDescriptionAttributeConverter.class)
-    private EventDescription eventDescription;
+    @NonNull
+    private EventDescription description;
 
     /**
      * Equality is only based on the identifier.
