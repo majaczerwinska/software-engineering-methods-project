@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.domain.HasEvents;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
 
@@ -23,7 +22,6 @@ import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDa
 @Entity
 @Table(name = "events")
 @NoArgsConstructor(force = true)
-@RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
 public class Event extends HasEvents {
@@ -57,8 +55,19 @@ public class Event extends HasEvents {
 
     @Column(name = "description", nullable = false)
     @Convert(converter = EventDescriptionAttributeConverter.class)
-    @NonNull
     private EventDescription description;
+
+    /**
+     * Constructor with nullable description.
+     */
+    public Event(LocalDate startDate, LocalDate endDate, IsCancelled isCancelled, EventName name,
+            EventDescription description) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isCancelled = isCancelled;
+        this.name = name;
+        this.description = description;
+    }
 
     /**
      * Convert self into an API Model Event.

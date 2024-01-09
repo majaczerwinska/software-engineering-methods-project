@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.controllers;
 
+import javax.transaction.Transactional;
 import nl.tudelft.sem.template.api.EventApi;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.user.AppUser;
@@ -41,6 +42,7 @@ public class EventController implements EventApi {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<Event> addEvent(
             Event event) {
         AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
@@ -50,7 +52,11 @@ public class EventController implements EventApi {
 
         nl.tudelft.sem.template.domain.event.Event createdEvent = eventService.createEvent(event.getStartDate(),
                 event.getEndDate(), event.getIsCancelled(), event.getName(), event.getDescription());
-        attendeeService.createAttendance(user.getId(), event.getId(), null, RoleTitle.GENERAL_CHAIR, true);
+        if (createdEvent == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        attendeeService.createAttendance(user.getId(), createdEvent.getId(), null, RoleTitle.GENERAL_CHAIR, true);
         return ResponseEntity.ok(createdEvent.toModelEvent());
     }
 }
