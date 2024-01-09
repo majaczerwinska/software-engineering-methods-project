@@ -2,23 +2,16 @@ package nl.tudelft.sem.template.domain.track;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.time.LocalDate;
 import java.util.Objects;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.domain.HasEvents;
@@ -31,6 +24,7 @@ import nl.tudelft.sem.template.events.TrackParentEventChangedEvent;
 import nl.tudelft.sem.template.events.TrackRemovedEvent;
 import nl.tudelft.sem.template.events.TrackTitleChangedEvent;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
 
 
 /**
@@ -54,26 +48,26 @@ public class Track extends HasEvents {
     @Convert(converter = DescriptionAttributeConverter.class)
     private Description description;
 
-    @Enumerated(EnumType.ORDINAL)
     @Column(name = "paperType", nullable = false)
     @Convert(converter = PaperRequirementAttributeConverter.class)
     private PaperRequirement paperType;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "submitDeadline", nullable = false)
-    @Convert(converter = DeadlineAttributeConverter.class)
-    private Deadline submitDeadline;
+    @Convert(converter = LocalDateConverter.class)
+    private LocalDate submitDeadline;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "reviewDeadline", nullable = false)
-    @Convert(converter = DeadlineAttributeConverter.class)
-    private Deadline reviewDeadline;
+    @Convert(converter = LocalDateConverter.class)
+    private LocalDate reviewDeadline;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "eventId", referencedColumnName = "id")
-    @JsonBackReference
-    @Column(name = "event", nullable = false)
-    @Convert(converter = ParentEventAttributeConverter.class)
+    //@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    //@JoinColumn(name = "eventId", referencedColumnName = "id")
+    //@JsonBackReference
+    //@Column(name = "event", nullable = false)
+    //@Convert(converter = ParentEventAttributeConverter.class)
+    @Transient //From Yair: The converter is not correct. How can it serialize an event instance?
     private ParentEvent event;
 
     /**
@@ -89,7 +83,7 @@ public class Track extends HasEvents {
      * @param event          the event this track belongs to
      */
     public Track(Title title, Description description, PaperRequirement paperType,
-                 Deadline submitDeadline, Deadline reviewDeadline, ParentEvent event) {
+                 LocalDate submitDeadline, LocalDate reviewDeadline, ParentEvent event) {
         this.title = title;
         this.description = description;
         this.paperType = paperType;
@@ -146,7 +140,7 @@ public class Track extends HasEvents {
      *
      * @param submitDeadline for this track
      */
-    public void setSubmitDeadline(Deadline submitDeadline) {
+    public void setSubmitDeadline(LocalDate submitDeadline) {
         this.submitDeadline = submitDeadline;
         this.recordThat(new TrackDeadlineChangedEvent(this));
     }
@@ -156,7 +150,7 @@ public class Track extends HasEvents {
      *
      * @param reviewDeadline for this track
      */
-    public void setReviewDeadline(Deadline reviewDeadline) {
+    public void setReviewDeadline(LocalDate reviewDeadline) {
         this.reviewDeadline = reviewDeadline;
         this.recordThat(new TrackDeadlineChangedEvent(this));
     }
