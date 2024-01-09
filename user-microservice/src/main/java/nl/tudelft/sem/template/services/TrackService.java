@@ -143,7 +143,7 @@ public class TrackService {
         if (parentEventId == null) {
             throw new IllegalArgumentException("Null reference for parent event");
         }
-        List<Track> tracks = trackRepository.findByEvent(parentEventId);
+        List<Track> tracks = trackRepository.findByParentEventId(parentEventId);
         if (tracks.isEmpty()) {
             throw new NoSuchElementException("Track does not exist in event:" + parentEventId);
         }
@@ -158,7 +158,7 @@ public class TrackService {
      * @return - tracks within this event if exists, else null
      */
     public Track getTrackByTitleInEvent(Title title, long parentEventId) throws NoSuchElementException {
-        Optional<Track> track = trackRepository.findByTitleAndEvent(title, parentEventId);
+        Optional<Track> track = trackRepository.findByTitleAndParentEventId(title, parentEventId);
         if (track.isEmpty()) {
             throw new NoSuchElementException("Track with title:" + title.toString()
                     + " does not exist  in event: " + parentEventId);
@@ -174,7 +174,7 @@ public class TrackService {
      * @return - true if exists, false otherwise
      */
     public boolean trackExistsByTitleInEvent(Title title, Long parentEventId) {
-        return trackRepository.existsByTitleInEvent(title, parentEventId);
+        return trackRepository.existsByTitleAndParentEventId(title, parentEventId);
     }
 
 }

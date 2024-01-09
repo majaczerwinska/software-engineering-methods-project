@@ -11,9 +11,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.domain.HasEvents;
+import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.events.TrackCreatedEvent;
 import nl.tudelft.sem.template.events.TrackDeadlineChangedEvent;
 import nl.tudelft.sem.template.events.TrackDescriptionChangedEvent;
@@ -50,10 +52,12 @@ public class Track extends HasEvents {
     @Convert(converter = PaperRequirementAttributeConverter.class)
     private PaperRequirement paperType;
 
+    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "submitDeadline", nullable = false)
     @Convert(converter = LocalDateConverter.class)
     private LocalDate submitDeadline;
 
+    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "reviewDeadline", nullable = false)
     @Convert(converter = LocalDateConverter.class)
     private LocalDate reviewDeadline;
@@ -61,7 +65,9 @@ public class Track extends HasEvents {
     //@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     //@JoinColumn(name = "eventId", referencedColumnName = "id")
     //@JsonBackReference
-    //From Yair: The converter is not correct. How can it serialize an event instance?
+    //@Column(name = "event", nullable = false)
+    //@Convert(converter = ParentEventAttributeConverter.class)
+     //From Yair: The converter is not correct. How can it serialize an event instance?
     @Column(name = "parentEventId", nullable = false)
     private Long parentEventId;
 
