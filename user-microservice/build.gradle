@@ -92,12 +92,14 @@ jacocoTestCoverageVerification() {
 		rule {
 			enabled = true
 			element = 'CLASS'
-			includes = ['nl.tudelft.sem.template.*']
+			includes = ['nl.tudelft.sem.template.domain.attendee.*',
+						'nl.tudelft.sem.template.services.*']
+			excludes = ['nl.tudelft.sem.template.domain.attendee.AttendeeId.*']
 
 			limit {
 				counter = 'BRANCH'
 				value = 'COVEREDRATIO'
-				minimum = 0.0
+				minimum = 0.85
 			}
 		}
 	}
