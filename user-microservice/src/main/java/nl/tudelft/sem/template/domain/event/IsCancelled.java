@@ -6,11 +6,11 @@ package nl.tudelft.sem.template.domain.event;
 public class IsCancelled {
     private final transient boolean status;
 
-    public IsCancelled(int isCancelled) {
-        this.status = isCancelled == 1;
+    public IsCancelled(boolean isCancelled) {
+        this.status = isCancelled;
     }
 
-    public int getCancelStatus() {
-        return status ? 1 : 0;
+    public boolean getCancelStatus() {
+        return status;
     }
 }

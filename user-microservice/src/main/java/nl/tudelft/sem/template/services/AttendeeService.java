@@ -15,7 +15,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 
-
+/**
+ * A service Class handling invitations and attendance.
+ */
 @Service
 public class AttendeeService {
 
