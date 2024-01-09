@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.transaction.Transactional;
-import nl.tudelft.sem.template.domain.track.ParentEvent;
+
+import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.domain.track.Title;
 import nl.tudelft.sem.template.domain.track.Track;
 import nl.tudelft.sem.template.domain.track.TrackRepository;
@@ -79,7 +80,7 @@ public class TrackService {
         if (track.getTitle() == null) {
             throw new IllegalArgumentException("Null reference for track title");
         }
-        if (trackExistsByTitleInEvent(track.getTitle(), track.getEvent())) {
+        if (trackExistsByTitleInEvent(track.getTitle(), track.getParentEventId())) {
             throw new IllegalArgumentException("Track with this title already exist in the event.");
         }
         if (!trackExistById(track.getId())) {
@@ -136,17 +137,17 @@ public class TrackService {
     /**
      * Retrieves all tracks within the specified event.
      *
-     * @param parentEvent - parent event of a track
+     * @param parentEventId - parent event of a track
      * @return - tracks within this event if exists, else null
      */
-    public List<Track> getTrackByParentEvent(ParentEvent parentEvent)
+    public List<Track> getTrackByParentEvent(Long parentEventId)
             throws NoSuchElementException, IllegalArgumentException {
-        if (parentEvent == null || parentEvent.toEvent() == null) {
+        if (parentEventId == null) {
             throw new IllegalArgumentException("Null reference for parent event");
         }
-        List<Track> tracks = trackRepository.findByEvent(parentEvent);
+        List<Track> tracks = trackRepository.findByEvent(parentEventId);
         if (tracks.isEmpty()) {
-            throw new NoSuchElementException("Track does not exist in event:" + parentEvent.toEvent().getName());
+            throw new NoSuchElementException("Track does not exist in event:" + parentEventId);
         }
         return tracks;
     }
@@ -155,14 +156,14 @@ public class TrackService {
      * Retrieves track with the specified title within the specified event.
      *
      * @param title       - title of a track
-     * @param parentEvent - parent event of a track
+     * @param parentEventId - parent event id of a track
      * @return - tracks within this event if exists, else null
      */
-    public Track getTrackByTitleInEvent(Title title, ParentEvent parentEvent) throws NoSuchElementException {
-        Optional<Track> track = trackRepository.findByTitleAndEvent(title, parentEvent);
+    public Track getTrackByTitleInEvent(Title title, long parentEventId) throws NoSuchElementException {
+        Optional<Track> track = trackRepository.findByTitleAndEvent(title, parentEventId);
         if (track.isEmpty()) {
             throw new NoSuchElementException("Track with title:" + title.toString()
-                    + " does not exist  in event: " + parentEvent.toEvent().getName());
+                    + " does not exist  in event: " + parentEventId);
         }
         return track.get();
     }
@@ -171,11 +172,11 @@ public class TrackService {
      * Checks whether the track with the specified title exists within the specified event.
      *
      * @param title       - title of a track
-     * @param parentEvent - parent event of a track
+     * @param parentEventId - parent event of a track
      * @return - true if exists, false otherwise
      */
-    public boolean trackExistsByTitleInEvent(Title title, ParentEvent parentEvent) {
-        return trackRepository.existsByTitleInEvent(title, parentEvent);
+    public boolean trackExistsByTitleInEvent(Title title, Long parentEventId) {
+        return trackRepository.existsByTitleInEvent(title, parentEventId);
     }
 
 }

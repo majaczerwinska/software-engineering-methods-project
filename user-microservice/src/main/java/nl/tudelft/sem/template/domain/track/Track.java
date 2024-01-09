@@ -11,11 +11,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.domain.HasEvents;
-import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.events.TrackCreatedEvent;
 import nl.tudelft.sem.template.events.TrackDeadlineChangedEvent;
 import nl.tudelft.sem.template.events.TrackDescriptionChangedEvent;
@@ -52,12 +50,10 @@ public class Track extends HasEvents {
     @Convert(converter = PaperRequirementAttributeConverter.class)
     private PaperRequirement paperType;
 
-    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "submitDeadline", nullable = false)
     @Convert(converter = LocalDateConverter.class)
     private LocalDate submitDeadline;
 
-    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "reviewDeadline", nullable = false)
     @Convert(converter = LocalDateConverter.class)
     private LocalDate reviewDeadline;
@@ -65,10 +61,9 @@ public class Track extends HasEvents {
     //@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     //@JoinColumn(name = "eventId", referencedColumnName = "id")
     //@JsonBackReference
-    //@Column(name = "event", nullable = false)
-    //@Convert(converter = ParentEventAttributeConverter.class)
-    @Transient //From Yair: The converter is not correct. How can it serialize an event instance?
-    private ParentEvent event;
+    //From Yair: The converter is not correct. How can it serialize an event instance?
+    @Column(name = "parentEventId", nullable = false)
+    private Long parentEventId;
 
     /**
      * a constructor for Track.
@@ -80,17 +75,17 @@ public class Track extends HasEvents {
      * @param paperType      the allowed paper type for submission for this track
      * @param submitDeadline the deadline for submission in this track
      * @param reviewDeadline the deadline for giving reviews in this track
-     * @param event          the event this track belongs to
+     * @param parentEventId          the event this track belongs to
      */
     public Track(Title title, Description description, PaperRequirement paperType,
-                 LocalDate submitDeadline, LocalDate reviewDeadline, ParentEvent event) {
+                 LocalDate submitDeadline, LocalDate reviewDeadline, Long parentEventId) {
         this.title = title;
         this.description = description;
         this.paperType = paperType;
         this.submitDeadline = submitDeadline;
         this.reviewDeadline = reviewDeadline;
-        this.event = event;
-        this.recordThat(new TrackCreatedEvent(event.toEvent(), this.id));
+        this.parentEventId = parentEventId;
+        this.recordThat(new TrackCreatedEvent(parentEventId, this.id));
     }
 
 
@@ -159,14 +154,14 @@ public class Track extends HasEvents {
     /**
      * method for change the event of this track.
      *
-     * @param event which this track belongs to
+     * @param parentEventId which this track belongs to
      */
-    public void setEvent(ParentEvent event) {
-        Event temp = this.event.toEvent();
-        this.event = event;
+    public void setParentEventId(Long parentEventId) {
+        Long temp = this.parentEventId;
+        this.parentEventId = parentEventId;
         this.recordThat(new TrackRemovedEvent(temp, this.id));
         this.recordThat(new TrackParentEventChangedEvent(this));
-        this.recordThat(new TrackCreatedEvent(event.toEvent(), this.id));
+        this.recordThat(new TrackCreatedEvent(parentEventId, this.id));
     }
 
     /**
@@ -184,7 +179,7 @@ public class Track extends HasEvents {
             return false;
         }
         Track track = (Track) o;
-        return title.equals(track.title) && event.equals(track.event);
+        return title.equals(track.title) && parentEventId.equals(track.parentEventId);
     }
 
     /**
@@ -194,7 +189,7 @@ public class Track extends HasEvents {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(title, event);
+        return Objects.hash(title, parentEventId);
     }
 
     /**

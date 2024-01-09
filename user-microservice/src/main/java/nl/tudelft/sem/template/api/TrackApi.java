@@ -73,7 +73,7 @@ public interface TrackApi {
         produces = { "application/json" },
         consumes = { "application/json" }
     )
-    default ResponseEntity<Track> addTrack(
+    default ResponseEntity<?> addTrack(
         @Parameter(name = "Track", description = "Track object to be created.") @Valid @RequestBody(required = false) Track track
     ) {
         getRequest().ifPresent(request -> {
@@ -117,7 +117,7 @@ public interface TrackApi {
         method = RequestMethod.DELETE,
         value = "/track/{trackID}"
     )
-    default ResponseEntity<Void> deleteTrack(
+    default ResponseEntity<?> deleteTrack(
         @Parameter(name = "trackID", description = "ID of the track to be deleted.", required = true, in = ParameterIn.PATH) @PathVariable("trackID") Integer trackID
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
@@ -128,7 +128,7 @@ public interface TrackApi {
     /**
      * GET /track : Gets tracks
      *
-     * @param name Track&#39;s name. (optional)
+     * @param title Track&#39;s title. (optional)
      * @param eventID Event to which the track belongs. (optional)
      * @param paperType Track&#39;s paper type (optional)
      * @return successful operation (status code 200)
@@ -155,10 +155,9 @@ public interface TrackApi {
         value = "/track",
         produces = { "application/json" }
     )
-    default ResponseEntity<List<Track>> getTrack(
-        @Parameter(name = "name", description = "Track's name.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "name", required = false) String name,
-        @Parameter(name = "eventID", description = "Event to which the track belongs.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "eventID", required = false) Integer eventID,
-        @Parameter(name = "paper_type", description = "Track's paper type", in = ParameterIn.QUERY) @Valid @RequestParam(value = "paper_type", required = false) PaperType paperType
+    default ResponseEntity<?> getTrack(
+        @Parameter(name = "title", description = "Track's title.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "title", required = false) String title,
+        @Parameter(name = "eventID", description = "Event to which the track belongs.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "eventID", required = false) Long eventID
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
@@ -170,7 +169,6 @@ public interface TrackApi {
             }
         });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
     }
 
 
@@ -206,7 +204,7 @@ public interface TrackApi {
         value = "/track/{trackID}",
         produces = { "application/json" }
     )
-    default ResponseEntity<Track> getTrackByID(
+    default ResponseEntity<?> getTrackByID(
         @Parameter(name = "trackID", description = "ID of the track to be returned.", required = true, in = ParameterIn.PATH) @PathVariable("trackID") Integer trackID
     ) {
         getRequest().ifPresent(request -> {
@@ -253,7 +251,7 @@ public interface TrackApi {
         value = "/track",
         consumes = { "application/json" }
     )
-    default ResponseEntity<Void> updateTrack(
+    default ResponseEntity<?> updateTrack(
         @Parameter(name = "Track", description = "Track data to be changed.") @Valid @RequestBody(required = false) Track track
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
