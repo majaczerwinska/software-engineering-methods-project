@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -60,6 +59,17 @@ public class Event extends HasEvents {
     @Convert(converter = EventDescriptionAttributeConverter.class)
     @NonNull
     private EventDescription description;
+
+    public nl.tudelft.sem.template.model.Event toModelEvent() {
+        nl.tudelft.sem.template.model.Event returnedEvent = new nl.tudelft.sem.template.model.Event();
+        returnedEvent.setId(this.getId());
+        returnedEvent.setStartDate(this.getStartDate());
+        returnedEvent.setEndDate(this.getEndDate());
+        returnedEvent.setIsCancelled(this.getIsCancelled().getCancelStatus());
+        returnedEvent.setName(this.getName().toString());
+        returnedEvent.setDescription(this.getDescription().toString());
+        return returnedEvent;
+    }
 
     /**
      * Equality is only based on the identifier.
