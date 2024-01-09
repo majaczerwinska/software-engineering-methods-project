@@ -66,7 +66,7 @@ public interface EventApi {
     )
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/nl/tudelft/sem/template/event",
+        value = "/event",
         produces = { "application/json" },
         consumes = { "application/json" }
     )
