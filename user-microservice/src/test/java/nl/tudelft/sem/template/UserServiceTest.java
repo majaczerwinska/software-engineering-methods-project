@@ -91,4 +91,83 @@ public class UserServiceTest {
         userService.deleteUserById(1L);
         assertEquals(0, userRepository.findAll().size());
     }
+
+    @Test
+    public void userNonexistantById() {
+        assertFalse(userService.userExistsById(1L));
+    }
+
+    @Test
+    public void userExistsById() {
+        userRepository.save(appUser);
+        assertTrue(userService.userExistsById(1L));
+    }
+
+    @Test
+    public void getValidUserByName() {
+        userRepository.save(appUser);
+        assertEquals(1, userService.getUserByName("user").size());
+    }
+
+    @Test
+    public void getInvalidUserByName() {
+        assertEquals(0, userService.getUserByName("user").size());
+    }
+
+    @Test
+    public void getValidUserByEmail() {
+        userRepository.save(appUser);
+        assertEquals(appUser, userService.getUserByEmail(new Email("abc@fun.org")));
+    }
+
+    @Test
+    public void getInvalidUserByEmail() {
+        assertNull(userService.getUserByEmail(new Email("abc@fun.org")));
+    }
+
+    @Test
+    public void updateNullUser() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateUser(null);
+        });
+    }
+
+    @Test
+    public void updateInvalidUser() {
+        AppUser appUser1 = new AppUser(-1L,
+                new Email("abc@gmail.com"),
+                new Name("mark"),
+                new UserAffiliation("police"),
+                new Link("url"),
+                new Communication("phone"));
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateUser(appUser1);
+        });
+    }
+
+    @Test
+    public void updateNonExistentUser() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateUser(appUser);
+        });
+    }
+
+    @Test
+    public void updateValidUser() {
+        userRepository.save(appUser);
+        AppUser appUser1 = new AppUser(1L,
+                new Email("abc@gmail.com"),
+                new Name("mark"),
+                new UserAffiliation("police"),
+                new Link("url"),
+                new Communication("phone"));
+        assertEquals(appUser1, userService.updateUser(appUser1));
+        assertEquals(appUser.getEmail().toString(), "abc@gmail.com");
+        assertEquals(appUser.getName().toString(), "mark");
+        assertEquals(appUser.getAffiliation().toString(), "police");
+        assertEquals(appUser.getLink().toString(), "url");
+        assertEquals(appUser.getCommunication().toString(), "phone");
+    }
+
+
 }

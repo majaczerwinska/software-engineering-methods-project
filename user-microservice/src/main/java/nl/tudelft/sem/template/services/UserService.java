@@ -109,8 +109,19 @@ public class UserService {
         if (updatedUser == null || updatedUser.getId() <= 0) {
             throw new IllegalArgumentException("Invalid user data");
         }
+        // If the id of the updatedUser does not correspond to an existing user,
+        // throw an IllegalArgumentException.
+        AppUser existingUser = userRepository.findById(String.valueOf(updatedUser.getId()))
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Update the user properties
+        existingUser.setName(updatedUser.getName());
+        existingUser.setAffiliation(updatedUser.getAffiliation());
+        existingUser.setCommunication(updatedUser.getCommunication());
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setLink(updatedUser.getLink());
 
         // Save the updated user to the database and return
-        return userRepository.save(updatedUser);
+        return userRepository.save(existingUser);
     }
 }
