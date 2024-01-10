@@ -6,10 +6,7 @@ import java.util.NoSuchElementException;
 import javax.validation.Valid;
 import nl.tudelft.sem.template.api.TrackApi;
 import nl.tudelft.sem.template.authentication.AuthManager;
-import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.track.Title;
-import nl.tudelft.sem.template.domain.user.AppUser;
-import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.model.PaperType;
 import nl.tudelft.sem.template.model.Track;
 import nl.tudelft.sem.template.services.AttendeeService;
@@ -18,9 +15,9 @@ import nl.tudelft.sem.template.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,11 +37,12 @@ public class TrackController implements TrackApi {
     private final transient UserService userService;
 
     /**
-     * Instantiates a new Track controller.
+     * Constructs a new instance of Track Controller.
      *
-     * @param trackService used to manage Track services
-     * @param authManager  Spring Security component used to authenticate and
-     *                     authorize the user
+     * @param authManager      Used for authentication-related checks.
+     * @param attendeeService  The service for managing attendee-related operations.
+     * @param trackService     The service for managing track-related operations.
+     * @param userService      The service for managing user-related operations.
      */
     @Autowired
     public TrackController(AuthManager authManager, AttendeeService attendeeService,
@@ -64,21 +62,10 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    //    @PreAuthorize("@RoleService.isGeneralChairForEvent("
-    //            + "userService.getUserByEmail(new Email(authManager.getEmail())),"
-    //            + " #track.getEventId())")
+    @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
+            + "#track.getEventId(), #track.getId(), 0)")
     public ResponseEntity<Track> addTrack(Track track) {
-        // Check authorization: user is (GENERAL_CHAIR) of the event
         try {
-            AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
-            if (user == null) {
-                throw new AccessDeniedException("User not found for creating track.");
-            }
-            Attendee role = attendeeService.getAttendance(user.getId(), track.getEventId(), null);
-            if (!(role.isConfirmed() && role.getRole().getRoleTitle().getPermission() <= 0)) {
-                throw new AccessDeniedException("User do not have right to add track.");
-            }
-
             trackService.createTrack(new nl.tudelft.sem.template.domain.track.Track(track));
             return ResponseEntity.ok(track);
         } catch (AccessDeniedException | NoSuchElementException e) {
@@ -96,18 +83,10 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    //    @PreAuthorize("hasRole('PC_CHAIR') or hasRole('GENERAL_CHAIR')")
+    @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
+            + "#track.getEventId(), #track.getId(), 1)")
     public ResponseEntity<Void> updateTrack(@Valid @RequestBody(required = false) Track track) {
         try {
-            AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
-            if (user == null) {
-                throw new AccessDeniedException("User not found for updating track.");
-            }
-            Attendee role = attendeeService.getAttendance(user.getId(), track.getEventId(), null);
-            if (!(role.isConfirmed() && role.getRole().getRoleTitle().getPermission() <= 1)) {
-                throw new AccessDeniedException("User do not have right to add track.");
-            }
-
             trackService.updateTrack(new nl.tudelft.sem.template.domain.track.Track(track));
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
         } catch (AccessDeniedException e) {
@@ -127,19 +106,10 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    //    @PreAuthorize("hasRole('PC_CHAIR') or hasRole('GENERAL_CHAIR')")
+    @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
+            + "#track.getEventId(), #track.getId(), 1)")
     public ResponseEntity<Void> deleteTrack(@PathVariable("trackID") Integer trackId) {
         try {
-            AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
-            if (user == null) {
-                throw new AccessDeniedException("User not found for removing track.");
-            }
-            Track track = trackService.getTrackById(trackId).toModelTrack();
-            Attendee role = attendeeService.getAttendance(user.getId(), track.getEventId(), null);
-            if (!(role.isConfirmed() && role.getRole().getRoleTitle().getPermission() <= 1)) {
-                throw new AccessDeniedException("User do not have right to add track.");
-            }
-
             trackService.deleteTrackById(trackId.longValue());
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
         } catch (AccessDeniedException e) {
@@ -159,14 +129,9 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    //    @PreAuthorize("@RoleService.isUser(userService.getUserByEmail(new Email(authManager.getEmail())))")
+    @PreAuthorize("@RoleService.isUser(userService, authManager)")
     public ResponseEntity<Track> getTrackByID(@PathVariable("trackId") Integer trackId) {
         try {
-            AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
-            if (user == null) {
-                throw new AccessDeniedException("User not found for finding track.");
-            }
-
             Track track = trackService.getTrackById(trackId.longValue()).toModelTrack();
             return ResponseEntity.ok(track); // 200
         } catch (AccessDeniedException e) {
@@ -186,14 +151,11 @@ public class TrackController implements TrackApi {
      * @return tracks with this title if exists, else null
      */
     @Override
+    @Transactional
+    @PreAuthorize("@RoleService.isUser(userService, authManager)")
     public ResponseEntity<List<Track>> getTrack(@Nullable String title,
                                                 @Nullable Integer eventId, @Nullable PaperType paperType) {
         try {
-            AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
-            if (user == null) {
-                throw new AccessDeniedException("User not found for finding track.");
-            }
-
             List<Track> tracks;
             if (eventId != null && title != null) {
                 Track track = trackService.getTrackByTitleInEvent(new Title(title), eventId.longValue()).toModelTrack();
