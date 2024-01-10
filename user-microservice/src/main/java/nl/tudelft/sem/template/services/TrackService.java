@@ -40,8 +40,14 @@ public class TrackService {
         if (track == null) {
             throw new IllegalArgumentException("Null reference for track");
         }
+        if (track.getId() == null || track.getId() < 0) {
+            throw new IllegalArgumentException("Null reference for track id");
+        }
         if (track.getTitle() == null || track.getTitle().toString() == null) {
             throw new IllegalArgumentException("Null reference for track title");
+        }
+        if (track.getParentEventId() == null || track.getParentEventId() < 0) {
+            throw new IllegalArgumentException("Null reference for parent event id");
         }
         if (trackRepository.existsById(String.valueOf(track.getId()))) {
             throw new IllegalArgumentException("Track with id:" + track.getId() + " already exist.");
@@ -57,7 +63,7 @@ public class TrackService {
      */
     @Transactional
     public Track deleteTrackById(long id) throws NoSuchElementException {
-        if (id <= 0) {
+        if (id < 0) {
             throw new IllegalArgumentException("Invalid track id: " + id);
         }
         if (!trackExistById(id)) {
