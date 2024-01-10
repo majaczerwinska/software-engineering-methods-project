@@ -10,9 +10,10 @@ import nl.tudelft.sem.template.api.TrackApi;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.track.Title;
-import nl.tudelft.sem.template.domain.track.Track;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.model.PaperType;
+import nl.tudelft.sem.template.model.Track;
 import nl.tudelft.sem.template.services.AttendeeService;
 import nl.tudelft.sem.template.services.TrackService;
 import nl.tudelft.sem.template.services.UserService;
@@ -73,11 +74,11 @@ public class TrackController implements TrackApi {
             if (user == null) {
                 throw new AccessDeniedException("User not found.");
             }
-            Attendee role = attendeeService.getAttendance(user.getId(), track.getParentEventId(), null);
+            Attendee role = attendeeService.getAttendance(user.getId(), track.getEventId(), null);
             if (!(role.isConfirmed() && role.getRole().getRoleTitle().equals(GENERAL_CHAIR))) {
                 throw new AccessDeniedException("User do not have right to add track.");
             }
-            trackService.createTrack(track);
+            trackService.createTrack(new nl.tudelft.sem.template.domain.track.Track(track));
             return ResponseEntity.ok(track);
         } catch (AccessDeniedException | NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -98,7 +99,7 @@ public class TrackController implements TrackApi {
     public ResponseEntity<Void> updateTrack(@Valid @RequestBody(required = false) Track track) {
         try {
             // TODO: Check authorization (PC_CHAIR or GENERAL_CHAIR)
-            trackService.updateTrack(track);
+            trackService.updateTrack(new nl.tudelft.sem.template.domain.track.Track(track));
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
         } catch (AccessDeniedException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
@@ -118,10 +119,10 @@ public class TrackController implements TrackApi {
     @Override
     @Transactional
     //    @PreAuthorize("hasRole('PC_CHAIR') or hasRole('GENERAL_CHAIR')")
-    public ResponseEntity<Void> deleteTrack(@PathVariable("trackID") Long trackId) {
+    public ResponseEntity<Void> deleteTrack(@PathVariable("trackID") Integer trackId) {
         try {
             // TODO: Check authorization (PC_CHAIR or GENERAL_CHAIR)
-            trackService.deleteTrackById(trackId);
+            trackService.deleteTrackById(trackId.longValue());
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
         } catch (AccessDeniedException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
@@ -141,14 +142,14 @@ public class TrackController implements TrackApi {
     @Override
     @Transactional
     //    @PreAuthorize("@RoleService.isUser(userService.getUserByEmail(new Email(authManager.getEmail())))")
-    public ResponseEntity<Track> getTrackById(@PathVariable("trackId") Long trackId) {
+    public ResponseEntity<Track> getTrackByID(@PathVariable("trackId") Integer trackId) {
         try {
             AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
             if (user == null) {
                 throw new AccessDeniedException("User not found.");
             }
 
-            Track track = trackService.getTrackById(trackId);
+            Track track = trackService.getTrackById(trackId.longValue()).toModelTrack();
             return ResponseEntity.ok(track); // 200
         } catch (AccessDeniedException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
@@ -167,7 +168,7 @@ public class TrackController implements TrackApi {
      * @return tracks with this title if exists, else null
      */
     @Override
-    public ResponseEntity<List<Track>> getTrack(String title, Long eventId) {
+    public ResponseEntity<List<Track>> getTrack(String title, Integer eventId, PaperType paperType) {
         try {
             AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
             if (user == null) {
@@ -175,15 +176,18 @@ public class TrackController implements TrackApi {
             }
 
             List<Track> tracks;
-            if (eventId != null && title != null) {
-                Track track = trackService.getTrackByTitleInEvent(new Title(title), eventId);
+            Long parentEventId = eventId.longValue();
+            if (parentEventId != null && title != null) {
+                Track track = trackService.getTrackByTitleInEvent(new Title(title), parentEventId).toModelTrack();
                 tracks = new ArrayList<>();
                 tracks.add(track);
                 return ResponseEntity.ok(tracks); // 200
             } else if (title != null) {
-                tracks = trackService.getTrackByTitle(new Title(title));
+                tracks = new ArrayList<>();
+                trackService.getTrackByTitle(new Title(title)).forEach(t -> tracks.add(t.toModelTrack()));
             } else if (eventId != null) {
-                tracks = trackService.getTrackByParentEvent(eventId);
+                tracks = new ArrayList<>();
+                trackService.getTrackByParentEvent(parentEventId).forEach(t -> tracks.add(t.toModelTrack()));
             } else {
                 throw new IllegalArgumentException("Null reference for track title and event id.");
             }

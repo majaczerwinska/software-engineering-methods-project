@@ -24,7 +24,6 @@ import nl.tudelft.sem.template.events.TrackTitleChangedEvent;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
 
-
 /**
  * A DDD entity representing a track in our domain.
  */
@@ -79,7 +78,7 @@ public class Track extends HasEvents {
      * @param paperType      the allowed paper type for submission for this track
      * @param submitDeadline the deadline for submission in this track
      * @param reviewDeadline the deadline for giving reviews in this track
-     * @param parentEventId          the event this track belongs to
+     * @param parentEventId  the event this track belongs to
      */
     public Track(Title title, Description description, PaperRequirement paperType,
                  LocalDate submitDeadline, LocalDate reviewDeadline, Long parentEventId) {
@@ -92,6 +91,21 @@ public class Track extends HasEvents {
         this.recordThat(new TrackCreatedEvent(parentEventId, this.id));
     }
 
+
+    /**
+     * a converter for Track. form model to domain
+     *
+     * @param track the track in model format
+     */
+    public Track(nl.tudelft.sem.template.model.Track track) {
+        this.title = new Title(track.getTitle());
+        this.description = new Description(track.getDescription());
+        this.paperType = new PaperRequirement(track.getPaperType());
+        this.submitDeadline = LocalDate.parse(track.getSubmitDeadline());
+        this.reviewDeadline = LocalDate.parse(track.getReviewDeadline());
+        this.parentEventId = track.getEventId();
+        this.recordThat(new TrackCreatedEvent(parentEventId, this.id));
+    }
 
     /**
      * method for changing the id of this track.
@@ -111,7 +125,6 @@ public class Track extends HasEvents {
         this.title = title;
         this.recordThat(new TrackTitleChangedEvent(this));
     }
-
 
     /**
      * method for changing the description of this track.
@@ -133,7 +146,6 @@ public class Track extends HasEvents {
         this.recordThat(new TrackPaperRequirementChangedEvent(this));
     }
 
-
     /**
      * method for changing the deadline for submission of this track.
      *
@@ -153,7 +165,6 @@ public class Track extends HasEvents {
         this.reviewDeadline = reviewDeadline;
         this.recordThat(new TrackDeadlineChangedEvent(this));
     }
-
 
     /**
      * method for change the event of this track.
@@ -211,5 +222,21 @@ public class Track extends HasEvents {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+    }
+
+    /**
+     * a converter for Track. form domain to model
+     *
+     * @return track in domain Track format
+     */
+    public nl.tudelft.sem.template.model.Track toModelTrack() {
+        nl.tudelft.sem.template.model.Track track = new nl.tudelft.sem.template.model.Track();
+        track.setTitle(this.title.toString());
+        track.setDescription(this.description.toString());
+        track.setPaperType(this.paperType.toPaperType());
+        track.setSubmitDeadline(this.submitDeadline.toString());
+        track.setReviewDeadline(this.reviewDeadline.toString());
+        track.setEventId(this.parentEventId);
+        return track;
     }
 }
