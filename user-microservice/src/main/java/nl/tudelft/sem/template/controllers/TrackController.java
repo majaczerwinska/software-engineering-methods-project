@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import nl.tudelft.sem.template.api.TrackApi;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.track.Title;
+import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.model.PaperType;
 import nl.tudelft.sem.template.model.Track;
 import nl.tudelft.sem.template.services.AttendeeService;
@@ -119,9 +120,11 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    @PreAuthorize("@RoleService.isUser(userService, authManager)") // 401
     public ResponseEntity<Track> getTrackByID(@PathVariable("trackId") Integer trackId) {
         try {
+            if (! userService.userExistsByEmail(new Email(authManager.getEmail()))) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
             Track track = trackService.getTrackById(trackId.longValue()).toModelTrack();
             return ResponseEntity.ok(track); // 200
         } catch (IllegalArgumentException e) {
@@ -141,9 +144,11 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    @PreAuthorize("@RoleService.isUser(userService, authManager)")
     public ResponseEntity<List<Track>> getTrack(String title, Integer eventId, PaperType paperType) {
         try {
+            if (! userService.userExistsByEmail(new Email(authManager.getEmail()))) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
             List<Track> tracks;
             if (eventId != null && title != null) {
                 Track track = trackService.getTrackByTitleInEvent(new Title(title), eventId.longValue()).toModelTrack();
