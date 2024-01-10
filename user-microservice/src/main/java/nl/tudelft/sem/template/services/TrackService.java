@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.services;
 
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -138,8 +139,7 @@ public class TrackService {
      * @param parentEventId - parent event of a track
      * @return - tracks within this event if exists, else null
      */
-    public List<Track> getTrackByParentEvent(Long parentEventId)
-            throws NoSuchElementException, IllegalArgumentException {
+    public List<Track> getTrackByParentEvent(Long parentEventId) throws NoSuchElementException, IllegalArgumentException {
         if (parentEventId == null) {
             throw new IllegalArgumentException("Null reference for parent event");
         }
@@ -153,7 +153,7 @@ public class TrackService {
     /**
      * Retrieves track with the specified title within the specified event.
      *
-     * @param title       - title of a track
+     * @param title         - title of a track
      * @param parentEventId - parent event id of a track
      * @return - tracks within this event if exists, else null
      */
@@ -169,7 +169,7 @@ public class TrackService {
     /**
      * Checks whether the track with the specified title exists within the specified event.
      *
-     * @param title       - title of a track
+     * @param title         - title of a track
      * @param parentEventId - parent event of a track
      * @return - true if exists, false otherwise
      */

@@ -18,7 +18,7 @@ import javax.annotation.Generated;
  * User
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-10T00:17:59.580920+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-10T16:12:17.351545+01:00[Europe/Amsterdam]")
 public class User {
 
   private Long id;

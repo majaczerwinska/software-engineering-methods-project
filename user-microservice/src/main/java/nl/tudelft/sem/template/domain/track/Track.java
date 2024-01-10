@@ -11,11 +11,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.domain.HasEvents;
-import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.events.TrackCreatedEvent;
 import nl.tudelft.sem.template.events.TrackDeadlineChangedEvent;
 import nl.tudelft.sem.template.events.TrackDescriptionChangedEvent;
@@ -189,7 +187,7 @@ public class Track extends HasEvents {
     }
 
     /**
-     * mothod to generate a unique int for this entity.
+     * method to generate a unique int for this entity.
      *
      * @return a unique int for this entity and the hashcode will be stored as the id of this entity
      */
