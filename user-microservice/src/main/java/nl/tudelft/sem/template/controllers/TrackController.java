@@ -26,11 +26,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-//The redundancy of literals here is justified for the queries and the parameter alias.
 
 /**
  * This controller is responsible for methods related to the Track entity.
  */
+//The redundancy of literals here is justified for the queries and the parameter alias.
 @RestController
 public class TrackController implements TrackApi {
 
@@ -72,7 +72,7 @@ public class TrackController implements TrackApi {
         try {
             AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
             if (user == null) {
-                throw new AccessDeniedException("User not found.");
+                throw new AccessDeniedException("User not found for creating track.");
             }
             Attendee role = attendeeService.getAttendance(user.getId(), track.getEventId(), null);
             if (!(role.isConfirmed() && role.getRole().getRoleTitle().getPermission() <= 0)) {
@@ -101,7 +101,7 @@ public class TrackController implements TrackApi {
         try {
             AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
             if (user == null) {
-                throw new AccessDeniedException("User not found.");
+                throw new AccessDeniedException("User not found for updating track.");
             }
             Attendee role = attendeeService.getAttendance(user.getId(), track.getEventId(), null);
             if (!(role.isConfirmed() && role.getRole().getRoleTitle().getPermission() <= 1)) {
@@ -130,11 +130,11 @@ public class TrackController implements TrackApi {
     //    @PreAuthorize("hasRole('PC_CHAIR') or hasRole('GENERAL_CHAIR')")
     public ResponseEntity<Void> deleteTrack(@PathVariable("trackID") Integer trackId) {
         try {
-            Track track = trackService.getTrackById(trackId).toModelTrack();
             AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
             if (user == null) {
-                throw new AccessDeniedException("User not found.");
+                throw new AccessDeniedException("User not found for removing track.");
             }
+            Track track = trackService.getTrackById(trackId).toModelTrack();
             Attendee role = attendeeService.getAttendance(user.getId(), track.getEventId(), null);
             if (!(role.isConfirmed() && role.getRole().getRoleTitle().getPermission() <= 1)) {
                 throw new AccessDeniedException("User do not have right to add track.");
@@ -164,7 +164,7 @@ public class TrackController implements TrackApi {
         try {
             AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
             if (user == null) {
-                throw new AccessDeniedException("User not found.");
+                throw new AccessDeniedException("User not found for finding track.");
             }
 
             Track track = trackService.getTrackById(trackId.longValue()).toModelTrack();
@@ -191,7 +191,7 @@ public class TrackController implements TrackApi {
         try {
             AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
             if (user == null) {
-                throw new AccessDeniedException("User not found.");
+                throw new AccessDeniedException("User not found for finding track.");
             }
 
             List<Track> tracks;
