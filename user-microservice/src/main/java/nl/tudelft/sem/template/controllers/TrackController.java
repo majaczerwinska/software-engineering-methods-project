@@ -15,8 +15,6 @@ import nl.tudelft.sem.template.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,10 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * This controller is responsible for methods related to the Track entity.
  */
-//The redundancy of literals here is justified for the queries and the parameter alias.
+// The redundancy of literals here is justified for the queries and the parameter alias.
 @RestController
 public class TrackController implements TrackApi {
-
     private final transient AuthManager authManager;
     private final transient AttendeeService attendeeService;
     private final transient TrackService trackService;
@@ -39,10 +36,10 @@ public class TrackController implements TrackApi {
     /**
      * Constructs a new instance of Track Controller.
      *
-     * @param authManager      Used for authentication-related checks.
-     * @param attendeeService  The service for managing attendee-related operations.
-     * @param trackService     The service for managing track-related operations.
-     * @param userService      The service for managing user-related operations.
+     * @param authManager     Used for authentication-related checks.
+     * @param attendeeService The service for managing attendee-related operations.
+     * @param trackService    The service for managing track-related operations.
+     * @param userService     The service for managing user-related operations.
      */
     @Autowired
     public TrackController(AuthManager authManager, AttendeeService attendeeService,
@@ -53,7 +50,6 @@ public class TrackController implements TrackApi {
         this.userService = userService;
     }
 
-
     /**
      * Create a new Track.
      *
@@ -63,7 +59,7 @@ public class TrackController implements TrackApi {
     @Override
     @Transactional
     @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "#track.getEventId(), #track.getId(), 0)")
+            + "#track.getEventId(), #track.getId(), 0)") // 401
     public ResponseEntity<Track> addTrack(Track track) {
         try {
             trackService.createTrack(new nl.tudelft.sem.template.domain.track.Track(track));
@@ -138,15 +134,15 @@ public class TrackController implements TrackApi {
     /**
      * Retrieves all tracks with the specified title.
      *
-     * @param title   title of a track
-     * @param eventId parent event of a track
+     * @param title     title of a track
+     * @param eventId   parent event of a track
+     * @param paperType paperType of a track requirment
      * @return tracks with this title if exists, else null
      */
     @Override
     @Transactional
     @PreAuthorize("@RoleService.isUser(userService, authManager)")
-    public ResponseEntity<List<Track>> getTrack(@Nullable String title,
-                                                @Nullable Integer eventId, @Nullable PaperType paperType) {
+    public ResponseEntity<List<Track>> getTrack(String title, Integer eventId, PaperType paperType) {
         try {
             List<Track> tracks;
             if (eventId != null && title != null) {
