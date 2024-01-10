@@ -68,10 +68,8 @@ public class TrackController implements TrackApi {
         try {
             trackService.createTrack(new nl.tudelft.sem.template.domain.track.Track(track));
             return ResponseEntity.ok(track);
-        } catch (AccessDeniedException | NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
         }
     }
 
@@ -84,13 +82,11 @@ public class TrackController implements TrackApi {
     @Override
     @Transactional
     @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "#track.getEventId(), #track.getId(), 1)")
+            + "#track.getEventId(), #track.getId(), 1)") // 401
     public ResponseEntity<Void> updateTrack(@Valid @RequestBody(required = false) Track track) {
         try {
             trackService.updateTrack(new nl.tudelft.sem.template.domain.track.Track(track));
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
-        } catch (AccessDeniedException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
         } catch (NoSuchElementException e) {
@@ -107,13 +103,11 @@ public class TrackController implements TrackApi {
     @Override
     @Transactional
     @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "#track.getEventId(), #track.getId(), 1)")
+            + "#track.getEventId(), #track.getId(), 1)") // 401
     public ResponseEntity<Void> deleteTrack(@PathVariable("trackID") Integer trackId) {
         try {
             trackService.deleteTrackById(trackId.longValue());
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
-        } catch (AccessDeniedException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
         } catch (NoSuchElementException e) {
@@ -129,13 +123,11 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    @PreAuthorize("@RoleService.isUser(userService, authManager)")
+    @PreAuthorize("@RoleService.isUser(userService, authManager)") // 401
     public ResponseEntity<Track> getTrackByID(@PathVariable("trackId") Integer trackId) {
         try {
             Track track = trackService.getTrackById(trackId.longValue()).toModelTrack();
             return ResponseEntity.ok(track); // 200
-        } catch (AccessDeniedException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
         } catch (NoSuchElementException e) {
@@ -161,21 +153,16 @@ public class TrackController implements TrackApi {
                 Track track = trackService.getTrackByTitleInEvent(new Title(title), eventId.longValue()).toModelTrack();
                 tracks = new ArrayList<>();
                 tracks.add(track);
-                return ResponseEntity.ok(tracks); // 200
             } else if (title != null) {
                 tracks = new ArrayList<>();
                 trackService.getTrackByTitle(new Title(title)).forEach(t -> tracks.add(t.toModelTrack()));
-                return ResponseEntity.ok(tracks); // 200
             } else if (eventId != null) {
                 tracks = new ArrayList<>();
                 trackService.getTrackByParentEvent(eventId.longValue()).forEach(t -> tracks.add(t.toModelTrack()));
-                return ResponseEntity.ok(tracks); // 200
             } else {
                 throw new IllegalArgumentException("Null reference for track title and event id.");
             }
-
-        } catch (AccessDeniedException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            return ResponseEntity.ok(tracks); // 200
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
         } catch (NoSuchElementException e) {
