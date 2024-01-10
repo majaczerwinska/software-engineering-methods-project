@@ -4,24 +4,13 @@ import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 @Service("RoleService")
 public class RoleService {
-
-    /**
-     * Checks if the user has exist.
-     *
-     * @param userService      The service for managing user-related operations.
-     * @param authManager      Used for authentication-related checks.
-     * @return True if the user exist.
-     */
-    public boolean isUser(UserService userService, AuthManager authManager) {
-        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
-        return user != null;
-    }
-
     /**
      * Checks if the user has permission for a given event and track.
      *
@@ -35,7 +24,7 @@ public class RoleService {
      */
     public boolean hasPermission(UserService userService, AuthManager authManager, AttendeeService attendeeService,
                                  Long eventId, @Nullable Long trackId, int level) {
-        if (! isUser(userService, authManager)) {
+        if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
             return false;
         }
         AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
