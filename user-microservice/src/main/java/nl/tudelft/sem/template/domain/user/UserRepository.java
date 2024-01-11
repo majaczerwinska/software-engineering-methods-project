@@ -20,11 +20,20 @@ public interface UserRepository extends JpaRepository<AppUser, String> {
 
     /**
      * Find user by Name.
-
-     * @param name - Name to find a User with
+     *
+     * @param firstName - first name to find a User with
+     * @param lastName - last name to find a User with
      * @return a List<AppUser> that match the specified Name </AppUser>
      */
-    List<AppUser> findByName(Name name);
+    List<AppUser> findByFirstNameAndLastName(Name firstName, Name lastName);
+
+    /**
+     * Find users with matching first name.
+     *
+     * @param firstName - first name
+     * @return - list of users
+     */
+    List<AppUser> findByFirstName(Name firstName);
 
     /**
      * Checks if User exists by Email.
@@ -34,6 +43,6 @@ public interface UserRepository extends JpaRepository<AppUser, String> {
      */
     boolean existsByEmail(Email email);
 
-    @Override
-    AppUser save(AppUser event);
+    //    @Override
+    //    AppUser save(AppUser event);
 }

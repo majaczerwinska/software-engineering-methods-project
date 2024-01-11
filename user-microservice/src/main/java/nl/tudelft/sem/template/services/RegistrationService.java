@@ -32,14 +32,13 @@ public class RegistrationService {
      * @param email    The NetID of the user
      * @throws Exception if the user already exists
      */
-    public AppUser registerUser(Email email,
-                                Name name, UserAffiliation affiliation,
-                                Link link, Communication communication) throws Exception {
+    public AppUser registerUser(Email email, Name firstName, Name lastName,
+                                UserAffiliation affiliation, Link link, Communication communication) throws Exception {
 
         if (checkEmailIsUnique(email)) {
 
             // Create new account
-            AppUser user = new AppUser(1L, email, name, affiliation, link, communication);
+            AppUser user = new AppUser(1L, email, firstName, lastName, affiliation, link, communication);
             userRepository.save(user);
 
             return user;

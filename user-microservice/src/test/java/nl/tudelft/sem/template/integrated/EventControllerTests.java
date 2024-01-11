@@ -14,8 +14,11 @@ import nl.tudelft.sem.template.domain.event.EventName;
 import nl.tudelft.sem.template.domain.event.EventRepository;
 import nl.tudelft.sem.template.domain.event.IsCancelled;
 import nl.tudelft.sem.template.domain.user.AppUser;
+import nl.tudelft.sem.template.domain.user.Communication;
 import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.domain.user.Link;
 import nl.tudelft.sem.template.domain.user.Name;
+import nl.tudelft.sem.template.domain.user.UserAffiliation;
 import nl.tudelft.sem.template.domain.user.UserRepository;
 import nl.tudelft.sem.template.model.Event;
 import org.junit.jupiter.api.BeforeAll;
@@ -64,7 +67,8 @@ public class EventControllerTests {
         LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         event = new nl.tudelft.sem.template.domain.event.Event(
             startDate, endDate, new IsCancelled(false), new EventName("name"), new EventDescription("desc")).toModelEvent();
-        appUser = new AppUser(new Email("test@test.net"), new Name("name"));
+        appUser = new AppUser(new Email("test@test.net"), new Name("name"), new Name("name"),
+                new UserAffiliation("test"), new Link("test"), new Communication("test"));
     }
 
     @BeforeEach

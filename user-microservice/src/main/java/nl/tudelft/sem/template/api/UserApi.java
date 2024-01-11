@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-11T14:29:55.907856+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-11T20:41:13.364276600+01:00[Europe/Berlin]")
 @Validated
 @Tag(name = "User Account Management", description = "end-points for operations that deal with account registration, account deletion, and account information modifications.")
 public interface UserApi {
@@ -119,7 +119,7 @@ public interface UserApi {
         value = "/user/{userID}"
     )
     default ResponseEntity<Void> deleteAccount(
-        @Parameter(name = "userID", description = "The userID of the user that should be deleted.", required = true, in = ParameterIn.PATH) @PathVariable("userID") Integer userID
+        @Parameter(name = "userID", description = "The userID of the user that should be deleted.", required = true, in = ParameterIn.PATH) @PathVariable("userID") Long userID
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
@@ -204,7 +204,7 @@ public interface UserApi {
         produces = { "application/json" }
     )
     default ResponseEntity<User> getAccountByID(
-        @Parameter(name = "userID", description = "The userID of the user account.", required = true, in = ParameterIn.PATH) @PathVariable("userID") Integer userID
+        @Parameter(name = "userID", description = "The userID of the user account.", required = true, in = ParameterIn.PATH) @PathVariable("userID") Long userID
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {

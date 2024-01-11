@@ -52,11 +52,12 @@ public class UserService {
     /**
      * Retrieves a list of users with the specified name.
      *
-     * @param name - name of users
+     * @param firstName - first name
+     * @param lastName - last name
      * @return - list of users with the specified name
      */
-    public List<AppUser> getUserByName(String name) {
-        return userRepository.findByName(new Name(name));
+    public List<AppUser> getUserByName(String firstName, String lastName) {
+        return userRepository.findByFirstNameAndLastName(new Name(firstName), new Name(lastName));
     }
 
 

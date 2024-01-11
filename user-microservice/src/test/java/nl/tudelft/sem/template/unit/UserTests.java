@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.unit;
+package nl.tudelft.sem.template.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -31,7 +31,8 @@ public class UserTests {
         user1 = new AppUser(
                 1L,
                 new Email("user1@example.com"),
-                new Name("John Doe"),
+                new Name("John"),
+                new Name("Doe"),
                 new UserAffiliation("Company A"),
                 new Link("http://user1.com"),
                 new Communication("user1@example.com")
@@ -40,7 +41,8 @@ public class UserTests {
         user2 = new AppUser(
                 2L,
                 new Email("user2@example.com"),
-                new Name("Jane Doe"),
+                new Name("Jane"),
+                new Name("Doe"),
                 new UserAffiliation("Company B"),
                 new Link("http://user2.com"),
                 new Communication("user2@example.com")
@@ -49,7 +51,8 @@ public class UserTests {
         user3 = new AppUser(
                 3L,
                 new Email("user1@example.com"),
-                new Name("John Doe"),
+                new Name("John"),
+                new Name("Doe"),
                 new UserAffiliation("Company A"),
                 new Link("http://user1.com"),
                 new Communication("user1@example.com")
@@ -79,10 +82,7 @@ public class UserTests {
         // user 1 and user 1 are the same
         assertEquals(user1.hashCode(), user1.hashCode());
 
-        // user1 and user3 have different id's, so their hashcode should be different
-        assertNotEquals(user1.hashCode(), user3.hashCode());
-
-        // user1 and user2 have different id's, so different hashcode
+        // user1 and user2 have different emails, so different hashcode
         assertNotEquals(user1.hashCode(), user2.hashCode());
 
 
@@ -103,9 +103,13 @@ public class UserTests {
         user1.setEmail(new Email("email@gmail.com"));
         assertEquals("email@gmail.com", user1.getEmail().toString());
 
-        // Check setName
-        user1.setName(new Name("New Name"));
-        assertEquals("New Name", user1.getName().toString());
+        // Check setFirstName
+        user1.setFirstName(new Name("New"));
+        assertEquals("New", user1.getFirstName().toString());
+
+        // Check setLastName
+        user1.setLastName(new Name("New"));
+        assertEquals("New", user1.getLastName().toString());
 
         // Check setAffiliation
         user1.setAffiliation(new UserAffiliation("New Affiliation"));

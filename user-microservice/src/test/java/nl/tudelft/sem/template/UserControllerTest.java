@@ -13,10 +13,19 @@ import nl.tudelft.sem.template.help.UserRepositoryTest;
 import nl.tudelft.sem.template.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-
+@ExtendWith({SpringExtension.class, MockitoExtension.class})
+@SpringBootTest(classes = Application.class)
+@ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UserControllerTest {
 
     private UserService userService;
@@ -38,7 +47,7 @@ public class UserControllerTest {
      */
     @Test
     public void getUserByIdInvalidId() {
-        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(), userController.getUserById(-1));
+        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(), userController.getAccountByID(-1L));
     }
 
     /**
@@ -54,7 +63,7 @@ public class UserControllerTest {
      */
     @Test
     public void getUserByIdUserNonexistent() {
-        assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(), userController.getUserById(0));
+        assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(), userController.getAccountByID(0L));
     }
 
     /**
@@ -67,10 +76,10 @@ public class UserControllerTest {
         UserAffiliation userAffiliation = new UserAffiliation("test");
         Link link = new Link("test");
         Communication com = new Communication("communicateMe");
-        AppUser user = new AppUser(1L, email, name, userAffiliation, link, com);
+        AppUser user = new AppUser(1L, email, name, name, userAffiliation, link, com);
         userRepository.save(user);
         AppUser appUser = userRepository.findById(String.valueOf(1L)).get();
-        assertEquals(appUser, userController.getUserById(1L).getBody());
+        assertEquals(appUser.toModelUser(), userController.getAccountByID(1L).getBody());
     }
 
 }

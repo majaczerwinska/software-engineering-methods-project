@@ -1,7 +1,10 @@
 package nl.tudelft.sem.template.controllers;
 
+import javax.transaction.Transactional;
+import nl.tudelft.sem.template.api.UserApi;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.model.User;
 import nl.tudelft.sem.template.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  * This controller is responsible for methods related to the User entity.
  */
 @RestController
-public class UserController {
+public class UserController implements UserApi {
     private final transient UserService userService;
 
     /**
@@ -39,8 +42,9 @@ public class UserController {
      * @return - bad request if invalid id, unauthorized access if expired token,
      *           not found if user not found, appUser if user found
      */
-    @GetMapping("/user/{userID}")
-    public ResponseEntity<AppUser> getUserById(@PathVariable("userID") long userId) {
+    @Override
+    @Transactional
+    public ResponseEntity<User> getAccountByID(@PathVariable("userID") Long userId) {
         if (userId < 0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -48,7 +52,7 @@ public class UserController {
         if (!userService.userExistsById(userId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(userService.getUserById(userId));
+        return ResponseEntity.ok(userService.getUserById(userId).toModelUser());
     }
     /**
      * Checks whether a user with the given email address exists, retrieves it if yes.
@@ -116,7 +120,8 @@ public class UserController {
         // TODO: Check if the request is authorized.
 
         // Update the user properties
-        existingUser.setName(updatedUser.getName());
+        existingUser.setFirstName(updatedUser.getFirstName());
+        existingUser.setLastName(updatedUser.getLastName());
         existingUser.setAffiliation(updatedUser.getAffiliation());
         existingUser.setCommunication(updatedUser.getCommunication());
         existingUser.setEmail(updatedUser.getEmail());

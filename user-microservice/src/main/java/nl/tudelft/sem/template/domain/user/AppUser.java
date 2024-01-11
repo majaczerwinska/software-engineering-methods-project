@@ -16,6 +16,7 @@ import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
 import nl.tudelft.sem.template.events.UserWasCreatedEvent;
+import nl.tudelft.sem.template.model.User;
 
 
 /**
@@ -40,9 +41,13 @@ public class AppUser extends HasEvents {
     @Convert(converter = EmailAttributeConverter.class)
     private Email email;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "firstName", nullable = false)
     @Convert(converter = NameAttributeConverter.class)
-    private Name name;
+    private Name firstName;
+
+    @Column(name = "lastName", nullable = false)
+    @Convert(converter = NameAttributeConverter.class)
+    private Name lastName;
 
     @Column(name = "affiliation")
     @Convert(converter =  UserAffiliationAttributeConverter.class)
@@ -66,15 +71,44 @@ public class AppUser extends HasEvents {
 
 
     /**
-     * Create new application user.
+     * Constructor.
      *
-     * @param email    The Email for the new user
+     * @param email - email
+     * @param firstName - first name
+     * @param lastName - last name
+     * @param affiliation - affiliation
+     * @param link - link
+     * @param communication - communication
      */
-    public AppUser(Email email,
-                   Name name, UserAffiliation affiliation, Link link, Communication communication) {
+    public AppUser(Email email, Name firstName, Name lastName,
+                   UserAffiliation affiliation, Link link, Communication communication) {
         this.email = email;
         this.recordThat(new UserWasCreatedEvent(email));
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.affiliation = affiliation;
+        this.link = link;
+        this.communication = communication;
+    }
+
+    /**
+     * Constructor for testing.
+     *
+     * @param id - id
+     * @param email - email
+     * @param firstName - first name
+     * @param lastName - last name
+     * @param affiliation - affiliation
+     * @param link - link
+     * @param communication - communication
+     */
+    public AppUser(long id, Email email, Name firstName, Name lastName,
+                   UserAffiliation affiliation, Link link, Communication communication) {
+        this.id = id;
+        this.email = email;
+        this.recordThat(new UserWasCreatedEvent(email));
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.affiliation = affiliation;
         this.link = link;
         this.communication = communication;
@@ -98,5 +132,22 @@ public class AppUser extends HasEvents {
     @Override
     public int hashCode() {
         return Objects.hash(email);
+    }
+
+    /**
+     * Converts the AppUser into a User.
+     *
+     * @return - the model user
+     */
+    public User toModelUser() {
+        User user = new User();
+        user.setId(this.id);
+        user.setFirstName(this.firstName.toString());
+        user.setLastName(this.lastName.toString());
+        user.setPreferredCommunication(this.communication.toString());
+        user.setPersonalWebsite(this.link.toString());
+        user.setAffiliation(this.affiliation.toString());
+        user.setEmail(this.email.toString());
+        return user;
     }
 }
