@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
@@ -31,9 +33,8 @@ public class AppUser extends HasEvents {
      * Identifier for the application user.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, unique = true)
-    private Long id;
+    @Column(name = "id", nullable = false)
+    private long id;
 
     @Column(name = "email", nullable = false, unique = true)
     @Convert(converter = EmailAttributeConverter.class)
@@ -69,39 +70,14 @@ public class AppUser extends HasEvents {
      *
      * @param email    The Email for the new user
      */
-    public AppUser(Long id, Email email,
+    public AppUser(Email email,
                    Name name, UserAffiliation affiliation, Link link, Communication communication) {
-        this.id = id;
         this.email = email;
         this.recordThat(new UserWasCreatedEvent(email));
         this.name = name;
         this.affiliation = affiliation;
         this.link = link;
         this.communication = communication;
-    }
-
-    public void setEmail(Email email) {
-        this.email = email;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setCommunication(Communication communication) {
-        this.communication = communication;
-    }
-
-    public void setName(Name name) {
-        this.name = name;
-    }
-
-    public void setAffiliation(UserAffiliation affiliation) {
-        this.affiliation = affiliation;
-    }
-
-    public void setLink(Link link) {
-        this.link = link;
     }
 
     /**
@@ -115,12 +91,12 @@ public class AppUser extends HasEvents {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        AppUser that = (AppUser) o;
-        return Objects.equals(id, that.id);
+        AppUser appUser = (AppUser) o;
+        return id == (appUser.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(email);
     }
 }

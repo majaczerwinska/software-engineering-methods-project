@@ -33,4 +33,7 @@ public interface UserRepository extends JpaRepository<AppUser, String> {
      * @return true if User exists
      */
     boolean existsByEmail(Email email);
+
+    @Override
+    AppUser save(AppUser event);
 }

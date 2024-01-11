@@ -27,6 +27,4 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Override
     Event save(Event event);
-
-
 }

@@ -81,6 +81,7 @@ public class UserService {
      */
     public boolean userExistsByEmail(Email email) {
         if (getUserByEmail(email) == null) {
+
             return false;
         }
         return true;

@@ -5,10 +5,14 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import nl.tudelft.sem.template.domain.HasEvents;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
 
@@ -17,39 +21,67 @@ import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDa
  */
 @Entity
 @Table(name = "events")
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
+@AllArgsConstructor
+@Getter
 public class Event extends HasEvents {
     /**
      * Identifier for the application event.
      */
     @Id
-    @Column(name = "id", nullable = false)
-    private long id;
+    @Column(name = "id", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Getter
     @Column(name = "start_date", nullable = false)
+    @NonNull
     @Convert(converter = LocalDateConverter.class)
     private LocalDate startDate;
 
-    @Getter
     @Column(name = "end_date", nullable = false)
+    @NonNull
     @Convert(converter = LocalDateConverter.class)
     private LocalDate endDate;
 
-    @Getter
     @Column(name = "is_cancelled", nullable = false)
+    @NonNull
     @Convert(converter = IsCancelledAttributeConverter.class)
     private IsCancelled isCancelled;
 
-    @Getter
     @Column(name = "name", nullable = false)
+    @NonNull
     @Convert(converter = EventNameAttributeConverter.class)
     private EventName name;
 
-    @Getter
     @Column(name = "description", nullable = false)
     @Convert(converter = EventDescriptionAttributeConverter.class)
-    private EventDescription eventDescription;
+    private EventDescription description;
+
+    /**
+     * Constructor with nullable description.
+     */
+    public Event(LocalDate startDate, LocalDate endDate, IsCancelled isCancelled, EventName name,
+            EventDescription description) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isCancelled = isCancelled;
+        this.name = name;
+        this.description = description;
+    }
+
+    /**
+     * Convert self into an API Model Event.
+     */
+    public nl.tudelft.sem.template.model.Event toModelEvent() {
+        nl.tudelft.sem.template.model.Event returnedEvent = new nl.tudelft.sem.template.model.Event();
+        returnedEvent.setId(this.getId());
+        returnedEvent.setStartDate(this.getStartDate());
+        returnedEvent.setEndDate(this.getEndDate());
+        returnedEvent.setIsCancelled(this.getIsCancelled().getCancelStatus());
+        returnedEvent.setName(this.getName().toString());
+        returnedEvent.setDescription(this.getDescription().toString());
+        return returnedEvent;
+    }
 
     /**
      * Equality is only based on the identifier.
@@ -63,7 +95,7 @@ public class Event extends HasEvents {
             return false;
         }
         Event event = (Event) o;
-        return id == (event.id);
+        return Objects.equals(id, event.id);
     }
 
     @Override
