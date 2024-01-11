@@ -11,11 +11,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.domain.HasEvents;
-import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.events.TrackCreatedEvent;
 import nl.tudelft.sem.template.events.TrackDeadlineChangedEvent;
 import nl.tudelft.sem.template.events.TrackDescriptionChangedEvent;
@@ -25,7 +23,6 @@ import nl.tudelft.sem.template.events.TrackRemovedEvent;
 import nl.tudelft.sem.template.events.TrackTitleChangedEvent;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
-
 
 /**
  * A DDD entity representing a track in our domain.
@@ -67,8 +64,9 @@ public class Track extends HasEvents {
     //@JsonBackReference
     //@Column(name = "event", nullable = false)
     //@Convert(converter = ParentEventAttributeConverter.class)
-    @Transient //From Yair: The converter is not correct. How can it serialize an event instance?
-    private ParentEvent event;
+    //From Yair: The converter is not correct. How can it serialize an event instance?
+    @Column(name = "parentEventId", nullable = false)
+    private Long parentEventId;
 
     /**
      * a constructor for Track.
@@ -80,19 +78,34 @@ public class Track extends HasEvents {
      * @param paperType      the allowed paper type for submission for this track
      * @param submitDeadline the deadline for submission in this track
      * @param reviewDeadline the deadline for giving reviews in this track
-     * @param event          the event this track belongs to
+     * @param parentEventId  the event this track belongs to
      */
     public Track(Title title, Description description, PaperRequirement paperType,
-                 LocalDate submitDeadline, LocalDate reviewDeadline, ParentEvent event) {
+                 LocalDate submitDeadline, LocalDate reviewDeadline, Long parentEventId) {
         this.title = title;
         this.description = description;
         this.paperType = paperType;
         this.submitDeadline = submitDeadline;
         this.reviewDeadline = reviewDeadline;
-        this.event = event;
-        this.recordThat(new TrackCreatedEvent(event.toEvent(), this.id));
+        this.parentEventId = parentEventId;
+        this.recordThat(new TrackCreatedEvent(parentEventId, this.id));
     }
 
+
+    /**
+     * a converter for Track. form model to domain
+     *
+     * @param track the track in model format
+     */
+    public Track(nl.tudelft.sem.template.model.Track track) {
+        this.title = new Title(track.getTitle());
+        this.description = new Description(track.getDescription());
+        this.paperType = new PaperRequirement(track.getPaperType());
+        this.submitDeadline = LocalDate.parse(track.getSubmitDeadline());
+        this.reviewDeadline = LocalDate.parse(track.getReviewDeadline());
+        this.parentEventId = track.getEventId();
+        this.recordThat(new TrackCreatedEvent(parentEventId, this.id));
+    }
 
     /**
      * method for changing the id of this track.
@@ -112,7 +125,6 @@ public class Track extends HasEvents {
         this.title = title;
         this.recordThat(new TrackTitleChangedEvent(this));
     }
-
 
     /**
      * method for changing the description of this track.
@@ -134,7 +146,6 @@ public class Track extends HasEvents {
         this.recordThat(new TrackPaperRequirementChangedEvent(this));
     }
 
-
     /**
      * method for changing the deadline for submission of this track.
      *
@@ -155,18 +166,17 @@ public class Track extends HasEvents {
         this.recordThat(new TrackDeadlineChangedEvent(this));
     }
 
-
     /**
      * method for change the event of this track.
      *
-     * @param event which this track belongs to
+     * @param parentEventId which this track belongs to
      */
-    public void setEvent(ParentEvent event) {
-        Event temp = this.event.toEvent();
-        this.event = event;
+    public void setParentEventId(Long parentEventId) {
+        Long temp = this.parentEventId;
+        this.parentEventId = parentEventId;
         this.recordThat(new TrackRemovedEvent(temp, this.id));
         this.recordThat(new TrackParentEventChangedEvent(this));
-        this.recordThat(new TrackCreatedEvent(event.toEvent(), this.id));
+        this.recordThat(new TrackCreatedEvent(parentEventId, this.id));
     }
 
     /**
@@ -184,17 +194,17 @@ public class Track extends HasEvents {
             return false;
         }
         Track track = (Track) o;
-        return title.equals(track.title) && event.equals(track.event);
+        return title.equals(track.title) && parentEventId.equals(track.parentEventId);
     }
 
     /**
-     * mothod to generate a unique int for this entity.
+     * method to generate a unique int for this entity.
      *
      * @return a unique int for this entity and the hashcode will be stored as the id of this entity
      */
     @Override
     public int hashCode() {
-        return Objects.hash(title, event);
+        return Objects.hash(title, parentEventId);
     }
 
     /**
@@ -212,5 +222,21 @@ public class Track extends HasEvents {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+    }
+
+    /**
+     * a converter for Track. form domain to model
+     *
+     * @return track in domain Track format
+     */
+    public nl.tudelft.sem.template.model.Track toModelTrack() {
+        nl.tudelft.sem.template.model.Track track = new nl.tudelft.sem.template.model.Track();
+        track.setTitle(this.title.toString());
+        track.setDescription(this.description.toString());
+        track.setPaperType(this.paperType.toPaperType());
+        track.setSubmitDeadline(this.submitDeadline.toString());
+        track.setReviewDeadline(this.reviewDeadline.toString());
+        track.setEventId(this.parentEventId);
+        return track;
     }
 }
