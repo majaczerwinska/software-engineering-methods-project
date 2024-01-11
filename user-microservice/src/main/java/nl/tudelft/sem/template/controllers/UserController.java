@@ -45,7 +45,7 @@ public class UserController {
         }
 
         // Check if the user already exists
-        if (userService.userExistsByEmail(appUser.getEmail().toString())) {
+        if (userService.userExistsByEmail(appUser.getEmail())) {
             return ResponseEntity.status(409).build(); // HTTP 409 User already exists
         }
 

@@ -62,8 +62,9 @@ public class UserService {
      * @param email - email of a user
      * @return - true if exists, false otherwise
      */
-    public boolean userExistsByEmail(String email) {
-        if (getUserByEmail(new Email(email)) == null) {
+    public boolean userExistsByEmail(Email email) {
+        if (getUserByEmail(email) == null) {
+
             return false;
         }
         return true;
