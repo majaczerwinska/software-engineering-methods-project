@@ -2,6 +2,7 @@ package nl.tudelft.sem.template;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.controllers.UserController;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Communication;
@@ -30,7 +31,7 @@ public class UserControllerTest {
     public void setup() {
         userRepository = new UserRepositoryTest();
         userService = new UserService(userRepository);
-        userController = new UserController(userService);
+        userController = new UserController(userService, new AuthManager());
     }
 
     /**
@@ -38,7 +39,7 @@ public class UserControllerTest {
      */
     @Test
     public void getUserByIdInvalidId() {
-        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(), userController.getUserById(-1));
+        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(), userController.getUserById(-1L));
     }
 
     /**
@@ -54,7 +55,7 @@ public class UserControllerTest {
      */
     @Test
     public void getUserByIdUserNonexistent() {
-        assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(), userController.getUserById(0));
+        assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(), userController.getUserById(0L));
     }
 
     /**
