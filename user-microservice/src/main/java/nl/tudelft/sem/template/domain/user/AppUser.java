@@ -131,7 +131,7 @@ public class AppUser extends HasEvents {
 
     @Override
     public int hashCode() {
-        return Objects.hash(email);
+        return Objects.hash(id) + Objects.hash(email) + Objects.hash(firstName);
     }
 
     /**

@@ -3,7 +3,11 @@ package nl.tudelft.sem.template.controllers;
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.api.UserApi;
 import nl.tudelft.sem.template.domain.user.AppUser;
+import nl.tudelft.sem.template.domain.user.Communication;
 import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.domain.user.Link;
+import nl.tudelft.sem.template.domain.user.Name;
+import nl.tudelft.sem.template.domain.user.UserAffiliation;
 import nl.tudelft.sem.template.model.User;
 import nl.tudelft.sem.template.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,40 +65,44 @@ public class UserController implements UserApi {
      * @return - bad request if invalid email, unauthorized access if expired token,
      *           not found if user not found, appUser if user found
      */
-    @GetMapping("user/byEmail/{email}")
-    public ResponseEntity<AppUser> getUserByEmail(@PathVariable("email") Email email) {
+    @Override
+    @Transactional
+    public ResponseEntity<User> getAccountByEmail(@PathVariable("email") String email) {
         if (!email.toString().contains("@")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         //TODO: unauthorized access
-        if (!userService.userExistsByEmail(email)) {
+        if (!userService.userExistsByEmail(new Email(email))) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(userService.getUserByEmail(email));
+        return ResponseEntity.ok(userService.getUserByEmail(new Email(email)).toModelUser());
     }
 
     /**
      * Create a new user account.
      *
-     * @param appUser - the RequestBody to create a new User account with
+     * @param user - the RequestBody to create a new User account with
      * @return ResponseEntity of new User account
      */
-    @PostMapping("/user")
-    public ResponseEntity<AppUser> createUser(@RequestBody AppUser appUser) {
+    @Override
+    @Transactional
+    public ResponseEntity<User> createAccount(@RequestBody User user) {
         // Check if the appUser is null or has missing required fields
-        if (appUser == null || appUser.getEmail() == null) {
+        if (user == null || user.getEmail() == null) {
             return ResponseEntity.badRequest().build();
         }
 
         // Check if the user already exists
-        if (userService.userExistsByEmail(appUser.getEmail())) {
+        if (userService.userExistsByEmail(new Email(user.getEmail()))) {
             return ResponseEntity.status(409).build(); // HTTP 409 User already exists
         }
 
         // TODO: check if the request is authorized, i don't know how to do this
-
-        AppUser createdUser = userService.createUser(appUser);
-        return ResponseEntity.ok(createdUser);
+        AppUser appUserToSave = new AppUser(new Email(user.getEmail()), new Name(user.getFirstName()),
+                new Name(user.getLastName()), new UserAffiliation(user.getAffiliation()),
+                new Link(user.getPersonalWebsite()), new Communication(user.getPreferredCommunication()));
+        AppUser createdUser = userService.createUser(appUserToSave);
+        return ResponseEntity.ok(createdUser.toModelUser());
     }
 
     /**
@@ -104,8 +112,9 @@ public class UserController implements UserApi {
      *
      * @return responseEntity of method
      */
-    @PutMapping("/user")
-    public ResponseEntity<AppUser> updateUser(@RequestBody AppUser updatedUser) {
+    @Override
+    @Transactional
+    public ResponseEntity<Void> updateAccount(@RequestBody User updatedUser) {
         // Check if the updatedUser is null or has missing required fields
         if (updatedUser == null || updatedUser.getId() <= 0) {
             return ResponseEntity.badRequest().build();
@@ -120,17 +129,17 @@ public class UserController implements UserApi {
         // TODO: Check if the request is authorized.
 
         // Update the user properties
-        existingUser.setFirstName(updatedUser.getFirstName());
-        existingUser.setLastName(updatedUser.getLastName());
-        existingUser.setAffiliation(updatedUser.getAffiliation());
-        existingUser.setCommunication(updatedUser.getCommunication());
-        existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setLink(updatedUser.getLink());
+        existingUser.setFirstName(new Name(updatedUser.getFirstName()));
+        existingUser.setLastName(new Name(updatedUser.getLastName()));
+        existingUser.setAffiliation(new UserAffiliation(updatedUser.getAffiliation()));
+        existingUser.setCommunication(new Communication(updatedUser.getPreferredCommunication()));
+        existingUser.setEmail(new Email(updatedUser.getEmail()));
+        existingUser.setLink(new Link(updatedUser.getPersonalWebsite()));
 
         // Save the updated user to the database
-        AppUser updatedUserResult = userService.updateUser(existingUser);
+        userService.updateUser(existingUser);
 
-        return ResponseEntity.ok(updatedUserResult);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
 
     }
 
@@ -140,8 +149,9 @@ public class UserController implements UserApi {
      * @param userId - UserID of the user account that needs to be deleted
      * @return response entity of the executed method
      */
-    @DeleteMapping("/user/{userID}")
-    public ResponseEntity<AppUser> deleteUser(@PathVariable("userID") int userId) {
+    @Override
+    @Transactional
+    public ResponseEntity<Void> deleteAccount(@PathVariable("userID") Long userId) {
         if (userId <= 0) {
             return ResponseEntity.badRequest().build();
         }
