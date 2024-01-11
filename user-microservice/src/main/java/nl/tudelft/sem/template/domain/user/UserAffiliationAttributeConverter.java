@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.domain.user;
 
+import java.util.Objects;
 import javax.persistence.AttributeConverter;
 
 /**
@@ -10,7 +11,7 @@ public class UserAffiliationAttributeConverter implements AttributeConverter<Use
 
     @Override
     public String convertToDatabaseColumn(UserAffiliation attribute) {
-        return attribute.toString();
+        return Objects.toString(attribute);
     }
 
     @Override

@@ -31,8 +31,8 @@ public class Attendee extends HasEvents {
 
     // Contains the attendance identifier
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // Contains the identifier for the user
