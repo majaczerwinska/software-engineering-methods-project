@@ -95,7 +95,7 @@ public class Event extends HasEvents {
             return false;
         }
         Event event = (Event) o;
-        return id == (event.id);
+        return Objects.equals(id, event.id);
     }
 
     @Override
