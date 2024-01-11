@@ -47,7 +47,7 @@ public class EventController implements EventApi {
             Event event) {
         AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
         if (user == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         nl.tudelft.sem.template.domain.event.Event createdEvent = eventService.createEvent(event.getStartDate(),

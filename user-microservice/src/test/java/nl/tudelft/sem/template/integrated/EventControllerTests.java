@@ -75,7 +75,7 @@ public class EventControllerTests {
     @Test
     public void createEventNoUserTest() {
         ResponseEntity<Event> response = eventController.addEvent(event);
-        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertEquals(response.getStatusCode(), HttpStatus.UNAUTHORIZED);
     }
 
     @Test
@@ -90,5 +90,4 @@ public class EventControllerTests {
         assertEquals(event.getName(), responseEvent.getName());
         assertEquals(event.getDescription(), responseEvent.getDescription());
     }
-
 }
