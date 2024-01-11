@@ -6,9 +6,8 @@ import nl.tudelft.sem.template.controllers.UserController;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Communication;
 import nl.tudelft.sem.template.domain.user.Email;
-import nl.tudelft.sem.template.domain.user.FirstName;
-import nl.tudelft.sem.template.domain.user.LastName;
 import nl.tudelft.sem.template.domain.user.Link;
+import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserAffiliation;
 import nl.tudelft.sem.template.help.UserRepositoryTest;
 import nl.tudelft.sem.template.services.UserService;
@@ -39,7 +38,7 @@ public class UserControllerTest {
      */
     @Test
     public void getUserByIdInvalidId() {
-        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(), userController.getAccountByID(-1));
+        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(), userController.getUserById(-1));
     }
 
     /**
@@ -55,7 +54,7 @@ public class UserControllerTest {
      */
     @Test
     public void getUserByIdUserNonexistent() {
-        assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(), userController.getAccountByID(0));
+        assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(), userController.getUserById(0));
     }
 
     /**
@@ -64,16 +63,14 @@ public class UserControllerTest {
     @Test
     public void getUserByIdUserExists() {
         Email email = new Email("abc@cool.com");
-        FirstName firstName = new FirstName("test");
-        LastName lastName = new LastName("test");
+        Name name = new Name("test");
         UserAffiliation userAffiliation = new UserAffiliation("test");
         Link link = new Link("test");
         Communication com = new Communication("communicateMe");
-        AppUser user = new AppUser(1L, email, firstName, lastName, userAffiliation, link, com);
+        AppUser user = new AppUser(1L, email, name, userAffiliation, link, com);
         userRepository.save(user);
         AppUser appUser = userRepository.findById(String.valueOf(1L)).get();
-        int id = (int) 1L;
-        assertEquals(appUser.toModelUser(), userController.getAccountByID((Integer) id).getBody());
+        assertEquals(appUser, userController.getUserById(1L).getBody());
     }
 
 }

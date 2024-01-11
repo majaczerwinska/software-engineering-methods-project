@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
-import nl.tudelft.sem.template.domain.user.FirstName;
-import nl.tudelft.sem.template.domain.user.LastName;
+import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserRepository;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -32,10 +31,10 @@ public class UserRepositoryTest implements UserRepository {
     }
 
     @Override
-    public List<AppUser> findByName(FirstName firstName, LastName lastName) {
+    public List<AppUser> findByName(Name name) {
         List<AppUser> matching = new ArrayList<>();
         for (AppUser user : users) {
-            if (user.getFirstName().equals(firstName) && user.getLastName().equals(lastName)) {
+            if (user.getName().equals(name)) {
                 matching.add(user);
             }
         }

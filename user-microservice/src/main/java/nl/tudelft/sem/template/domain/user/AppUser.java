@@ -14,7 +14,6 @@ import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
 import nl.tudelft.sem.template.events.UserWasCreatedEvent;
-import nl.tudelft.sem.template.model.User;
 
 
 /**
@@ -40,13 +39,9 @@ public class AppUser extends HasEvents {
     @Convert(converter = EmailAttributeConverter.class)
     private Email email;
 
-    @Column(name = "firstName", nullable = false)
-    @Convert(converter = FirstNameAttributeConverter.class)
-    private FirstName firstName;
-
-    @Column(name = "lastName", nullable = false)
-    @Convert(converter = LastNameAttributeConverter.class)
-    private LastName lastName;
+    @Column(name = "name", nullable = false)
+    @Convert(converter = NameAttributeConverter.class)
+    private Name name;
 
     @Column(name = "affiliation")
     @Convert(converter =  UserAffiliationAttributeConverter.class)
@@ -74,13 +69,12 @@ public class AppUser extends HasEvents {
      *
      * @param email    The Email for the new user
      */
-    public AppUser(Long id, Email email, FirstName firstName, LastName lastName,
-                   UserAffiliation affiliation, Link link, Communication communication) {
+    public AppUser(Long id, Email email,
+                   Name name, UserAffiliation affiliation, Link link, Communication communication) {
         this.id = id;
         this.email = email;
         this.recordThat(new UserWasCreatedEvent(email));
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.name = name;
         this.affiliation = affiliation;
         this.link = link;
         this.communication = communication;
@@ -94,24 +88,12 @@ public class AppUser extends HasEvents {
         this.id = id;
     }
 
-    public FirstName getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(FirstName firstName) {
-        this.firstName = firstName;
-    }
-
-    public LastName getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(LastName lastName) {
-        this.lastName = lastName;
-    }
-
     public void setCommunication(Communication communication) {
         this.communication = communication;
+    }
+
+    public void setName(Name name) {
+        this.name = name;
     }
 
     public void setAffiliation(UserAffiliation affiliation) {
@@ -140,22 +122,5 @@ public class AppUser extends HasEvents {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    /**
-     * A converter for User class, from domain to model.
-     *
-     * @return user from model class
-     */
-    public User toModelUser() {
-        User user = new User();
-        user.setId(this.id);
-        user.setFirstName(this.firstName.toString());
-        user.setLastName(this.lastName.toString());
-        user.setEmail(this.email.toString());
-        user.setAffiliation(this.affiliation.toString());
-        user.setPersonalWebsite(this.link.toString());
-        user.setPreferredCommunication(this.communication.toString());
-        return user;
     }
 }
