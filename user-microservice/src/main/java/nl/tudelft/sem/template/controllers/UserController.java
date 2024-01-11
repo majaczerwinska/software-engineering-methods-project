@@ -1,7 +1,10 @@
 package nl.tudelft.sem.template.controllers;
 
+import javax.transaction.Transactional;
+import nl.tudelft.sem.template.api.UserApi;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.model.User;
 import nl.tudelft.sem.template.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  * This controller is responsible for methods related to the User entity.
  */
 @RestController
-public class UserController {
+public class UserController implements UserApi {
     private final transient UserService userService;
 
     /**
@@ -39,16 +42,17 @@ public class UserController {
      * @return - bad request if invalid id, unauthorized access if expired token,
      *           not found if user not found, appUser if user found
      */
-    @GetMapping("/user/{userID}")
-    public ResponseEntity<AppUser> getUserById(@PathVariable("userID") long userId) {
+    @Override
+    @Transactional
+    public ResponseEntity<User> getAccountByID(@PathVariable("userID") Integer userId) {
         if (userId < 0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         //TODO: unauthorized access
-        if (!userService.userExistsById(userId)) {
+        if (!userService.userExistsById(Long.valueOf(userId))) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(userService.getUserById(userId));
+        return ResponseEntity.ok(userService.getUserById(Long.valueOf(userId)).toModelUser());
     }
     /**
      * Checks whether a user with the given email address exists, retrieves it if yes.
@@ -93,41 +97,41 @@ public class UserController {
         return ResponseEntity.ok(createdUser);
     }
 
-    /**
-     * This method updates an existing User Account.
-     *
-     * @param updatedUser - user account to be updated
-     *
-     * @return responseEntity of method
-     */
-    @PutMapping("/user")
-    public ResponseEntity<AppUser> updateUser(@RequestBody AppUser updatedUser) {
-        // Check if the updatedUser is null or has missing required fields
-        if (updatedUser == null || updatedUser.getId() <= 0) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        // Check if the user exists
-        AppUser existingUser = userService.getUserById(updatedUser.getId());
-        if (existingUser == null) {
-            return ResponseEntity.status(404).build(); // HTTP 404 User not found
-        }
-
-        // TODO: Check if the request is authorized.
-
-        // Update the user properties
-        existingUser.setName(updatedUser.getName());
-        existingUser.setAffiliation(updatedUser.getAffiliation());
-        existingUser.setCommunication(updatedUser.getCommunication());
-        existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setLink(updatedUser.getLink());
-
-        // Save the updated user to the database
-        AppUser updatedUserResult = userService.updateUser(existingUser);
-
-        return ResponseEntity.ok(updatedUserResult);
-
-    }
+    //    /**
+    //     * This method updates an existing User Account.
+    //     *
+    //     * @param updatedUser - user account to be updated
+    //     *
+    //     * @return responseEntity of method
+    //     */
+    //    @PutMapping("/user")
+    //    public ResponseEntity<AppUser> updateUser(@RequestBody AppUser updatedUser) {
+    //        // Check if the updatedUser is null or has missing required fields
+    //        if (updatedUser == null || updatedUser.getId() <= 0) {
+    //            return ResponseEntity.badRequest().build();
+    //        }
+    //
+    //        // Check if the user exists
+    //        AppUser existingUser = userService.getUserById(updatedUser.getId());
+    //        if (existingUser == null) {
+    //            return ResponseEntity.status(404).build(); // HTTP 404 User not found
+    //        }
+    //
+    //        // TODO: Check if the request is authorized.
+    //
+    //        // Update the user properties
+    //        existingUser.setName(updatedUser.getName());
+    //        existingUser.setAffiliation(updatedUser.getAffiliation());
+    //        existingUser.setCommunication(updatedUser.getCommunication());
+    //        existingUser.setEmail(updatedUser.getEmail());
+    //        existingUser.setLink(updatedUser.getLink());
+    //
+    //        // Save the updated user to the database
+    //        AppUser updatedUserResult = userService.updateUser(existingUser);
+    //
+    //        return ResponseEntity.ok(updatedUserResult);
+    //
+    //    }
 
     /**
      * This method deletes an existing user account by ID.

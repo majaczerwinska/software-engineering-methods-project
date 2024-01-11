@@ -19,12 +19,13 @@ public interface UserRepository extends JpaRepository<AppUser, String> {
     Optional<AppUser> findByEmail(Email email);
 
     /**
-     * Find user by Name.
-
-     * @param name - Name to find a User with
-     * @return a List<AppUser> that match the specified Name </AppUser>
+     * Finds a list of users with a matching first name and last name.
+     *
+     * @param firstName - first name
+     * @param lastName - last name
+     * @return - list of users with matching names
      */
-    List<AppUser> findByName(Name name);
+    List<AppUser> findByName(FirstName firstName, LastName lastName);
 
     /**
      * Checks if User exists by Email.

@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.example.unit;
+package nl.tudelft.sem.template.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Communication;
 import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.domain.user.FirstName;
+import nl.tudelft.sem.template.domain.user.LastName;
 import nl.tudelft.sem.template.domain.user.Link;
 import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserAffiliation;
@@ -31,7 +33,8 @@ public class UserTests {
         user1 = new AppUser(
                 1L,
                 new Email("user1@example.com"),
-                new Name("John Doe"),
+                new FirstName("John"),
+                new LastName("Doe"),
                 new UserAffiliation("Company A"),
                 new Link("http://user1.com"),
                 new Communication("user1@example.com")
@@ -40,7 +43,8 @@ public class UserTests {
         user2 = new AppUser(
                 2L,
                 new Email("user2@example.com"),
-                new Name("Jane Doe"),
+                new FirstName("Jane"),
+                new LastName("Doe"),
                 new UserAffiliation("Company B"),
                 new Link("http://user2.com"),
                 new Communication("user2@example.com")
@@ -49,7 +53,8 @@ public class UserTests {
         user3 = new AppUser(
                 3L,
                 new Email("user1@example.com"),
-                new Name("John Doe"),
+                new FirstName("John"),
+                new LastName("Doe"),
                 new UserAffiliation("Company A"),
                 new Link("http://user1.com"),
                 new Communication("user1@example.com")
@@ -103,9 +108,13 @@ public class UserTests {
         user1.setEmail(new Email("email@gmail.com"));
         assertEquals("email@gmail.com", user1.getEmail().toString());
 
-        // Check setName
-        user1.setName(new Name("New Name"));
-        assertEquals("New Name", user1.getName().toString());
+        // Check setFirstName
+        user1.setFirstName(new FirstName("New"));
+        assertEquals("New", user1.getFirstName().toString());
+
+        // Check setLastName
+        user1.setLastName(new LastName("New"));
+        assertEquals("New", user1.getLastName().toString());
 
         // Check setAffiliation
         user1.setAffiliation(new UserAffiliation("New Affiliation"));

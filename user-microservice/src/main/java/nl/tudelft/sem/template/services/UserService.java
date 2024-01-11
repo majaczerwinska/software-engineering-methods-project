@@ -3,7 +3,8 @@ package nl.tudelft.sem.template.services;
 import java.util.List;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
-import nl.tudelft.sem.template.domain.user.Name;
+import nl.tudelft.sem.template.domain.user.FirstName;
+import nl.tudelft.sem.template.domain.user.LastName;
 import nl.tudelft.sem.template.domain.user.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -45,18 +46,25 @@ public class UserService {
         return null;
     }
 
+    /**
+     * Checks whether a user with the given id exists.
+     *
+     * @param userId - user's id
+     * @return - true iff exists, false otherwise
+     */
     public boolean userExistsById(long userId) {
         return userRepository.existsById(String.valueOf(userId));
     }
 
     /**
-     * Retrieves a list of users with the specified name.
+     * Finds a list of users with a matching first name and last name.
      *
-     * @param name - name of users
-     * @return - list of users with the specified name
+     * @param firstName - first name
+     * @param lastName - last name
+     * @return - list of users with matching names
      */
-    public List<AppUser> getUserByName(String name) {
-        return userRepository.findByName(new Name(name));
+    public List<AppUser> getUserByName(String firstName, String lastName) {
+        return userRepository.findByName(new FirstName(firstName), new LastName(lastName));
     }
 
 

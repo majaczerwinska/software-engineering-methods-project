@@ -9,8 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Communication;
 import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.domain.user.FirstName;
+import nl.tudelft.sem.template.domain.user.LastName;
 import nl.tudelft.sem.template.domain.user.Link;
-import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserAffiliation;
 import nl.tudelft.sem.template.help.UserRepositoryTest;
 import nl.tudelft.sem.template.services.UserService;
@@ -34,11 +35,12 @@ public class UserServiceTest {
         userService = new UserService(userRepository);
         Long id = 1L;
         email = new Email("abc@fun.org");
-        Name name = new Name("user");
+        FirstName firstName = new FirstName("user");
+        LastName lastName = new LastName("user");
         UserAffiliation affiliation = new UserAffiliation("affiliation");
         Link link = new Link("link");
         Communication communication = new Communication("communication");
-        appUser = new AppUser(id, email, name, affiliation, link, communication);
+        appUser = new AppUser(id, email, firstName, lastName, affiliation, link, communication);
     }
 
     @Test

@@ -4,8 +4,9 @@ import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Communication;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.EmailAlreadyInUseException;
+import nl.tudelft.sem.template.domain.user.FirstName;
+import nl.tudelft.sem.template.domain.user.LastName;
 import nl.tudelft.sem.template.domain.user.Link;
-import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserAffiliation;
 import nl.tudelft.sem.template.domain.user.UserRepository;
 import org.springframework.stereotype.Service;
@@ -32,14 +33,13 @@ public class RegistrationService {
      * @param email    The NetID of the user
      * @throws Exception if the user already exists
      */
-    public AppUser registerUser(Email email,
-                                Name name, UserAffiliation affiliation,
+    public AppUser registerUser(Email email, FirstName firstName, LastName lastName, UserAffiliation affiliation,
                                 Link link, Communication communication) throws Exception {
 
         if (checkEmailIsUnique(email)) {
 
             // Create new account
-            AppUser user = new AppUser(1L, email, name, affiliation, link, communication);
+            AppUser user = new AppUser(1L, email, firstName, lastName, affiliation, link, communication);
             userRepository.save(user);
 
             return user;

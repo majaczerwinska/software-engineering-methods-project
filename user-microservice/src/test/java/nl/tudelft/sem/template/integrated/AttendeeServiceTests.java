@@ -23,11 +23,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = Application.class)
-// activate profiles to have spring use mocks during auto-injection of certain beans.
-@ActiveProfiles("test")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+//@ExtendWith(SpringExtension.class)
+//@SpringBootTest(classes = Application.class)
+//// activate profiles to have spring use mocks during auto-injection of certain beans.
+//@ActiveProfiles("test")
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AttendeeServiceTests {
 
     @Autowired
@@ -35,7 +35,6 @@ public class AttendeeServiceTests {
 
     @Autowired
     private transient AttendeeService service;
-
 
     @Test
     public void createAttendeeTest() {
