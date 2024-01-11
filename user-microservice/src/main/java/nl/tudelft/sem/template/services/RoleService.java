@@ -4,8 +4,6 @@ import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +22,10 @@ public class RoleService {
      */
     public boolean hasPermission(UserService userService, AuthManager authManager, AttendeeService attendeeService,
                                  Long eventId, @Nullable Long trackId, int level) {
-        if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
+        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+        if (user == null) {
             return false;
         }
-        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
         Attendee role = attendeeService.getAttendance(user.getId(), eventId, trackId);
         if (! role.isConfirmed()) {
             return false;

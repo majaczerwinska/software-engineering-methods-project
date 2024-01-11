@@ -100,7 +100,8 @@ public class TrackController implements TrackApi {
     @Override
     @Transactional
     @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "#track.getEventId(), #track.getId(), 1)") // 401
+            + "(#trackId != null ? trackService.getTrackById(trackId).getParentEventId() : null), "
+            + "#trackId, 1)")
     public ResponseEntity<Void> deleteTrack(@PathVariable("trackID") Integer trackId) {
         try {
             trackService.deleteTrackById(trackId.longValue());
