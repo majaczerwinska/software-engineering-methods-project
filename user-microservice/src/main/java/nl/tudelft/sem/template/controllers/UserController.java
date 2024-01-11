@@ -126,7 +126,7 @@ public class UserController {
         }
 
         String name = updatedUser.getName().toString();
-        if(name.contains("&")
+        if (name.contains("&")
                 || name.contains("=")
                 || name.contains("_")
                 || name.contains("'")
@@ -134,7 +134,7 @@ public class UserController {
                 || name.contains("+")
                 || name.contains(",")
                 || name.contains("<")
-                || name.contains(">")){
+                || name.contains(">")) {
             return ResponseEntity.badRequest().build(); //400
         }
 
