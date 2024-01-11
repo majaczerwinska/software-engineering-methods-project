@@ -90,4 +90,20 @@ public class EventControllerTests {
         assertEquals(event.getName(), responseEvent.getName());
         assertEquals(event.getDescription(), responseEvent.getDescription());
     }
+
+    @Test
+    public void getInvalidEventById() {
+        ResponseEntity<Event> response = eventController.getEventById(2115L);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void getValidEventById() {
+        nl.tudelft.sem.template.domain.event.Event domainEvent = new nl.tudelft.sem.template.domain.event.Event(
+                event.getStartDate(), event.getEndDate(), new IsCancelled(event.getIsCancelled()),
+                new EventName(event.getName()), new EventDescription(event.getDescription()));
+        eventRepository.save(domainEvent);
+        ResponseEntity<Event> response = eventController.getEventById(domainEvent.getId());
+        assertEquals(domainEvent.toModelEvent(), response.getBody());
+    }
 }

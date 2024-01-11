@@ -1,12 +1,18 @@
 package nl.tudelft.sem.template.integrated;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import nl.tudelft.sem.template.Application;
 import nl.tudelft.sem.template.domain.event.Event;
+import nl.tudelft.sem.template.domain.event.EventDescription;
+import nl.tudelft.sem.template.domain.event.EventName;
 import nl.tudelft.sem.template.domain.event.EventRepository;
+import nl.tudelft.sem.template.domain.event.IsCancelled;
 import nl.tudelft.sem.template.services.EventService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 
 
 @ExtendWith(SpringExtension.class)
@@ -44,5 +49,40 @@ public class EventServiceTests {
 
         // Then
         assertTrue(eventRepository.existsById(returnedEvent.getId()));
+    }
+
+    @Test
+    public void eventExistsTest() {
+        LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+        LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+
+        Long eventId = 1L;
+        Event event = new Event(eventId, startDate, endDate, new IsCancelled(false),
+                new EventName("test"), new EventDescription("test"));
+        eventRepository.save(event);
+        assertTrue(service.eventExistsById(eventId));
+    }
+
+    @Test
+    public void eventNonExistentTest() {
+        assertFalse(service.eventExistsById(2115L));
+    }
+
+    @Test
+    public void getExistingEventTest() {
+        LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+        LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+
+        Long eventId = 1L;
+        Event event = new Event(eventId, startDate, endDate, new IsCancelled(false),
+                new EventName("test"), new EventDescription("test"));
+        eventRepository.save(event);
+        assertEquals(event, service.getEventById(eventId));
+    }
+
+    @Test
+    public void getNonexistentEventTest() {
+        Long eventId = 1L;
+        assertNull(service.getEventById(eventId));
     }
 }

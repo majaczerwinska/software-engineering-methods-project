@@ -47,4 +47,32 @@ public class EventService {
 
         return repository.save(event);
     }
+
+    /**
+     * Checks whether an event with the given id exists.
+     *
+     * @param id event id
+     * @return true iff an event exists, false otherwise
+     */
+    @Transactional
+    public boolean eventExistsById(Long id) {
+        if (repository.existsById(id)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Retrieves an event with the given id.
+     *
+     * @param id event id
+     * @return the event if exists, null otherwise
+     */
+    @Transactional
+    public Event getEventById(Long id) {
+        if (repository.existsById(id)) {
+            return repository.findById(id).get();
+        }
+        return null;
+    }
 }

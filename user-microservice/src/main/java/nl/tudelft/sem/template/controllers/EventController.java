@@ -6,6 +6,7 @@ import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.enums.RoleTitle;
+import nl.tudelft.sem.template.model.Attendee;
 import nl.tudelft.sem.template.model.Event;
 import nl.tudelft.sem.template.services.AttendeeService;
 import nl.tudelft.sem.template.services.EventService;
@@ -58,5 +59,27 @@ public class EventController implements EventApi {
 
         attendeeService.createAttendance(user.getId(), createdEvent.getId(), null, RoleTitle.GENERAL_CHAIR, true);
         return ResponseEntity.ok(createdEvent.toModelEvent());
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> deleteEvent(Long eventId) {
+        if (!eventService.eventExistsById(eventId)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        //AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+        //Optional<Attendee> attendance = attendeeService.findAttendee(user.getId(), eventId, null);
+        //if(user == null || )
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Event> getEventById(Long eventId) {
+        if (!eventService.eventExistsById(eventId)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Event event = eventService.getEventById(eventId).toModelEvent();
+        return ResponseEntity.ok(event);
     }
 }
