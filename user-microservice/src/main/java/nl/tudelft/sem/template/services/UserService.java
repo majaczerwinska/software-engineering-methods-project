@@ -108,7 +108,7 @@ public class UserService {
      * @return the updated user account that was saved.
      */
     public AppUser updateUser(AppUser updatedUser) {
-        if (updatedUser == null || updatedUser.getId() <= 0) {
+        if (updatedUser == null || updatedUser.getId() < 0) {
             throw new IllegalArgumentException("Invalid user data");
         }
         // If the id of the updatedUser does not correspond to an existing user,
@@ -117,7 +117,8 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // Update the user properties
-        existingUser.setName(updatedUser.getName());
+        existingUser.setFirstName(updatedUser.getFirstName());
+        existingUser.setLastName(updatedUser.getLastName());
         existingUser.setAffiliation(updatedUser.getAffiliation());
         existingUser.setCommunication(updatedUser.getCommunication());
         existingUser.setEmail(updatedUser.getEmail());

@@ -115,12 +115,12 @@ public class UserServiceTest {
     @Test
     public void getValidUserByName() {
         userRepository.save(appUser);
-        assertEquals(1, userService.getUserByName("user").size());
+        assertEquals(1, userService.getUserByName("user", "user").size());
     }
 
     @Test
     public void getInvalidUserByName() {
-        assertEquals(0, userService.getUserByName("user").size());
+        assertEquals(0, userService.getUserByName("John", "Johnson").size());
     }
 
     @Test
@@ -143,9 +143,10 @@ public class UserServiceTest {
 
     @Test
     public void updateInvalidUser() {
-        AppUser appUser1 = new AppUser(-1L,
+        AppUser appUser1 = new AppUser(
                 new Email("abc@gmail.com"),
                 new Name("mark"),
+                new Name("smith"),
                 new UserAffiliation("police"),
                 new Link("url"),
                 new Communication("phone"));
@@ -164,15 +165,17 @@ public class UserServiceTest {
     @Test
     public void updateValidUser() {
         userRepository.save(appUser);
-        AppUser appUser1 = new AppUser(1L,
-                new Email("abc@gmail.com"),
-                new Name("mark"),
-                new UserAffiliation("police"),
-                new Link("url"),
-                new Communication("phone"));
-        assertEquals(appUser1, userService.updateUser(appUser1));
+        appUser.setEmail(new Email("abc@gmail.com"));
+        appUser.setFirstName(new Name("mark"));
+        appUser.setLastName(new Name("smith"));
+        appUser.setAffiliation(new UserAffiliation("police"));
+        appUser.setLink(new Link("url"));
+        appUser.setCommunication(new Communication("phone"));
+
+        assertEquals(appUser, userService.updateUser(appUser));
         assertEquals(appUser.getEmail().toString(), "abc@gmail.com");
-        assertEquals(appUser.getName().toString(), "mark");
+        assertEquals(appUser.getFirstName().toString(), "mark");
+        assertEquals(appUser.getLastName().toString(), "smith");
         assertEquals(appUser.getAffiliation().toString(), "police");
         assertEquals(appUser.getLink().toString(), "url");
         assertEquals(appUser.getCommunication().toString(), "phone");
