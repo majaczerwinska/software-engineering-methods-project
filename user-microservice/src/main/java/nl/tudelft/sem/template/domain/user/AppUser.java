@@ -92,6 +92,21 @@ public class AppUser extends HasEvents {
     }
 
     /**
+     * Constructor for converting model User into AppUser.
+     *
+     * @param user model User to convert into AppUser
+     */
+    public AppUser(User user) {
+        this.email = new Email(user.getEmail());
+        this.recordThat(new UserWasCreatedEvent(new Email(user.getEmail())));
+        this.firstName = new Name(user.getFirstName());
+        this.lastName = new Name(user.getLastName());
+        this.affiliation = new UserAffiliation(user.getAffiliation());
+        this.link = new Link(user.getPersonalWebsite());
+        this.communication = new Communication(user.getPreferredCommunication());
+    }
+
+    /**
      * Constructor for testing.
      *
      * @param id - id

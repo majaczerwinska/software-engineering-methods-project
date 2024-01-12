@@ -27,6 +27,11 @@ public class UserRepositoryTest implements UserRepository {
 
     @Override
     public boolean existsByEmail(Email email) {
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getEmail().equals(email)) {
+                return true;
+            }
+        }
         return false;
     }
 

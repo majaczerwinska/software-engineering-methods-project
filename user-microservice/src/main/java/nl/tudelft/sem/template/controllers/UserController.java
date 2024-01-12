@@ -1,26 +1,20 @@
 package nl.tudelft.sem.template.controllers;
 
+import java.util.NoSuchElementException;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import nl.tudelft.sem.template.api.UserApi;
 import nl.tudelft.sem.template.domain.user.AppUser;
-import nl.tudelft.sem.template.domain.user.Communication;
 import nl.tudelft.sem.template.domain.user.Email;
-import nl.tudelft.sem.template.domain.user.Link;
-import nl.tudelft.sem.template.domain.user.Name;
-import nl.tudelft.sem.template.domain.user.UserAffiliation;
 import nl.tudelft.sem.template.model.User;
 import nl.tudelft.sem.template.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 
 /**
  * This controller is responsible for methods related to the User entity.
@@ -86,23 +80,21 @@ public class UserController implements UserApi {
      */
     @Override
     @Transactional
-    public ResponseEntity<User> createAccount(@RequestBody User user) {
+    @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
+            + "#track.getEventId(), #track.getId(), 1)") // 401
+    public ResponseEntity<User> createAccount(@Valid @RequestBody User user) {
         // Check if the appUser is null or has missing required fields
-        if (user == null || user.getEmail() == null) {
-            return ResponseEntity.badRequest().build();
+        try {
+            userService.createUser(new AppUser(user));
+            return ResponseEntity.ok(user); // 200
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().equals("Invalid user data")) {
+                return ResponseEntity.badRequest().build(); // 400
+            } else {
+                return ResponseEntity.status(409).build(); // 409
+            }
         }
 
-        // Check if the user already exists
-        if (userService.userExistsByEmail(new Email(user.getEmail()))) {
-            return ResponseEntity.status(409).build(); // HTTP 409 User already exists
-        }
-
-        // TODO: check if the request is authorized, i don't know how to do this
-        AppUser appUserToSave = new AppUser(new Email(user.getEmail()), new Name(user.getFirstName()),
-                new Name(user.getLastName()), new UserAffiliation(user.getAffiliation()),
-                new Link(user.getPersonalWebsite()), new Communication(user.getPreferredCommunication()));
-        AppUser createdUser = userService.createUser(appUserToSave);
-        return ResponseEntity.ok(createdUser.toModelUser());
     }
 
     /**
@@ -114,33 +106,18 @@ public class UserController implements UserApi {
      */
     @Override
     @Transactional
-    public ResponseEntity<Void> updateAccount(@RequestBody User updatedUser) {
+    @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
+            + "#track.getEventId(), #track.getId(), 1)") // 401
+    public ResponseEntity<Void> updateAccount(@Valid @RequestBody User updatedUser) {
         // Check if the updatedUser is null or has missing required fields
-        if (updatedUser == null || updatedUser.getId() <= 0) {
-            return ResponseEntity.badRequest().build();
+        try {
+            userService.updateUser(new AppUser(updatedUser));
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404
         }
-
-        // Check if the user exists
-        AppUser existingUser = userService.getUserById(updatedUser.getId());
-        if (existingUser == null) {
-            return ResponseEntity.status(404).build(); // HTTP 404 User not found
-        }
-
-        // TODO: Check if the request is authorized.
-
-        // Update the user properties
-        existingUser.setFirstName(new Name(updatedUser.getFirstName()));
-        existingUser.setLastName(new Name(updatedUser.getLastName()));
-        existingUser.setAffiliation(new UserAffiliation(updatedUser.getAffiliation()));
-        existingUser.setCommunication(new Communication(updatedUser.getPreferredCommunication()));
-        existingUser.setEmail(new Email(updatedUser.getEmail()));
-        existingUser.setLink(new Link(updatedUser.getPersonalWebsite()));
-
-        // Save the updated user to the database
-        userService.updateUser(existingUser);
-
-        return ResponseEntity.status(HttpStatus.OK).body(null);
-
     }
 
     /**
@@ -151,23 +128,18 @@ public class UserController implements UserApi {
      */
     @Override
     @Transactional
+    @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
+            + "#track.getEventId(), #track.getId(), 1)") // 401
     public ResponseEntity<Void> deleteAccount(@PathVariable("userID") Long userId) {
-        if (userId <= 0) {
-            return ResponseEntity.badRequest().build();
+        try {
+            userService.deleteUser(userId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404
         }
 
-        // Check if the user exists
-        AppUser existingUser = userService.getUserById(userId);
-        if (existingUser == null) {
-            return ResponseEntity.status(404).build(); // HTTP 404 User not found
-        }
-
-        // TODO: Check if the request is authorized.
-
-        // Delete the user from the repository
-        userService.deleteUserById(userId);
-
-        return ResponseEntity.noContent().build(); // HTTP 204 No Content
     }
 
 }

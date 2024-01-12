@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.services;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.Name;
@@ -26,6 +27,11 @@ public class UserService {
         if (appUser == null || appUser.getEmail() == null) {
             throw new IllegalArgumentException("Invalid user data");
         }
+
+        if (userRepository.existsByEmail(appUser.getEmail())) {
+            throw new IllegalArgumentException("User already exists");
+        }
+
         // Save the user to the database
         AppUser createdUser = userRepository.save(appUser);
 
@@ -94,9 +100,12 @@ public class UserService {
      *
      * @param userId - id of the to be deleted user
      */
-    public void deleteUserById(long userId) {
+    public void deleteUser(long userId) {
+        if (userId < 0) {
+            throw new IllegalArgumentException("Invalid user data");
+        }
         if (getUserById(userId) == null) {
-            return;
+            throw new NoSuchElementException("User not found");
         }
         userRepository.deleteById(String.valueOf(userId));
     }
@@ -108,13 +117,13 @@ public class UserService {
      * @return the updated user account that was saved.
      */
     public AppUser updateUser(AppUser updatedUser) {
-        if (updatedUser == null || updatedUser.getId() < 0) {
+        if (updatedUser == null || updatedUser.getId() < 0 || updatedUser.getEmail() == null) {
             throw new IllegalArgumentException("Invalid user data");
         }
         // If the id of the updatedUser does not correspond to an existing user,
         // throw an IllegalArgumentException.
         AppUser existingUser = userRepository.findById(String.valueOf(updatedUser.getId()))
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
 
         // Update the user properties
         existingUser.setFirstName(updatedUser.getFirstName());
