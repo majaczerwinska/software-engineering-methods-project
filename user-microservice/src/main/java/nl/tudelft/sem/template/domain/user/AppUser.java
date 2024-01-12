@@ -10,10 +10,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
 import nl.tudelft.sem.template.events.UserWasCreatedEvent;
+import nl.tudelft.sem.template.model.User;
 
 
 /**
@@ -31,17 +34,20 @@ public class AppUser extends HasEvents {
      * Identifier for the application user.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, unique = true)
-    private Long id;
+    @Column(name = "id", nullable = false)
+    private long id;
 
     @Column(name = "email", nullable = false, unique = true)
     @Convert(converter = EmailAttributeConverter.class)
     private Email email;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "firstName", nullable = false)
     @Convert(converter = NameAttributeConverter.class)
-    private Name name;
+    private Name firstName;
+
+    @Column(name = "lastName", nullable = false)
+    @Convert(converter = NameAttributeConverter.class)
+    private Name lastName;
 
     @Column(name = "affiliation")
     @Convert(converter =  UserAffiliationAttributeConverter.class)
@@ -65,43 +71,47 @@ public class AppUser extends HasEvents {
 
 
     /**
-     * Create new application user.
+     * Constructor.
      *
-     * @param email    The Email for the new user
+     * @param email - email
+     * @param firstName - first name
+     * @param lastName - last name
+     * @param affiliation - affiliation
+     * @param link - link
+     * @param communication - communication
      */
-    public AppUser(Long id, Email email,
-                   Name name, UserAffiliation affiliation, Link link, Communication communication) {
+    public AppUser(Email email, Name firstName, Name lastName,
+                   UserAffiliation affiliation, Link link, Communication communication) {
+        this.email = email;
+        this.recordThat(new UserWasCreatedEvent(email));
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.affiliation = affiliation;
+        this.link = link;
+        this.communication = communication;
+    }
+
+    /**
+     * Constructor for testing.
+     *
+     * @param id - id
+     * @param email - email
+     * @param firstName - first name
+     * @param lastName - last name
+     * @param affiliation - affiliation
+     * @param link - link
+     * @param communication - communication
+     */
+    public AppUser(long id, Email email, Name firstName, Name lastName,
+                   UserAffiliation affiliation, Link link, Communication communication) {
         this.id = id;
         this.email = email;
         this.recordThat(new UserWasCreatedEvent(email));
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.affiliation = affiliation;
         this.link = link;
         this.communication = communication;
-    }
-
-    public void setEmail(Email email) {
-        this.email = email;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setCommunication(Communication communication) {
-        this.communication = communication;
-    }
-
-    public void setName(Name name) {
-        this.name = name;
-    }
-
-    public void setAffiliation(UserAffiliation affiliation) {
-        this.affiliation = affiliation;
-    }
-
-    public void setLink(Link link) {
-        this.link = link;
     }
 
     /**
@@ -115,12 +125,29 @@ public class AppUser extends HasEvents {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        AppUser that = (AppUser) o;
-        return Objects.equals(id, that.id);
+        AppUser appUser = (AppUser) o;
+        return id == (appUser.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id) + Objects.hash(email) + Objects.hash(firstName);
+    }
+
+    /**
+     * Converts the AppUser into a User.
+     *
+     * @return - the model user
+     */
+    public User toModelUser() {
+        User user = new User();
+        user.setId(this.id);
+        user.setFirstName(this.firstName.toString());
+        user.setLastName(this.lastName.toString());
+        user.setPreferredCommunication(this.communication.toString());
+        user.setPersonalWebsite(this.link.toString());
+        user.setAffiliation(this.affiliation.toString());
+        user.setEmail(this.email.toString());
+        return user;
     }
 }

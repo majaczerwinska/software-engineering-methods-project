@@ -16,9 +16,18 @@ import nl.tudelft.sem.template.help.UserRepositoryTest;
 import nl.tudelft.sem.template.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
-
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = Application.class)
+// activate profiles to have spring use mocks during auto-injection of certain beans.
+@ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UserServiceTest {
     private UserRepositoryTest userRepository;
     private UserService userService;
@@ -38,7 +47,7 @@ public class UserServiceTest {
         UserAffiliation affiliation = new UserAffiliation("affiliation");
         Link link = new Link("link");
         Communication communication = new Communication("communication");
-        appUser = new AppUser(id, email, name, affiliation, link, communication);
+        appUser = new AppUser(id, email, name, name, affiliation, link, communication);
     }
 
     @Test

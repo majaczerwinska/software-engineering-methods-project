@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.model;
 import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -20,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets PaperType
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-12-05T18:45:04.605384300+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-11T20:41:13.364276600+01:00[Europe/Berlin]")
 public enum PaperType {
   
   FULL_PAPER("full-paper"),

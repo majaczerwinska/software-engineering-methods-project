@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-12-05T18:45:04.605384300+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-11T20:41:13.364276600+01:00[Europe/Berlin]")
 @Validated
 @Tag(name = "Event Management", description = "end-points for features that help users create and manage events when permitted by their assigned role.")
 public interface AttendeeApi {
@@ -41,6 +41,54 @@ public interface AttendeeApi {
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
     }
+
+    /**
+     * POST /attendee : Create a new attendee.
+     * The invitation system should be used by human users of the API. This endpoint is only designed to be used by other microservices.
+     *
+     * @param attendee Attendee to be created. (optional)
+     * @return Operation executed successfully (status code 200)
+     *         or Unauthorized access. (status code 401)
+     *         or Attendee already exists. (status code 409)
+     */
+    @Operation(
+        operationId = "createAttendee",
+        summary = "Create a new attendee.",
+        description = "The invitation system should be used by human users of the API. This endpoint is only designed to be used by other microservices.",
+        tags = { "Event Management" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Operation executed successfully", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = Attendee.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access."),
+            @ApiResponse(responseCode = "409", description = "Attendee already exists.")
+        },
+        security = {
+            @SecurityRequirement(name = "api_key")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/attendee",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<Attendee> createAttendee(
+        @Parameter(name = "Attendee", description = "Attendee to be created.") @Valid @RequestBody(required = false) Attendee attendee
+    ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"event_id\" : 10, \"user_id\" : 10, \"track_id\" : 10, \"id\" : 10 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
 
     /**
      * DELETE /attendee/{attendeeID} : Remove an attendee from a particular event or track.

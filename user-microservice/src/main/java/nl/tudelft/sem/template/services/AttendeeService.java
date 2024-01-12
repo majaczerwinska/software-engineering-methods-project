@@ -53,7 +53,7 @@ public class AttendeeService {
      *          exists, and that no changes have been made to the repository.
      */
     @Transactional
-    private void createAttendance(Long userId, Long eventId, Long trackId, RoleTitle role)
+    public void createAttendance(Long userId, Long eventId, Long trackId, RoleTitle role, boolean confirmed)
             throws IllegalArgumentException {
 
         // Check that no such attendance already exists
@@ -62,7 +62,7 @@ public class AttendeeService {
         }
 
         Attendee attendee = new Attendee(userId, eventId, trackId,
-                new Role(role), new Confirmation(false));
+                new Role(role), new Confirmation(confirmed));
 
         // Commits the new attendance to the repository
         repository.save(attendee);
@@ -287,7 +287,7 @@ public class AttendeeService {
 
         //Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId, trackId);
 
-        createAttendance(userId, eventId, trackId, role);
+        createAttendance(userId, eventId, trackId, role, false);
         //TODO create an invitation
     }
 
@@ -343,7 +343,7 @@ public class AttendeeService {
     @Transactional
     public void enroll(Long enroleeId, Long eventId, Long trackId, RoleTitle role) {
 
-        createAttendance(enroleeId, eventId, trackId, role);
+        createAttendance(enroleeId, eventId, trackId, role, false);
         //TODO self-enroll in an event as an attendee.
     }
 

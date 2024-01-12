@@ -31,10 +31,21 @@ public class UserRepositoryTest implements UserRepository {
     }
 
     @Override
-    public List<AppUser> findByName(Name name) {
+    public List<AppUser> findByFirstNameAndLastName(Name firstName, Name lastName) {
         List<AppUser> matching = new ArrayList<>();
         for (AppUser user : users) {
-            if (user.getName().equals(name)) {
+            if (user.getFirstName().equals(firstName) && user.getLastName().equals(lastName)) {
+                matching.add(user);
+            }
+        }
+        return matching;
+    }
+
+    @Override
+    public List<AppUser> findByFirstName(Name firstName) {
+        List<AppUser> matching = new ArrayList<>();
+        for (AppUser user : users) {
+            if (user.getFirstName().equals(firstName)) {
                 matching.add(user);
             }
         }
