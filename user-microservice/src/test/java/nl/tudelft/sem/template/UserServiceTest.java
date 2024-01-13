@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.NoSuchElementException;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Communication;
 import nl.tudelft.sem.template.domain.user.Email;
@@ -66,6 +67,23 @@ public class UserServiceTest {
     }
 
     @Test
+    public void createExistingUser() {
+        userRepository.save(appUser);
+        AppUser appUser1 = new AppUser(
+                new Email("abc@fun.org"),
+                new Name("user1"),
+                new Name("surname"),
+                new UserAffiliation("affiliation"),
+                new Link("url"),
+                new Communication("communication")
+        );
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.createUser(appUser1);
+        });
+
+    }
+
+    @Test
     public void getInvalidUser() {
         assertNull(userService.getUserById(1L));
     }
@@ -89,15 +107,104 @@ public class UserServiceTest {
 
     @Test
     public void deleteInvalidUser() {
-        userRepository.save(appUser);
-        userService.deleteUserById(2L);
-        assertEquals(1, userRepository.findAll().size());
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.deleteUser(-1L);
+        });
     }
 
     @Test
     public void deleteValidUser() {
         userRepository.save(appUser);
-        userService.deleteUserById(1L);
+        userService.deleteUser(1L);
         assertEquals(0, userRepository.findAll().size());
     }
+
+    @Test
+    public void deleteUserNonExistent() {
+        assertThrows(NoSuchElementException.class, () -> {
+            userService.deleteUser(appUser.getId());
+        });
+    }
+
+    @Test
+    public void userNonexistantById() {
+        assertFalse(userService.userExistsById(1L));
+    }
+
+    @Test
+    public void userExistsById() {
+        userRepository.save(appUser);
+        assertTrue(userService.userExistsById(1L));
+    }
+
+    @Test
+    public void getValidUserByName() {
+        userRepository.save(appUser);
+        assertEquals(1, userService.getUserByName("user", "user").size());
+    }
+
+    @Test
+    public void getInvalidUserByName() {
+        assertEquals(0, userService.getUserByName("John", "Johnson").size());
+    }
+
+    @Test
+    public void getValidUserByEmail() {
+        userRepository.save(appUser);
+        assertEquals(appUser, userService.getUserByEmail(new Email("abc@fun.org")));
+    }
+
+    @Test
+    public void getInvalidUserByEmail() {
+        assertNull(userService.getUserByEmail(new Email("abc@fun.org")));
+    }
+
+    @Test
+    public void updateNullUser() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateUser(null);
+        });
+    }
+
+    @Test
+    public void updateInvalidUser() {
+        AppUser appUser1 = new AppUser(
+                new Email("abc@gmail.com"),
+                new Name("mark"),
+                new Name("smith"),
+                new UserAffiliation("police"),
+                new Link("url"),
+                new Communication("phone"));
+        assertThrows(NoSuchElementException.class, () -> {
+            userService.updateUser(appUser1);
+        });
+    }
+
+    @Test
+    public void updateNonExistentUser() {
+        assertThrows(NoSuchElementException.class, () -> {
+            userService.updateUser(appUser);
+        });
+    }
+
+    @Test
+    public void updateValidUser() {
+        userRepository.save(appUser);
+        appUser.setEmail(new Email("abc@gmail.com"));
+        appUser.setFirstName(new Name("mark"));
+        appUser.setLastName(new Name("smith"));
+        appUser.setAffiliation(new UserAffiliation("police"));
+        appUser.setLink(new Link("url"));
+        appUser.setCommunication(new Communication("phone"));
+
+        assertEquals(appUser, userService.updateUser(appUser));
+        assertEquals(appUser.getEmail().toString(), "abc@gmail.com");
+        assertEquals(appUser.getFirstName().toString(), "mark");
+        assertEquals(appUser.getLastName().toString(), "smith");
+        assertEquals(appUser.getAffiliation().toString(), "police");
+        assertEquals(appUser.getLink().toString(), "url");
+        assertEquals(appUser.getCommunication().toString(), "phone");
+    }
+
+
 }
