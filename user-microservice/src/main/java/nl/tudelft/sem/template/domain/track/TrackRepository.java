@@ -10,6 +10,13 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface TrackRepository extends JpaRepository<Track, String> {
+
+    /** save th track in to db.
+     *
+     * @return the save the track with id
+     */
+    Track save(Track track);
+
     /**
      * find track that have this id.
      *
