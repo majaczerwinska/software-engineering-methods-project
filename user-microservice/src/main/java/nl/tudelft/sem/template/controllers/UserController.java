@@ -62,7 +62,7 @@ public class UserController implements UserApi {
     @Override
     @Transactional
     public ResponseEntity<User> getAccountByEmail(@PathVariable("email") String email) {
-        if (!email.toString().contains("@")) {
+        if (!email.contains("@")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         //TODO: unauthorized access
@@ -81,7 +81,7 @@ public class UserController implements UserApi {
     @Override
     @Transactional
     @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "#track.getEventId(), #track.getId(), 1)") // 401
+            + "#track.getEventId(), #track.getId(), 0)") // 401
     public ResponseEntity<User> createAccount(@Valid @RequestBody User user) {
         // Check if the appUser is null or has missing required fields
         try {
@@ -91,7 +91,7 @@ public class UserController implements UserApi {
             if (e.getMessage().equals("Invalid user data")) {
                 return ResponseEntity.badRequest().build(); // 400
             } else {
-                return ResponseEntity.status(409).build(); // 409
+                return ResponseEntity.status(409).build(); // 409, user already exists
             }
         }
 
@@ -107,7 +107,7 @@ public class UserController implements UserApi {
     @Override
     @Transactional
     @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "#track.getEventId(), #track.getId(), 1)") // 401
+            + "#track.getEventId(), #track.getId(), 0)") // 401
     public ResponseEntity<Void> updateAccount(@Valid @RequestBody User updatedUser) {
         // Check if the updatedUser is null or has missing required fields
         try {
@@ -129,7 +129,7 @@ public class UserController implements UserApi {
     @Override
     @Transactional
     @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "#track.getEventId(), #track.getId(), 1)") // 401
+            + "#track.getEventId(), #track.getId(), 0)") // 401
     public ResponseEntity<Void> deleteAccount(@PathVariable("userID") Long userId) {
         try {
             userService.deleteUser(userId);

@@ -97,6 +97,10 @@ public class AppUser extends HasEvents {
      * @param user model User to convert into AppUser
      */
     public AppUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("Invalid user data");
+        }
+        this.id = user.getId();
         this.email = new Email(user.getEmail());
         this.recordThat(new UserWasCreatedEvent(new Email(user.getEmail())));
         this.firstName = new Name(user.getFirstName());

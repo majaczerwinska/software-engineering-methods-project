@@ -10,6 +10,7 @@ import nl.tudelft.sem.template.domain.user.Link;
 import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserAffiliation;
 import nl.tudelft.sem.template.help.UserRepositoryTest;
+import nl.tudelft.sem.template.model.User;
 import nl.tudelft.sem.template.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,8 @@ public class UserControllerTest {
     private  UserRepositoryTest userRepository;
     private UserController userController;
 
+    private AppUser appUser;
+
     /**
      * Setting up the environment.
      */
@@ -40,6 +43,13 @@ public class UserControllerTest {
         userRepository = new UserRepositoryTest();
         userService = new UserService(userRepository);
         userController = new UserController(userService);
+        Long id = 1L;
+        Email email = new Email("abc@fun.org");
+        Name name = new Name("user");
+        UserAffiliation affiliation = new UserAffiliation("affiliation");
+        Link link = new Link("link");
+        Communication communication = new Communication("communication");
+        appUser = new AppUser(id, email, name, name, affiliation, link, communication);
     }
 
     /**
@@ -81,5 +91,93 @@ public class UserControllerTest {
         AppUser appUser = userRepository.findById(String.valueOf(1L)).get();
         assertEquals(appUser.toModelUser(), userController.getAccountByID(1L).getBody());
     }
+
+    @Test
+    public void getAccountByEmailUserExists() {
+        userRepository.save(appUser);
+        AppUser appUser1 = userRepository.findByEmail(appUser.getEmail()).get();
+        assertEquals(appUser1.toModelUser(),
+                userController.getAccountByEmail(appUser.getEmail().toString()).getBody());
+    }
+
+    @Test
+    public void getAccountByEmailInvalidEmail() {
+        appUser.setEmail(new Email("notAnEmail"));
+        userRepository.save(appUser);
+        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(),
+                userController.getAccountByEmail(appUser.getEmail().toString()));
+    }
+
+    @Test
+    public void getAccountByEmailNonExistent() {
+        assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(),
+                userController.getAccountByEmail(appUser.getEmail().toString()));
+    }
+
+    @Test
+    public void createAccountNullUser() {
+        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(),
+                userController.createAccount(null));
+    }
+
+    @Test
+    public void createAccountValidUser() {
+        User modelUser = appUser.toModelUser();
+        assertEquals(modelUser,
+                userController.createAccount(modelUser).getBody());
+    }
+
+    @Test
+    public void createAccountUserAlreadyExists() {
+        userRepository.save(appUser);
+        assertEquals(ResponseEntity.status(409).build(),
+                userController.createAccount(appUser.toModelUser()));
+    }
+
+    @Test
+    public void updateAccountValidUser() {
+        userRepository.save(appUser);
+        User modelUser = appUser.toModelUser();
+        assertEquals(ResponseEntity.status(HttpStatus.NO_CONTENT).build(),
+                userController.updateAccount(modelUser));
+    }
+
+    @Test
+    public void updateAccountInvalidUser() {
+        appUser.setId(-1L);
+        userRepository.save(appUser);
+        User modelUser = appUser.toModelUser();
+        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(),
+                userController.updateAccount(modelUser));
+    }
+
+    @Test
+    public void updateAcountUserNonExistent() {
+        User modelUser = appUser.toModelUser();
+        assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(),
+                userController.updateAccount(modelUser));
+    }
+
+    @Test
+    public void deleteAccountValid() {
+        userRepository.save(appUser);
+        assertEquals(ResponseEntity.status(HttpStatus.NO_CONTENT).build(),
+                userController.deleteAccount(appUser.getId()));
+    }
+
+    @Test
+    public void deleteAccountInvalidUser() {
+        appUser.setId(-1L);
+        userRepository.save(appUser);
+        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(),
+                userController.deleteAccount(appUser.getId()));
+    }
+
+    @Test
+    public void deleteAccountUserNonExistent() {
+        assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(),
+                userController.deleteAccount(appUser.getId()));
+    }
+
 
 }
