@@ -40,16 +40,16 @@ public class TrackService {
         if (track == null) {
             throw new IllegalArgumentException("Null reference for track");
         }
-        if (track.getId() == null || track.getId() < 0) {
-            throw new IllegalArgumentException("Null reference for track id");
+        if (track.getId() < 0) {
+            throw new IllegalArgumentException("Invalid track id");
         }
         if (track.getTitle() == null || track.getTitle().toString() == null) {
             throw new IllegalArgumentException("Null reference for track title");
         }
-        if (track.getParentEventId() == null || track.getParentEventId() < 0) {
-            throw new IllegalArgumentException("Null reference for parent event id");
+        if (track.getParentEventId() < 0) {
+            throw new IllegalArgumentException("Invalid parent event id");
         }
-        if (trackRepository.existsById(String.valueOf(track.getId()))) {
+        if (trackRepository.existsById(track.getId())) {
             throw new IllegalArgumentException("Track with id:" + track.getId() + " already exist.");
         }
         return trackRepository.save(track);
@@ -66,12 +66,12 @@ public class TrackService {
         if (id < 0) {
             throw new IllegalArgumentException("Invalid track id: " + id);
         }
-        if (!trackExistById(id)) {
+        Optional<Track> track = trackRepository.findById(id);
+        if (track.isEmpty()) {
             throw new NoSuchElementException("Track with id:" + id + " does not exist.");
         }
-        Track track = getTrackById(id);
-        trackRepository.delete(track);
-        return track;
+        trackRepository.delete(track.get());
+        return track.get();
     }
 
     /**
@@ -82,14 +82,14 @@ public class TrackService {
      */
     @Transactional
     public Track updateTrack(Track track) throws IllegalArgumentException, NoSuchElementException {
-        if (track.getTitle() == null) {
+        if (track.getTitle() == null || track.getTitle().toString() == null) {
             throw new IllegalArgumentException("Null reference for track title");
         }
-        if (trackExistsByTitleInEvent(track.getTitle(), track.getParentEventId())) {
+        if (trackRepository.existsByTitleAndParentEventId(track.getTitle(), track.getParentEventId())) {
             throw new IllegalArgumentException("Track with this title already exist in the event.");
         }
-        if (!trackExistById(track.getId())) {
-            throw new NoSuchElementException("Track with id:" + track.getId().toString() + " does not exist.");
+        if (!trackRepository.existsById(track.getId())) {
+            throw new NoSuchElementException("Track with id:" + track.getId() + " does not exist.");
         }
         return trackRepository.save(track);
     }
@@ -101,25 +101,15 @@ public class TrackService {
      * @return - track with this id if exists, else null
      */
     public Track getTrackById(long id) throws NoSuchElementException, IllegalArgumentException {
-        if (id <= 0) {
+        if (id < 0) {
             throw new IllegalArgumentException("Invalid track ID");
         }
-        Optional<Track> track = trackRepository.findById(String.valueOf(id));
+        Optional<Track> track = trackRepository.findById(id);
         if (track.isEmpty()) {
             throw new NoSuchElementException("Track with ID: " + id + " does not exist.");
         }
 
         return track.get();
-    }
-
-    /**
-     * Retrieves the track with the specified id.
-     *
-     * @param id - id of a track
-     * @return - track with this id if exists, else null
-     */
-    public boolean trackExistById(long id) {
-        return trackRepository.existsById(id);
     }
 
     /**
@@ -145,13 +135,13 @@ public class TrackService {
      * @param parentEventId - parent event of a track
      * @return - tracks within this event if exists, else null
      */
-    public List<Track> getTrackByParentEvent(Long parentEventId) throws NoSuchElementException, IllegalArgumentException {
-        if (parentEventId == null) {
-            throw new IllegalArgumentException("Null reference for parent event");
+    public List<Track> getTrackByParentEvent(long parentEventId) throws NoSuchElementException, IllegalArgumentException {
+        if (parentEventId < 0) {
+            throw new IllegalArgumentException("Invalid parent id");
         }
         List<Track> tracks = trackRepository.findByParentEventId(parentEventId);
         if (tracks.isEmpty()) {
-            throw new NoSuchElementException("Track does not exist in event:" + parentEventId);
+            throw new NoSuchElementException("No Track exist in event:" + parentEventId);
         }
         return tracks;
     }
@@ -159,28 +149,23 @@ public class TrackService {
     /**
      * Retrieves track with the specified title within the specified event.
      *
-     * @param title         - title of a track
-     * @param parentEventId - parent event id of a track
+     * @param title         title of a track
+     * @param parentEventId parent event id of a track
      * @return - tracks within this event if exists, else null
      */
-    public Track getTrackByTitleInEvent(Title title, long parentEventId) throws NoSuchElementException {
+    public Track getTrackByTitleInEvent(Title title, long parentEventId) throws IllegalArgumentException, NoSuchElementException {
+        if (parentEventId < 0) {
+            throw new IllegalArgumentException("Invalid parent id");
+        }
+        if (title == null || title.toString() == null) {
+            throw new IllegalArgumentException("Null reference for track title");
+        }
         Optional<Track> track = trackRepository.findByTitleAndParentEventId(title, parentEventId);
         if (track.isEmpty()) {
             throw new NoSuchElementException("Track with title:" + title.toString()
                     + " does not exist  in event: " + parentEventId);
         }
         return track.get();
-    }
-
-    /**
-     * Checks whether the track with the specified title exists within the specified event.
-     *
-     * @param title         - title of a track
-     * @param parentEventId - parent event of a track
-     * @return - true if exists, false otherwise
-     */
-    public boolean trackExistsByTitleInEvent(Title title, Long parentEventId) {
-        return trackRepository.existsByTitleAndParentEventId(title, parentEventId);
     }
 
 }

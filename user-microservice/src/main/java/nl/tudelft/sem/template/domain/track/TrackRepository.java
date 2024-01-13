@@ -23,7 +23,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @param id the id to look for
      * @return track that have this id
      */
-    Optional<Track> findById(String id);
+    Optional<Track> findById(long id);
 
     /**
      * find track that have this title in the input event.
@@ -32,7 +32,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @param parentEventId     the event where the track belongs to
      * @return track that have this title in the input event
      */
-    Optional<Track> findByTitleAndParentEventId(Title title, Long parentEventId);
+    Optional<Track> findByTitleAndParentEventId(Title title, long parentEventId);
 
     /**
      * find list of track that have this title.
@@ -48,7 +48,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @param parentEventId the event id where the track belongs to
      * @return list of track that in the event
      */
-    List<Track> findByParentEventId(Long parentEventId);
+    List<Track> findByParentEventId(long parentEventId);
 
     /**
      * check if event with input id exist.
@@ -65,7 +65,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @param parentEventId     the event to check for
      * @return true if event with input title exist in the input event
      */
-    boolean existsByTitleAndParentEventId(Title title, Long parentEventId);
+    boolean existsByTitleAndParentEventId(Title title, long parentEventId);
 
     /**
      * check if event with input title exist.

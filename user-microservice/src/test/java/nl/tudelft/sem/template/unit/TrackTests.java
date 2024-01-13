@@ -99,7 +99,7 @@ public class TrackTests {
     void equalsEmptyTest() {
         assertNotEquals(fullTrack1, emptyTrack);
         emptyTrack.setTitle(null);
-        assertNotEquals(emptyTrack, fullTrack1);
+        assertNotEquals(emptyTrack, fullTrack2);
     }
 
     @Test
@@ -115,6 +115,9 @@ public class TrackTests {
 
     @Test
     void allSettersTest() {
+        fullTrack1.setId(1351L);
+        assertEquals(fullTrack1.getId(), 1351L);
+
         Title title_after_setter = new Title("Title after setter");
         fullTrack1.setTitle(title_after_setter);
         assertEquals(fullTrack1.getTitle().toString(), title_after_setter.toString());

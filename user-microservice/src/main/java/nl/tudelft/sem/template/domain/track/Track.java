@@ -35,7 +35,7 @@ public class Track extends HasEvents {
     @Id
     @Column(name = "id", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @Column(name = "title", nullable = false)
     @Convert(converter = TitleAttributeConverter.class)
@@ -66,7 +66,7 @@ public class Track extends HasEvents {
     //@Convert(converter = ParentEventAttributeConverter.class)
     //From Yair: The converter is not correct. How can it serialize an event instance?
     @Column(name = "parentEventId", nullable = false)
-    private Long parentEventId;
+    private long parentEventId;
 
     /**
      * a constructor for Track.
@@ -81,7 +81,7 @@ public class Track extends HasEvents {
      * @param parentEventId  the event this track belongs to
      */
     public Track(Title title, Description description, PaperRequirement paperType,
-                 LocalDate submitDeadline, LocalDate reviewDeadline, Long parentEventId) {
+                 LocalDate submitDeadline, LocalDate reviewDeadline, long parentEventId) {
         this.title = title;
         this.description = description;
         this.paperType = paperType;
@@ -109,6 +109,15 @@ public class Track extends HasEvents {
 
     /**
      * method for changing the id of this track.
+     *
+     * @param id for this track
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    /**
+     * method for changing the title of this track.
      *
      * @param title for this track
      */
@@ -162,8 +171,8 @@ public class Track extends HasEvents {
      *
      * @param parentEventId which this track belongs to
      */
-    public void setParentEventId(Long parentEventId) {
-        Long temp = this.parentEventId;
+    public void setParentEventId(long parentEventId) {
+        long temp = this.parentEventId;
         this.parentEventId = parentEventId;
         this.recordThat(new TrackRemovedEvent(temp, this.id));
         this.recordThat(new TrackParentEventChangedEvent(this));
