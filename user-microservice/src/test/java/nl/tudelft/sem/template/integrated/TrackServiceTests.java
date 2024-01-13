@@ -43,6 +43,8 @@ public class TrackServiceTests {
     private transient TrackRepository trackRepository;
     @InjectMocks
     private transient TrackService trackService;
+    private static final String nullTitle = "Null reference for track title";
+    private static final String invalidId = "Invalid track id";
 
     /**
      * set up a track using all arg constructor.
@@ -71,13 +73,13 @@ public class TrackServiceTests {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> trackService.createTrack(fullTrack));
-        assertEquals("Invalid track id", exception.getMessage());
+        assertEquals(invalidId, exception.getMessage());
 
         fullTrack.setTitle(null);
         exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> trackService.createTrack(fullTrack));
-        assertEquals("Invalid track id", exception.getMessage());
+        assertEquals(invalidId, exception.getMessage());
     }
 
     @Test
@@ -87,13 +89,13 @@ public class TrackServiceTests {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> trackService.createTrack(fullTrack));
-        assertEquals("Null reference for track title", exception.getMessage());
+        assertEquals(nullTitle, exception.getMessage());
 
         fullTrack.setTitle(new Title(null));
         exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> trackService.createTrack(fullTrack));
-        assertEquals("Null reference for track title", exception.getMessage());
+        assertEquals(nullTitle, exception.getMessage());
     }
 
     @Test
@@ -127,7 +129,7 @@ public class TrackServiceTests {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> trackService.deleteTrackById(-1L));
-        assertEquals("Invalid track id: " + -1L, exception.getMessage());
+        assertEquals(invalidId, exception.getMessage());
         verify(trackRepository, times(0)).existsById(5233L);
     }
 
@@ -156,13 +158,13 @@ public class TrackServiceTests {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> trackService.updateTrack(fullTrack));
-        assertEquals("Null reference for track title", exception.getMessage());
+        assertEquals(nullTitle, exception.getMessage());
 
         fullTrack.setTitle(new Title(null));
         exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> trackService.updateTrack(fullTrack));
-        assertEquals("Null reference for track title", exception.getMessage());
+        assertEquals(nullTitle, exception.getMessage());
         verify(trackRepository, times(0))
                 .existsByTitleAndParentEventId(title, 5233L);
     }
@@ -213,7 +215,7 @@ public class TrackServiceTests {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> trackService.getTrackById(-1L));
-        assertEquals("Invalid track ID", exception.getMessage());
+        assertEquals(invalidId, exception.getMessage());
         verify(trackRepository, times(0)).existsById(5233L);
     }
 
@@ -242,12 +244,12 @@ public class TrackServiceTests {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> trackService.getTrackByTitle(null));
-        assertEquals("Null reference for track title", exception.getMessage());
+        assertEquals(nullTitle, exception.getMessage());
 
         exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> trackService.getTrackByTitle(testTitle));
-        assertEquals("Null reference for track title", exception.getMessage());
+        assertEquals(nullTitle, exception.getMessage());
     }
 
     @Test
@@ -316,12 +318,12 @@ public class TrackServiceTests {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> trackService.getTrackByTitleInEvent(null, 5233L));
-        assertEquals("Null reference for track title", exception.getMessage());
+        assertEquals(nullTitle, exception.getMessage());
 
         exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> trackService.getTrackByTitleInEvent(testTitle, 5233L));
-        assertEquals("Null reference for track title", exception.getMessage());
+        assertEquals(nullTitle, exception.getMessage());
     }
 
     @Test

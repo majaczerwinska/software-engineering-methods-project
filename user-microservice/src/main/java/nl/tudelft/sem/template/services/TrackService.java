@@ -15,9 +15,13 @@ import org.springframework.stereotype.Service;
 /**
  * A DDD service for track.
  */
+// The redundancy of literals here is justified for the queries and the parameter alias.
 @Service
 public class TrackService {
     private final transient TrackRepository trackRepository;
+    private static final String nullTitle = "Null reference for track title";
+    private static final String invalidId = "Invalid track id";
+
 
     /**
      * A constructor dependency injection for the track JPA Repository concrete implementation.
@@ -41,10 +45,10 @@ public class TrackService {
             throw new IllegalArgumentException("Null reference for track");
         }
         if (track.getId() < 0) {
-            throw new IllegalArgumentException("Invalid track id");
+            throw new IllegalArgumentException(invalidId);
         }
         if (track.getTitle() == null || track.getTitle().toString() == null) {
-            throw new IllegalArgumentException("Null reference for track title");
+            throw new IllegalArgumentException(nullTitle);
         }
         if (track.getParentEventId() < 0) {
             throw new IllegalArgumentException("Invalid parent event id");
@@ -64,7 +68,7 @@ public class TrackService {
     @Transactional
     public Track deleteTrackById(long id) throws NoSuchElementException {
         if (id < 0) {
-            throw new IllegalArgumentException("Invalid track id: " + id);
+            throw new IllegalArgumentException(invalidId);
         }
         Optional<Track> track = trackRepository.findById(id);
         if (track.isEmpty()) {
@@ -83,7 +87,7 @@ public class TrackService {
     @Transactional
     public Track updateTrack(Track track) throws IllegalArgumentException, NoSuchElementException {
         if (track.getTitle() == null || track.getTitle().toString() == null) {
-            throw new IllegalArgumentException("Null reference for track title");
+            throw new IllegalArgumentException(nullTitle);
         }
         if (trackRepository.existsByTitleAndParentEventId(track.getTitle(), track.getParentEventId())) {
             throw new IllegalArgumentException("Track with this title already exist in the event.");
@@ -102,7 +106,7 @@ public class TrackService {
      */
     public Track getTrackById(long id) throws NoSuchElementException, IllegalArgumentException {
         if (id < 0) {
-            throw new IllegalArgumentException("Invalid track ID");
+            throw new IllegalArgumentException(invalidId);
         }
         Optional<Track> track = trackRepository.findById(id);
         if (track.isEmpty()) {
@@ -120,7 +124,7 @@ public class TrackService {
      */
     public List<Track> getTrackByTitle(Title title) throws NoSuchElementException, IllegalArgumentException {
         if (title == null || title.toString() == null) {
-            throw new IllegalArgumentException("Null reference for track title");
+            throw new IllegalArgumentException(nullTitle);
         }
         List<Track> tracks = trackRepository.findByTitle(title);
         if (tracks.isEmpty()) {
@@ -159,7 +163,7 @@ public class TrackService {
             throw new IllegalArgumentException("Invalid parent id");
         }
         if (title == null || title.toString() == null) {
-            throw new IllegalArgumentException("Null reference for track title");
+            throw new IllegalArgumentException(nullTitle);
         }
         Optional<Track> track = trackRepository.findByTitleAndParentEventId(title, parentEventId);
         if (track.isEmpty()) {
