@@ -97,7 +97,7 @@ public class AppUser extends HasEvents {
      * @param user model User to convert into AppUser
      */
     public AppUser(User user) {
-        if (user == null) {
+        if (user == null || user.getId() < 0 || !user.getEmail().contains("@")) {
             throw new IllegalArgumentException("Invalid user data");
         }
         this.id = user.getId();
