@@ -153,7 +153,8 @@ public class TrackService {
      * @param parentEventId parent event id of a track
      * @return - tracks within this event if exists, else null
      */
-    public Track getTrackByTitleInEvent(Title title, long parentEventId) throws IllegalArgumentException, NoSuchElementException {
+    public Track getTrackByTitleInEvent(Title title, long parentEventId)
+            throws IllegalArgumentException, NoSuchElementException {
         if (parentEventId < 0) {
             throw new IllegalArgumentException("Invalid parent id");
         }

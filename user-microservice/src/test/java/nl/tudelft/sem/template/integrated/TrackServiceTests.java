@@ -1,7 +1,22 @@
 package nl.tudelft.sem.template.integrated;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import nl.tudelft.sem.template.Application;
-import nl.tudelft.sem.template.domain.track.*;
+import nl.tudelft.sem.template.domain.track.Description;
+import nl.tudelft.sem.template.domain.track.PaperRequirement;
+import nl.tudelft.sem.template.domain.track.Title;
+import nl.tudelft.sem.template.domain.track.Track;
+import nl.tudelft.sem.template.domain.track.TrackRepository;
 import nl.tudelft.sem.template.model.PaperType;
 import nl.tudelft.sem.template.services.TrackService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,19 +28,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
-
-
+/**
+ * integrated tests for track service.
+ */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
+// activate profiles to have spring use mocks during auto-injection of certain beans.
 @ActiveProfiles("test")
 public class TrackServiceTests {
 
@@ -36,6 +44,9 @@ public class TrackServiceTests {
     @InjectMocks
     private transient TrackService trackService;
 
+    /**
+     * set up a track using all arg constructor.
+     */
     @BeforeEach
     public void setup() {
         title = new Title("test title");
@@ -152,40 +163,47 @@ public class TrackServiceTests {
                 IllegalArgumentException.class,
                 () -> trackService.updateTrack(fullTrack));
         assertEquals("Null reference for track title", exception.getMessage());
-        verify(trackRepository, times(0)).existsByTitleAndParentEventId(title, 5233L);
+        verify(trackRepository, times(0))
+                .existsByTitleAndParentEventId(title, 5233L);
     }
 
     @Test
     public void updateTrackAlreadyExistTest() {
-        when(trackRepository.existsByTitleAndParentEventId(fullTrack.getTitle(), fullTrack.getParentEventId())).thenReturn(true);
+        when(trackRepository.existsByTitleAndParentEventId(fullTrack.getTitle(), fullTrack.getParentEventId()))
+                .thenReturn(true);
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> trackService.updateTrack(fullTrack));
         assertEquals("Track with this title already exist in the event.", exception.getMessage());
-        verify(trackRepository, times(1)).existsByTitleAndParentEventId(fullTrack.getTitle(), fullTrack.getParentEventId());
+        verify(trackRepository, times(1))
+                .existsByTitleAndParentEventId(fullTrack.getTitle(), fullTrack.getParentEventId());
         verify(trackRepository, times(0)).existsById(5233L);
     }
 
     @Test
     public void updateTrackNoIdExistTest() {
-        when(trackRepository.existsByTitleAndParentEventId(fullTrack.getTitle(), fullTrack.getParentEventId())).thenReturn(false);
+        when(trackRepository.existsByTitleAndParentEventId(fullTrack.getTitle(),
+                fullTrack.getParentEventId())).thenReturn(false);
         when(trackRepository.existsById(fullTrack.getId())).thenReturn(false);
         NoSuchElementException exception = assertThrows(
                 NoSuchElementException.class,
                 () -> trackService.updateTrack(fullTrack));
         assertEquals("Track with id:" + fullTrack.getId() + " does not exist.", exception.getMessage());
-        verify(trackRepository, times(1)).existsByTitleAndParentEventId(fullTrack.getTitle(), fullTrack.getParentEventId());
+        verify(trackRepository, times(1))
+                .existsByTitleAndParentEventId(fullTrack.getTitle(), fullTrack.getParentEventId());
         verify(trackRepository, times(1)).existsById(fullTrack.getId());
         verify(trackRepository, times(0)).save(fullTrack);
     }
 
     @Test
     public void updateTrackSuccessTest() {
-        when(trackRepository.existsByTitleAndParentEventId(fullTrack.getTitle(), fullTrack.getParentEventId())).thenReturn(false);
+        when(trackRepository.existsByTitleAndParentEventId(fullTrack.getTitle(), fullTrack.getParentEventId()))
+                .thenReturn(false);
         when(trackRepository.existsById(fullTrack.getId())).thenReturn(true);
         when(trackRepository.save(fullTrack)).thenReturn(fullTrack);
         assertEquals(trackService.updateTrack(fullTrack), fullTrack);
-        verify(trackRepository, times(1)).existsByTitleAndParentEventId(fullTrack.getTitle(), fullTrack.getParentEventId());
+        verify(trackRepository, times(1))
+                .existsByTitleAndParentEventId(fullTrack.getTitle(), fullTrack.getParentEventId());
         verify(trackRepository, times(1)).existsById(fullTrack.getId());
         verify(trackRepository, times(1)).save(fullTrack);
     }

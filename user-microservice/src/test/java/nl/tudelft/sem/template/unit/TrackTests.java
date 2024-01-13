@@ -1,18 +1,24 @@
 package nl.tudelft.sem.template.unit;
 
-import nl.tudelft.sem.template.domain.track.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import javax.transaction.Transactional;
+import nl.tudelft.sem.template.domain.track.Description;
+import nl.tudelft.sem.template.domain.track.PaperRequirement;
+import nl.tudelft.sem.template.domain.track.Title;
+import nl.tudelft.sem.template.domain.track.Track;
+import nl.tudelft.sem.template.domain.track.TrackRepository;
 import nl.tudelft.sem.template.model.PaperType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
-
-import javax.transaction.Transactional;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @Commit
@@ -61,7 +67,8 @@ public class TrackTests {
         PaperRequirement paperRequirement = new PaperRequirement(PaperType.POSITION_PAPER);
         LocalDate subDeadlineForTest = LocalDate.parse("2029-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         LocalDate reviewDeadlineForTest = LocalDate.parse("2024-07-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
-        Track track = new Track(title, descriptionForTest, paperRequirement, subDeadlineForTest, reviewDeadlineForTest, 999L);
+        Track track = new Track(title, descriptionForTest, paperRequirement,
+                subDeadlineForTest, reviewDeadlineForTest, 999L);
 
         assertNotEquals(fullTrack1, track);
 
@@ -118,9 +125,9 @@ public class TrackTests {
         fullTrack1.setId(1351L);
         assertEquals(fullTrack1.getId(), 1351L);
 
-        Title title_after_setter = new Title("Title after setter");
-        fullTrack1.setTitle(title_after_setter);
-        assertEquals(fullTrack1.getTitle().toString(), title_after_setter.toString());
+        Title titleAfterSetter = new Title("Title after setter");
+        fullTrack1.setTitle(titleAfterSetter);
+        assertEquals(fullTrack1.getTitle().toString(), titleAfterSetter.toString());
 
         Description description = new Description("Description after setter");
         fullTrack1.setDescription(description);
