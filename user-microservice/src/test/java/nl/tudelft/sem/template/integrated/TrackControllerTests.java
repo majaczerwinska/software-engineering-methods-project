@@ -1,5 +1,17 @@
 package nl.tudelft.sem.template.integrated;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import nl.tudelft.sem.template.Application;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.controllers.TrackController;
@@ -24,22 +36,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.LocalDate;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 // activate profiles to have spring use mocks during auto-injection of certain beans.
 @ActiveProfiles("test")
 public class TrackControllerTests {
 
-    private Track mTrack;
-    private nl.tudelft.sem.template.domain.track.Track dTrack;
     private static Email userEmail;
-
+    private Track modelTrack;
+    private nl.tudelft.sem.template.domain.track.Track domainTrack;
     @Mock
     private UserService userService;
 
@@ -58,6 +63,9 @@ public class TrackControllerTests {
     @InjectMocks
     private transient TrackController trackController;
 
+    /**
+     * create the testing domainTrack and modelTrack.
+     */
     @BeforeEach
     public void setup() {
         userEmail = new Email("test@test.net");
@@ -66,9 +74,9 @@ public class TrackControllerTests {
         PaperRequirement paperRequirement = new PaperRequirement(PaperType.FULL_PAPER);
         LocalDate subDeadline = LocalDate.now().plusDays(7);
         LocalDate reviewDeadline = LocalDate.now().plusDays(14);
-        dTrack = new nl.tudelft.sem.template.domain.track.Track(title, description,
+        domainTrack = new nl.tudelft.sem.template.domain.track.Track(title, description,
                 paperRequirement, subDeadline, reviewDeadline, 52L);
-        mTrack = dTrack.toModelTrack();
+        modelTrack = domainTrack.toModelTrack();
     }
 
     @Test
@@ -78,13 +86,13 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(0)
         )).thenReturn(false);
 
         // Run
-        ResponseEntity<Track> response = trackController.addTrack(mTrack);
+        ResponseEntity<Track> response = trackController.addTrack(modelTrack);
 
         // Check
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -94,8 +102,8 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(0));
     }
 
@@ -106,15 +114,15 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(0)
         )).thenReturn(true);
 
-        when(trackService.createTrack(eq(dTrack))).thenThrow(new IllegalArgumentException());
+        when(trackService.createTrack(eq(domainTrack))).thenThrow(new IllegalArgumentException());
 
         // Run
-        ResponseEntity<Track> response = trackController.addTrack(mTrack);
+        ResponseEntity<Track> response = trackController.addTrack(modelTrack);
 
         // Check
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -124,10 +132,10 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(0));
-        verify(trackService, times(1)).createTrack(eq(dTrack));
+        verify(trackService, times(1)).createTrack(eq(domainTrack));
     }
 
     @Test
@@ -137,29 +145,29 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(0)
         )).thenReturn(true);
 
-        when(trackService.createTrack(eq(dTrack))).thenReturn(dTrack);
+        when(trackService.createTrack(eq(domainTrack))).thenReturn(domainTrack);
 
         // Run
-        ResponseEntity<Track> response = trackController.addTrack(mTrack);
+        ResponseEntity<Track> response = trackController.addTrack(modelTrack);
 
         // Check
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mTrack, response.getBody());
+        assertEquals(modelTrack, response.getBody());
 
         // Verify
         verify(roleService, times(1)).hasPermission(
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(0));
-        verify(trackService, times(1)).createTrack(eq(dTrack));
+        verify(trackService, times(1)).createTrack(eq(domainTrack));
     }
 
     @Test
@@ -169,13 +177,13 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(1)
         )).thenReturn(false);
 
         // Run
-        ResponseEntity<Void> response = trackController.updateTrack(mTrack);
+        ResponseEntity<Void> response = trackController.updateTrack(modelTrack);
 
         // Check
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -185,8 +193,8 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(1));
     }
 
@@ -197,15 +205,15 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(1)
         )).thenReturn(true);
 
-        when(trackService.updateTrack(eq(dTrack))).thenThrow(new IllegalArgumentException());
+        when(trackService.updateTrack(eq(domainTrack))).thenThrow(new IllegalArgumentException());
 
         // Run
-        ResponseEntity<Void> response = trackController.updateTrack(mTrack);
+        ResponseEntity<Void> response = trackController.updateTrack(modelTrack);
 
         // Check
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -215,10 +223,10 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(1));
-        verify(trackService, times(1)).updateTrack(eq(dTrack));
+        verify(trackService, times(1)).updateTrack(eq(domainTrack));
     }
 
     @Test
@@ -228,15 +236,15 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(1)
         )).thenReturn(true);
 
-        when(trackService.updateTrack(eq(dTrack))).thenThrow(new NoSuchElementException());
+        when(trackService.updateTrack(eq(domainTrack))).thenThrow(new NoSuchElementException());
 
         // Run
-        ResponseEntity<Void> response = trackController.updateTrack(mTrack);
+        ResponseEntity<Void> response = trackController.updateTrack(modelTrack);
 
         // Check
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -246,10 +254,10 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(1));
-        verify(trackService, times(1)).updateTrack(eq(dTrack));
+        verify(trackService, times(1)).updateTrack(eq(domainTrack));
     }
 
     @Test
@@ -259,15 +267,15 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(1)
         )).thenReturn(true);
 
-        when(trackService.updateTrack(eq(dTrack))).thenReturn(dTrack);
+        when(trackService.updateTrack(eq(domainTrack))).thenReturn(domainTrack);
 
         // Run
-        ResponseEntity<Void> response = trackController.updateTrack(mTrack);
+        ResponseEntity<Void> response = trackController.updateTrack(modelTrack);
 
         // Check
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -277,10 +285,10 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(mTrack.getEventId()),
-                eq(mTrack.getId()),
+                eq(modelTrack.getEventId()),
+                eq(modelTrack.getId()),
                 eq(1));
-        verify(trackService, times(1)).updateTrack(eq(dTrack));
+        verify(trackService, times(1)).updateTrack(eq(domainTrack));
     }
 
     @Test
@@ -290,12 +298,12 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(dTrack.getParentEventId()),
+                eq(domainTrack.getParentEventId()),
                 eq(33L),
                 eq(0)
         )).thenReturn(false);
 
-        when(trackService.getTrackById(33L)).thenReturn(dTrack);
+        when(trackService.getTrackById(33L)).thenReturn(domainTrack);
 
         // Run
         ResponseEntity<Void> response = trackController.deleteTrack(Math.toIntExact(33L));
@@ -308,7 +316,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(dTrack.getParentEventId()),
+                eq(domainTrack.getParentEventId()),
                 eq(33L),
                 eq(0));
     }
@@ -324,7 +332,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(dTrack.getParentEventId()),
+                eq(domainTrack.getParentEventId()),
                 eq(33L),
                 eq(0));
     }
@@ -336,11 +344,11 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(dTrack.getParentEventId()),
+                eq(domainTrack.getParentEventId()),
                 eq(33L),
                 eq(0)
         )).thenReturn(true);
-        when(trackService.getTrackById(33L)).thenReturn(dTrack);
+        when(trackService.getTrackById(33L)).thenReturn(domainTrack);
         when(trackService.deleteTrackById(eq(33L))).thenThrow(new IllegalArgumentException());
 
         // Run
@@ -354,7 +362,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(dTrack.getParentEventId()),
+                eq(domainTrack.getParentEventId()),
                 eq(33L),
                 eq(0));
         verify(trackService, times(1)).getTrackById(eq(33L));
@@ -368,11 +376,11 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(dTrack.getParentEventId()),
+                eq(domainTrack.getParentEventId()),
                 eq(33L),
                 eq(0)
         )).thenReturn(true);
-        when(trackService.getTrackById(33L)).thenReturn(dTrack);
+        when(trackService.getTrackById(33L)).thenReturn(domainTrack);
         when(trackService.deleteTrackById(eq(33L))).thenThrow(new NoSuchElementException());
 
         // Run
@@ -386,7 +394,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(dTrack.getParentEventId()),
+                eq(domainTrack.getParentEventId()),
                 eq(33L),
                 eq(0));
         verify(trackService, times(1)).getTrackById(eq(33L));
@@ -400,12 +408,12 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(dTrack.getParentEventId()),
+                eq(domainTrack.getParentEventId()),
                 eq(33L),
                 eq(0)
         )).thenReturn(true);
-        when(trackService.getTrackById(eq(33L))).thenReturn(dTrack);
-        when(trackService.deleteTrackById(eq(33L))).thenReturn(dTrack);
+        when(trackService.getTrackById(eq(33L))).thenReturn(domainTrack);
+        when(trackService.deleteTrackById(eq(33L))).thenReturn(domainTrack);
 
         // Run
         ResponseEntity<Void> response = trackController.deleteTrack(Math.toIntExact(33L));
@@ -418,7 +426,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(dTrack.getParentEventId()),
+                eq(domainTrack.getParentEventId()),
                 eq(33L),
                 eq(0));
         verify(trackService, times(1)).getTrackById(eq(33L));
@@ -485,14 +493,14 @@ public class TrackControllerTests {
         // Mock
         when(authManager.getEmail()).thenReturn(userEmail.toString());
         when(userService.userExistsByEmail(userEmail)).thenReturn(true);
-        when(trackService.getTrackById(33L)).thenReturn(dTrack);
+        when(trackService.getTrackById(33L)).thenReturn(domainTrack);
 
         // Run
         ResponseEntity<Track> response = trackController.getTrackByID(Math.toIntExact(33L));
 
         // Check
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mTrack, response.getBody());
+        assertEquals(modelTrack, response.getBody());
 
         // Verify
         verify(authManager, times(1)).getEmail();
@@ -528,13 +536,13 @@ public class TrackControllerTests {
         // Mock
         when(authManager.getEmail()).thenReturn(userEmail.toString());
         when(userService.userExistsByEmail(userEmail)).thenReturn(true);
-        when(trackService.getTrackByTitleInEvent(title, eventId)).thenReturn(dTrack);
+        when(trackService.getTrackByTitleInEvent(title, eventId)).thenReturn(domainTrack);
         // Run
         ResponseEntity<List<Track>> response = trackController.getTrack(title.toString(), Math.toIntExact(eventId), p);
 
         // Check
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mTrack, Objects.requireNonNull(response.getBody()).get(0));
+        assertEquals(modelTrack, Objects.requireNonNull(response.getBody()).get(0));
         // Verify
         verify(authManager, times(1)).getEmail();
         verify(userService, times(1)).userExistsByEmail(userEmail);
@@ -548,13 +556,13 @@ public class TrackControllerTests {
         // Mock
         when(authManager.getEmail()).thenReturn(userEmail.toString());
         when(userService.userExistsByEmail(userEmail)).thenReturn(true);
-        when(trackService.getTrackByTitle(title)).thenReturn(Collections.singletonList(dTrack));
+        when(trackService.getTrackByTitle(title)).thenReturn(Collections.singletonList(domainTrack));
         // Run
         ResponseEntity<List<Track>> response = trackController.getTrack(title.toString(), null, p);
 
         // Check
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mTrack, Objects.requireNonNull(response.getBody()).get(0));
+        assertEquals(modelTrack, Objects.requireNonNull(response.getBody()).get(0));
         // Verify
         verify(authManager, times(1)).getEmail();
         verify(userService, times(1)).userExistsByEmail(userEmail);

@@ -1,5 +1,11 @@
 package nl.tudelft.sem.template.integrated;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.attendee.Confirmation;
@@ -18,10 +24,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 public class RoleServiceTests {
 
@@ -39,6 +41,9 @@ public class RoleServiceTests {
     @InjectMocks
     private RoleService roleService;
 
+    /**
+     * Set up the commonly used objects for role service testing.
+     */
     @BeforeEach
     public void setup() {
         userEmail = new Email("test@test.net");

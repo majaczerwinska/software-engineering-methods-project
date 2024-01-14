@@ -109,7 +109,7 @@ public class TrackController implements TrackApi {
     @Transactional
     public ResponseEntity<Void> deleteTrack(@PathVariable("trackID") Integer trackId) {
         try {
-            if (trackId == null){
+            if (trackId == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
             }
             if (!roleService.hasPermission(userService, authManager, attendeeService,
