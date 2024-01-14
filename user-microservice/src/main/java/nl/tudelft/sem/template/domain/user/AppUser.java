@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
-import nl.tudelft.sem.template.events.UserWasCreatedEvent;
 
 /**
  * A DDD entity representing an application user in our domain.
@@ -77,7 +76,6 @@ public class AppUser extends HasEvents {
     public AppUser(Email email,
             Name name, UserAffiliation affiliation, Link link, Communication communication) {
         this.email = email;
-        this.recordThat(new UserWasCreatedEvent(email));
         this.name = name;
         this.affiliation = affiliation;
         this.link = link;
@@ -102,5 +100,14 @@ public class AppUser extends HasEvents {
     @Override
     public int hashCode() {
         return Objects.hash(email);
+    }
+
+    /**
+     * Extends the accessor to a public visibility.
+     *
+     * @param object The log to be recorded.
+     */
+    public void recordLog(Object object) {
+        this.recordThat(object);
     }
 }

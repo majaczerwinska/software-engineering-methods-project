@@ -151,4 +151,13 @@ public class Event extends HasEvents {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    /**
+     * Extends the accessor to a public visibility.
+     *
+     * @param object The log to be recorded.
+     */
+    public void recordLog(Object object) {
+        this.recordThat(object);
+    }
 }
