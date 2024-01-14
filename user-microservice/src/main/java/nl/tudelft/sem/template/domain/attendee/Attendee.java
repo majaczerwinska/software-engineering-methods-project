@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.domain.attendee;
 
 import java.util.Objects;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -26,7 +25,6 @@ import nl.tudelft.sem.template.domain.user.AppUser;
 /**
  * An DDD entity that represents an attendee/role in the domain.
  */
-
 
 @Entity
 @Table(name = "attendees")
@@ -92,7 +90,6 @@ public class Attendee extends HasEvents {
     public void setConfirmation(Boolean confirm) {
         this.confirmation = new Confirmation(confirm);
     }
-
 
     /**
      * Two entities are equal if their identifiers are equivalent.

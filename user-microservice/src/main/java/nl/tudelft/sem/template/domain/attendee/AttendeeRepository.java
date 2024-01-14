@@ -6,7 +6,6 @@ import lombok.NonNull;
 import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.domain.track.Track;
 import nl.tudelft.sem.template.domain.user.AppUser;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,5 +26,6 @@ public interface AttendeeRepository extends JpaRepository<Attendee, Long> {
 
     boolean existsByUserIdAndEventIdAndTrackId(Long userId, Long eventId, Long trackId);
 
-    boolean existsByUserIdAndEventIdAndTrackIdAndConfirmation(Long userId, Long eventId, Long trackId, Confirmation confirmed);
+    boolean existsByUserIdAndEventIdAndTrackIdAndConfirmation(Long userId, Long eventId, Long trackId,
+            Confirmation confirmed);
 }

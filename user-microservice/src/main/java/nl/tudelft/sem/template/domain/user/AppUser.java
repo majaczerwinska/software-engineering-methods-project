@@ -2,7 +2,6 @@ package nl.tudelft.sem.template.domain.user;
 
 import java.util.List;
 import java.util.Objects;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -22,11 +21,9 @@ import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.events.UserWasCreatedEvent;
 
-
 /**
  * A DDD entity representing an application user in our domain.
  */
-
 
 @Entity
 @Table(name = "users")
@@ -54,7 +51,7 @@ public class AppUser extends HasEvents {
     private Name name;
 
     @Column(name = "affiliation", nullable = true)
-    @Convert(converter =  UserAffiliationAttributeConverter.class)
+    @Convert(converter = UserAffiliationAttributeConverter.class)
     private UserAffiliation affiliation;
 
     @Column(name = "link", nullable = true)
@@ -75,10 +72,10 @@ public class AppUser extends HasEvents {
     /**
      * Create new application user.
      *
-     * @param email    The Email for the new user
+     * @param email The Email for the new user
      */
     public AppUser(Email email,
-                   Name name, UserAffiliation affiliation, Link link, Communication communication) {
+            Name name, UserAffiliation affiliation, Link link, Communication communication) {
         this.email = email;
         this.recordThat(new UserWasCreatedEvent(email));
         this.name = name;

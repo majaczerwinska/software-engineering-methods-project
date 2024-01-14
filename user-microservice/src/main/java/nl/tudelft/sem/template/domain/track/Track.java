@@ -5,7 +5,6 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -17,14 +16,12 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.event.Event;
-import nl.tudelft.sem.template.domain.event.EventRepository;
 import nl.tudelft.sem.template.events.TrackCreatedEvent;
 import nl.tudelft.sem.template.events.TrackDeadlineChangedEvent;
 import nl.tudelft.sem.template.events.TrackDescriptionChangedEvent;
@@ -89,10 +86,10 @@ public class Track extends HasEvents {
      * @param paperType      the allowed paper type for submission for this track
      * @param submitDeadline the deadline for submission in this track
      * @param reviewDeadline the deadline for giving reviews in this track
-     * @param parentEventId  the event this track belongs to
+     * @param event  the event this track belongs to
      */
     public Track(Title title, Description description, PaperRequirement paperType,
-                 LocalDate submitDeadline, LocalDate reviewDeadline, Event event) {
+            LocalDate submitDeadline, LocalDate reviewDeadline, Event event) {
         this.title = title;
         this.description = description;
         this.paperType = paperType;
@@ -103,7 +100,7 @@ public class Track extends HasEvents {
     }
 
     public Track(Long id, Title title, Description description, PaperRequirement paperType,
-                 LocalDate submitDeadline, LocalDate reviewDeadline, Event event) {
+            LocalDate submitDeadline, LocalDate reviewDeadline, Event event) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -176,7 +173,7 @@ public class Track extends HasEvents {
     /**
      * method for change the event of this track.
      *
-     * @param parentEventId which this track belongs to
+     * @param event Event which this track belongs to
      */
     public void setEvent(Event event) {
         Event temp = this.event;
@@ -207,7 +204,8 @@ public class Track extends HasEvents {
     /**
      * method to generate a unique int for this entity.
      *
-     * @return a unique int for this entity and the hashcode will be stored as the id of this entity
+     * @return a unique int for this entity and the hashcode will be stored as the
+     *         id of this entity
      */
     @Override
     public int hashCode() {

@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.domain.event;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -21,7 +20,6 @@ import lombok.NonNull;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.track.Track;
-
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
 
 /**
@@ -87,7 +85,7 @@ public class Event extends HasEvents {
         this.description = description;
     }
 
-        /**
+    /**
      * Constructor with nullable description.
      */
     public Event(Long id, LocalDate startDate, LocalDate endDate, IsCancelled isCancelled, EventName name,

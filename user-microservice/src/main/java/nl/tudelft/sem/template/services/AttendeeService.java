@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-
 /**
  * A service Class handling invitations and attendance.
  */
@@ -39,7 +38,8 @@ public class AttendeeService {
      * @param attendeeRepository the attendee repository injection
      */
     @Autowired
-    public AttendeeService(AttendeeRepository attendeeRepository, UserRepository userRepository, EventRepository eventRepository, TrackRepository trackRepository) {
+    public AttendeeService(AttendeeRepository attendeeRepository, UserRepository userRepository,
+            EventRepository eventRepository, TrackRepository trackRepository) {
         this.attendeeRepository = attendeeRepository;
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
@@ -50,19 +50,22 @@ public class AttendeeService {
 
     /**
      * Creates a new unconfirmed attendance instance, which is committed to the
-     * attendee repository. In case where such an attendance instance already exists,
-     * confirmed or not, the method throws an {@link IllegalArgumentException} to signify
+     * attendee repository. In case where such an attendance instance already
+     * exists,
+     * confirmed or not, the method throws an {@link IllegalArgumentException} to
+     * signify
      * that no change has taken place.
      *
      * <p>This method is to be used within the service
      * class; refer to the invitation-related methods for out-of-class invocations.
      *
-     * @param userId the user identifier of the attendance to be created
+     * @param userId  the user identifier of the attendance to be created
      * @param eventId the event identifier of the attendance to be created
      * @param trackId the track identifier of the attendance to be created
-     * @param role the role of the new attendance
+     * @param role    the role of the new attendance
      * @throws IllegalArgumentException specifies that the attendance already
-     *          exists, and that no changes have been made to the repository.
+     *                                  exists, and that no changes have been made
+     *                                  to the repository.
      */
     @Transactional
     public void createAttendance(Long userId, Long eventId, Long trackId, RoleTitle role, boolean confirmed)
@@ -76,11 +79,12 @@ public class AttendeeService {
         Event event = eventRepository.findById(eventId).get();
         Track track = null;
         if (trackId != null) {
-            track = trackRepository.findById(trackId).get();}
+            track = trackRepository.findById(trackId).get();
+        }
         AppUser user = userRepository.findById(userId).get();
 
         Attendee attendee = new Attendee(
-            new Role(role), new Confirmation(confirmed), event, track, user);
+                new Role(role), new Confirmation(confirmed), event, track, user);
 
         // Commits the new attendance to the repository
         attendeeRepository.save(attendee);
@@ -97,17 +101,19 @@ public class AttendeeService {
      * class only. For out-of-class invocations, refer to the {@link #remove}
      * method or the {@link #resign} method.
      *
-     * @param userId the user identifier of the instance to be deleted
+     * @param userId  the user identifier of the instance to be deleted
      * @param eventId the event identifier of the instance to be deleted
      * @param trackId the track identifier of the instance to be deleted,
      *                potentially nullable
      * @throws NoSuchElementException indicates that no such attendance
-     *          can be found, and that no deletion can take place.
+     *                                can be found, and that no deletion can take
+     *                                place.
      */
     @Transactional
     private void deleteAttendance(Long userId, Long eventId, @Nullable Long trackId)
             throws NoSuchElementException {
-        Optional<Attendee> retrievedAttendance = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId, trackId);
+        Optional<Attendee> retrievedAttendance = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId,
+                trackId);
 
         // Exception handling for when no attendances can be found.
         if (retrievedAttendance.isEmpty()) {
@@ -126,27 +132,30 @@ public class AttendeeService {
     /**
      * Retrieves the confirmed Attendee instance corresponding to the given
      * identifiers. If the attendance does not exist, or if the attendance
-     * is not confirmed, then no instance is returned, and a {@link NoSuchElementException}
+     * is not confirmed, then no instance is returned, and a
+     * {@link NoSuchElementException}
      * is thrown.
      *
-     * @param userId the user identifier
+     * @param userId  the user identifier
      * @param eventId the event identifier
      * @param trackId the track identifier
      * @return the retrieved Attendee instance
      * @throws NoSuchElementException indicates that the attendance instance
-     *          does not exist or is unconfirmed.
+     *                                does not exist or is unconfirmed.
      */
     public Attendee getAttendance(Long userId, Long eventId, @Nullable Long trackId)
             throws NoSuchElementException {
 
-        Optional<Attendee> retrievedAttendee = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId, trackId);
+        Optional<Attendee> retrievedAttendee = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId,
+                trackId);
 
         // Exception handling for when the repository can find the instance
         if (retrievedAttendee.isEmpty()) {
             throw new NoSuchElementException("No such attendance can be found.");
         }
 
-        // Exception handling for when the attendance is not confirmed (i.e. still an invitation)
+        // Exception handling for when the attendance is not confirmed (i.e. still an
+        // invitation)
         if (!retrievedAttendee.get().isConfirmed()) {
             throw new NoSuchElementException("No confirmed attendance can be found.");
         }
@@ -162,7 +171,7 @@ public class AttendeeService {
      * @param userId the user identifier
      * @return the list of corresponding attendances
      * @throws NoSuchElementException indicates that no such attendances
-     *          exist.
+     *                                exist.
      */
     public List<Attendee> getAttendanceByUser(Long userId)
             throws NoSuchElementException {
@@ -185,7 +194,7 @@ public class AttendeeService {
      * @param eventId the event identifier
      * @return the list of corresponding attendances
      * @throws NoSuchElementException indicates that no such attendances
-     *          exist.
+     *                                exist.
      */
     public List<Attendee> getAttendanceByEvent(Long eventId)
             throws NoSuchElementException {
@@ -208,7 +217,7 @@ public class AttendeeService {
      * @param trackId the track identifier, not nullable
      * @return the list of attendances
      * @throws NoSuchElementException indicates that no such attendances
-     *          exist.
+     *                                exist.
      */
     public List<Attendee> getAttendanceByTrack(@NonNull Long trackId)
             throws NoSuchElementException {
@@ -223,37 +232,39 @@ public class AttendeeService {
         return retrievedList;
     }
 
-
     /**
      * Invites a user.
      *
      * @param executorId the inviter (user) identifier
-     * @param userId the user identifier
-     * @param eventId the event identifier
-     * @param trackId the track identifier
-     * @param role the event role to be conferred
+     * @param userId     the user identifier
+     * @param eventId    the event identifier
+     * @param trackId    the track identifier
+     * @param role       the event role to be conferred
      */
     public void invite(Long executorId, Long userId, Long eventId, Long trackId, RoleTitle role) {
 
-        //Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId, trackId);
+        // Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId,
+        // trackId);
 
         createAttendance(userId, eventId, trackId, role, false);
-        //TODO create an invitation
+        // TODO create an invitation
     }
 
     /**
      * Accepts an invitation.
      *
      * @param executorId the executor identifier
-     * @param userId the user identifier
-     * @param eventId the event identifier
-     * @param trackId the track identifier
+     * @param userId     the user identifier
+     * @param eventId    the event identifier
+     * @param trackId    the track identifier
      */
     @Transactional
     public void accept(Long executorId, Long userId, Long eventId, Long trackId) {
 
-        //Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId, trackId);
-        Optional<Attendee> retrievedAttendance = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId, trackId);
+        // Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId,
+        // trackId);
+        Optional<Attendee> retrievedAttendance = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId,
+                trackId);
 
         if (retrievedAttendance.isEmpty()) {
             throw new NoSuchElementException();
@@ -264,23 +275,25 @@ public class AttendeeService {
 
         attendeeRepository.save(attendee);
 
-        //TODO accept an invitation
+        // TODO accept an invitation
     }
 
     /**
      * Rejects an invitation.
      *
      * @param executorId the executor (user) identifier
-     * @param userId the user identifier
-     * @param eventId the event identifier
-     * @param trackId the track identifier
+     * @param userId     the user identifier
+     * @param eventId    the event identifier
+     * @param trackId    the track identifier
      */
     public void reject(Long executorId, Long userId, Long eventId, Long trackId) {
 
-        //Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId, trackId);
-        //Optional<Attendee> retrievedAttendance = findAttendee(userId, eventId, trackId);
+        // Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId,
+        // trackId);
+        // Optional<Attendee> retrievedAttendance = findAttendee(userId, eventId,
+        // trackId);
 
-        //TODO reject an invitation
+        // TODO reject an invitation
 
     }
 
@@ -288,26 +301,26 @@ public class AttendeeService {
      * Self-enroll in an event.
      *
      * @param enroleeId the enrollee (user) identifier
-     * @param eventId the event identifier
+     * @param eventId   the event identifier
      */
     @Transactional
     public void enroll(Long enroleeId, Long eventId, Long trackId, RoleTitle role) {
 
         createAttendance(enroleeId, eventId, trackId, role, false);
-        //TODO self-enroll in an event as an attendee.
+        // TODO self-enroll in an event as an attendee.
     }
 
     /**
      * Resign from a particular attendance.
      *
-     * @param userId the user identifier
+     * @param userId  the user identifier
      * @param eventId the event identifier
      * @param trackId the track identifier
      */
     public void resign(Long userId, Long eventId, Long trackId) {
 
         deleteAttendance(userId, eventId, trackId);
-        //TODO self-resign from a particular attendance.
+        // TODO self-resign from a particular attendance.
 
     }
 
@@ -315,14 +328,14 @@ public class AttendeeService {
      * Remove an attendee from the event.
      *
      * @param executorId the executor (user) identifier
-     * @param userId the user identifier
-     * @param eventId the event identifier
-     * @param trackId the track identifier
+     * @param userId     the user identifier
+     * @param eventId    the event identifier
+     * @param trackId    the track identifier
      */
     public void remove(Long executorId, Long userId, Long eventId, Long trackId) {
 
         deleteAttendance(userId, eventId, trackId);
-        //TODO remove a user from a particular attendance.
+        // TODO remove a user from a particular attendance.
     }
 
     /**
@@ -331,20 +344,23 @@ public class AttendeeService {
      * does not exist.
      *
      * @param executorId the executor (user) identifier
-     * @param userId the user identifier
-     * @param eventId the event identifier
-     * @param trackId the track identifier, potentially nullable
-     * @param role the new role
+     * @param userId     the user identifier
+     * @param eventId    the event identifier
+     * @param trackId    the track identifier, potentially nullable
+     * @param role       the new role
      * @throws NoSuchElementException indicates that no such attendance
-     *          exists, and, therefore, that no modification can take place.
+     *                                exists, and, therefore, that no modification
+     *                                can take place.
      */
     @Transactional
     public void modifyTitle(Long executorId, Long userId, Long eventId,
-                            @Nullable Long trackId, RoleTitle role)
+            @Nullable Long trackId, RoleTitle role)
             throws NoSuchElementException {
 
-        //Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId, trackId);
-        Optional<Attendee> retrievedAttendance = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId, trackId);
+        // Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId,
+        // trackId);
+        Optional<Attendee> retrievedAttendance = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId,
+                trackId);
 
         // Exception handling for when the repository can find the instance
         if (retrievedAttendance.isEmpty()) {
