@@ -70,7 +70,6 @@ public class Attendee extends HasEvents {
         this.confirmation = confirmation;
         this.event = event;
         this.track = track;
-        this.event = event;
         this.user = user;
     }
 
