@@ -22,13 +22,6 @@ import lombok.NoArgsConstructor;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.event.Event;
-import nl.tudelft.sem.template.events.TrackCreatedEvent;
-import nl.tudelft.sem.template.events.TrackDeadlineChangedEvent;
-import nl.tudelft.sem.template.events.TrackDescriptionChangedEvent;
-import nl.tudelft.sem.template.events.TrackPaperRequirementChangedEvent;
-import nl.tudelft.sem.template.events.TrackParentEventChangedEvent;
-import nl.tudelft.sem.template.events.TrackRemovedEvent;
-import nl.tudelft.sem.template.events.TrackTitleChangedEvent;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
 
@@ -96,7 +89,6 @@ public class Track extends HasEvents {
         this.submitDeadline = submitDeadline;
         this.reviewDeadline = reviewDeadline;
         this.event = event;
-        this.recordThat(new TrackCreatedEvent(event.getId(), this.id));
     }
 
     /**
@@ -111,7 +103,6 @@ public class Track extends HasEvents {
         this.submitDeadline = submitDeadline;
         this.reviewDeadline = reviewDeadline;
         this.event = event;
-        this.recordThat(new TrackCreatedEvent(event.getId(), this.id));
     }
 
     /**
@@ -130,7 +121,6 @@ public class Track extends HasEvents {
      */
     public void setTitle(Title title) {
         this.title = title;
-        this.recordThat(new TrackTitleChangedEvent(this));
     }
 
     /**
@@ -140,7 +130,6 @@ public class Track extends HasEvents {
      */
     public void setDescription(Description description) {
         this.description = description;
-        this.recordThat(new TrackDescriptionChangedEvent(this));
     }
 
     /**
@@ -150,7 +139,6 @@ public class Track extends HasEvents {
      */
     public void setPaperType(PaperRequirement paperType) {
         this.paperType = paperType;
-        this.recordThat(new TrackPaperRequirementChangedEvent(this));
     }
 
     /**
@@ -160,7 +148,6 @@ public class Track extends HasEvents {
      */
     public void setSubmitDeadline(LocalDate submitDeadline) {
         this.submitDeadline = submitDeadline;
-        this.recordThat(new TrackDeadlineChangedEvent(this));
     }
 
     /**
@@ -170,7 +157,6 @@ public class Track extends HasEvents {
      */
     public void setReviewDeadline(LocalDate reviewDeadline) {
         this.reviewDeadline = reviewDeadline;
-        this.recordThat(new TrackDeadlineChangedEvent(this));
     }
 
     /**
@@ -179,11 +165,7 @@ public class Track extends HasEvents {
      * @param event Event which this track belongs to
      */
     public void setEvent(Event event) {
-        Event temp = this.event;
         this.event = event;
-        this.recordThat(new TrackRemovedEvent(temp.getId(), this.id));
-        this.recordThat(new TrackParentEventChangedEvent(this));
-        this.recordThat(new TrackCreatedEvent(event.getId(), this.id));
     }
 
     /**
@@ -246,5 +228,14 @@ public class Track extends HasEvents {
         track.setReviewDeadline(this.reviewDeadline);
         track.setEventId(this.event.getId());
         return track;
+    }
+
+    /**
+     * Extends the accessor to a public visibility.
+     *
+     * @param object The log to be recorded.
+     */
+    public void recordLog(Object object) {
+        this.recordThat(object);
     }
 }
