@@ -8,6 +8,7 @@ import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.enums.RoleTitle;
 import nl.tudelft.sem.template.model.Attendee;
 import nl.tudelft.sem.template.model.Event;
+import nl.tudelft.sem.template.model.Role;
 import nl.tudelft.sem.template.services.AttendeeService;
 import nl.tudelft.sem.template.services.EventService;
 import nl.tudelft.sem.template.services.UserService;
@@ -64,10 +65,18 @@ public class EventController implements EventApi {
     @Override
     @Transactional
     public ResponseEntity<Void> deleteEvent(Long eventId) {
+        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+//        Role role = attendeeService.getAttendance(user.getId(), eventId, null).getRole();
+//        if (!.equals(Role.GENERAL_CHAIR)) {
+//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//        }
         if (!eventService.eventExistsById(eventId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        //AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+
         //Optional<Attendee> attendance = attendeeService.findAttendee(user.getId(), eventId, null);
         //if(user == null || )
         return new ResponseEntity<>(HttpStatus.OK);
@@ -76,8 +85,12 @@ public class EventController implements EventApi {
     @Override
     @Transactional
     public ResponseEntity<Event> getEventById(Long eventId) {
+        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         if (!eventService.eventExistsById(eventId)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Event event = eventService.getEventById(eventId).toModelEvent();
         return ResponseEntity.ok(event);

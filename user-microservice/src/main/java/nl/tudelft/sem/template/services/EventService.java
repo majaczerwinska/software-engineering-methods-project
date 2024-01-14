@@ -56,10 +56,7 @@ public class EventService {
      */
     @Transactional
     public boolean eventExistsById(Long id) {
-        if (repository.existsById(id)) {
-            return true;
-        }
-        return false;
+        return repository.existsById(id);
     }
 
     /**
