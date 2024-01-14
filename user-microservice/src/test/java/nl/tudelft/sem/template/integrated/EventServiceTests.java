@@ -7,7 +7,13 @@ import java.time.format.DateTimeFormatter;
 import nl.tudelft.sem.template.Application;
 import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.domain.event.EventRepository;
+import nl.tudelft.sem.template.domain.user.AppUser;
+import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.domain.user.Name;
+import nl.tudelft.sem.template.domain.user.UserRepository;
 import nl.tudelft.sem.template.services.EventService;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +36,30 @@ public class EventServiceTests {
     @Autowired
     private transient EventService service;
 
+    @Autowired
+    private transient UserRepository userRepository;
+
+    static AppUser user;
+
+    /**
+     * Initialize globals.
+     */
+    @BeforeAll
+    public static void setup() {
+        user = new AppUser(new Email("test@test.test"), new Name("name"), null, null, null);
+    }
+
     @Test
     public void createEventTest() {
 
         // Given
+        user = userRepository.save(user);
         LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
 
         // Create Event for the first time
         // When
-        Event returnedEvent = service.createEvent(startDate, endDate, false, "name", "desc");
+        Event returnedEvent = service.createEvent(startDate, endDate, false, "name", "desc", "test@test.test");
 
         // Then
         assertTrue(eventRepository.existsById(returnedEvent.getId()));
