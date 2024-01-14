@@ -19,13 +19,13 @@ import org.springframework.stereotype.Repository;
 public interface AttendeeRepository extends JpaRepository<Attendee, Long> {
     Optional<Attendee> findByUserIdAndEventIdAndTrackId(Long userId, Long eventId, Long trackId);
 
-    List<Attendee> findByUserIdAndConfirmation(Long userId, boolean confirmed);
+    List<Attendee> findByUserIdAndConfirmation(Long userId, Confirmation confirmed);
 
-    List<Attendee> findByEventIdAndConfirmation(Long eventId, boolean confirmed);
+    List<Attendee> findByEventIdAndConfirmation(Long eventId, Confirmation confirmed);
 
-    List<Attendee> findByTrackIdAndConfirmation(Long trackId, boolean confirmed);
+    List<Attendee> findByTrackIdAndConfirmation(Long trackId, Confirmation confirmed);
 
     boolean existsByUserIdAndEventIdAndTrackId(Long userId, Long eventId, Long trackId);
 
-    boolean existsByUserIdAndEventIdAndTrackIdAndConfirmation(Long userId, Long eventId, Long trackId, boolean confirmed);
+    boolean existsByUserIdAndEventIdAndTrackIdAndConfirmation(Long userId, Long eventId, Long trackId, Confirmation confirmed);
 }

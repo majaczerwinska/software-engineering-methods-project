@@ -167,7 +167,7 @@ public class AttendeeService {
     public List<Attendee> getAttendanceByUser(Long userId)
             throws NoSuchElementException {
 
-        List<Attendee> retrievedList = attendeeRepository.findByUserIdAndConfirmation(userId, true);
+        List<Attendee> retrievedList = attendeeRepository.findByUserIdAndConfirmation(userId, new Confirmation(true));
 
         // Exception handling for when no attendances can be found.
         if (retrievedList.isEmpty()) {
@@ -190,7 +190,7 @@ public class AttendeeService {
     public List<Attendee> getAttendanceByEvent(Long eventId)
             throws NoSuchElementException {
 
-        List<Attendee> retrievedList = attendeeRepository.findByEventIdAndConfirmation(eventId, true);
+        List<Attendee> retrievedList = attendeeRepository.findByEventIdAndConfirmation(eventId, new Confirmation(true));
 
         // Exception handling for when no attendances can be found.
         if (retrievedList.isEmpty()) {
@@ -213,7 +213,7 @@ public class AttendeeService {
     public List<Attendee> getAttendanceByTrack(@NonNull Long trackId)
             throws NoSuchElementException {
 
-        List<Attendee> retrievedList = attendeeRepository.findByTrackIdAndConfirmation(trackId, true);
+        List<Attendee> retrievedList = attendeeRepository.findByTrackIdAndConfirmation(trackId, new Confirmation(true));
 
         // Exception handling for when no attendances can be found.
         if (retrievedList.isEmpty()) {
