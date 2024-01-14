@@ -82,7 +82,7 @@ public class Event extends HasEvents {
         this.isCancelled = isCancelled;
         this.name = name;
         this.description = description;
-        this.recordThat(((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerCreation(this));
+        ((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerCreation(this);
     }
 
     /**
@@ -96,7 +96,7 @@ public class Event extends HasEvents {
         this.isCancelled = isCancelled;
         this.name = name;
         this.description = description;
-        this.recordThat(((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerCreation(this));
+        ((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerCreation(this);
     }
 
     /**
@@ -119,27 +119,27 @@ public class Event extends HasEvents {
 
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
-        this.recordThat(((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerStartDateChange(this));
+        ((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerStartDateChange(this);
     }
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-        this.recordThat(((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerEndDateChange(this));
+        ((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerEndDateChange(this);
     }
 
     public void setIsCancelled(IsCancelled isCancelled) {
         this.isCancelled = isCancelled;
-        this.recordThat(((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerIsCancelledChange(this));
+        ((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerIsCancelledChange(this);
     }
 
     public void setName(EventName name) {
         this.name = name;
-        this.recordThat(((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerEventNameChange(this));
+        ((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerEventNameChange(this);
     }
 
     public void setEventDescription(EventDescription description) {
         this.description = description;
-        this.recordThat(((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerEventDescriptionChange(this));
+        ((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerEventDescriptionChange(this);
     }
 
     /**
