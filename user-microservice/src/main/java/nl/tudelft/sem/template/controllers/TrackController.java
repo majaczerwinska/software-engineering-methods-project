@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-
 /**
  * This controller is responsible for methods related to the Track entity.
  */
-// The redundancy of literals here is justified for the queries and the parameter alias.
+// The redundancy of literals here is justified for the queries and the
+// parameter alias.
 @RestController
 public class TrackController implements TrackApi {
     private final transient AuthManager authManager;
@@ -68,13 +68,13 @@ public class TrackController implements TrackApi {
                     track.getEventId(), track.getId(), 0)) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }
-            trackService.createTrack(new nl.tudelft.sem.template.domain.track.Track(track));
+            trackService.createTrack(track.getTitle(), track.getDescription(), track.getSubmitDeadline(),
+                    track.getReviewDeadline(), track.getPaperType(), track.getEventId());
             return ResponseEntity.ok(track);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
         }
     }
-
 
     /**
      * Updates an existing track account and saves it in the repository.
@@ -90,7 +90,8 @@ public class TrackController implements TrackApi {
                     track.getEventId(), track.getId(), 1)) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }
-            trackService.updateTrack(new nl.tudelft.sem.template.domain.track.Track(track));
+            trackService.updateTrack(track.getId(), track.getTitle(), track.getDescription(), track.getSubmitDeadline(),
+                    track.getReviewDeadline(), track.getPaperType(), track.getEventId());
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
@@ -135,7 +136,7 @@ public class TrackController implements TrackApi {
     @Transactional
     public ResponseEntity<Track> getTrackByID(@PathVariable("trackId") Integer trackId) {
         try {
-            if (! userService.userExistsByEmail(new Email(authManager.getEmail()))) {
+            if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }
             Track track = trackService.getTrackById(trackId.longValue()).toModelTrack();
@@ -159,7 +160,7 @@ public class TrackController implements TrackApi {
     @Transactional
     public ResponseEntity<List<Track>> getTrack(String title, Integer eventId, PaperType paperType) {
         try {
-            if (! userService.userExistsByEmail(new Email(authManager.getEmail()))) {
+            if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }
             List<Track> tracks;

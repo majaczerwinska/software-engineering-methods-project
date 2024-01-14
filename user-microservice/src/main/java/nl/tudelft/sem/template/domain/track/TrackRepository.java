@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.domain.track;
 
 import java.util.List;
 import java.util.Optional;
+import nl.tudelft.sem.template.domain.event.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -37,7 +38,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     /**
      * find list of track that have this title.
      *
-     * @param title     the title to look for
+     * @param title the title to look for
      * @return list of track that have this title
      */
     List<Track> findByTitle(Title title);
@@ -70,7 +71,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     /**
      * check if event with input title exist.
      *
-     * @param title     the title to check for
+     * @param title the title to check for
      * @return true if event with input title exist
      */
     boolean existsByTitle(Title title);

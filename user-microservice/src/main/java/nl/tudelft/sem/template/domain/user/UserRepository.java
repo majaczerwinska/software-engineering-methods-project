@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UserRepository extends JpaRepository<AppUser, String> {
+    Optional<AppUser> findById(Long id);
+
     /**
      * Find user by NetID.
      */
@@ -18,7 +20,4 @@ public interface UserRepository extends JpaRepository<AppUser, String> {
      * Check if an existing user already uses a NetID.
      */
     boolean existsByEmail(Email email);
-
-    @Override
-    AppUser save(AppUser event);
 }
