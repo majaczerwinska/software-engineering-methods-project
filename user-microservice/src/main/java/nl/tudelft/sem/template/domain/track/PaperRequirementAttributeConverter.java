@@ -2,7 +2,7 @@ package nl.tudelft.sem.template.domain.track;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import nl.tudelft.sem.template.model.PaperType;
+import nl.tudelft.sem.template.enums.PaperType;
 
 
 /**

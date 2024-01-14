@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
  * A DDD value object representing an event's name in our domain.
  */
 @EqualsAndHashCode
-public class EventName {
+class EventName {
     private final transient String eventNameValue;
 
     public EventName(String eventName) {

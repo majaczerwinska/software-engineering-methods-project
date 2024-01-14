@@ -5,7 +5,11 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import java.time.LocalDate;
+import java.util.Arrays;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.format.annotation.DateTimeFormat;
+import java.util.NoSuchElementException;
+import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -19,7 +23,7 @@ import javax.annotation.Generated;
  * Event
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-14T04:30:26.331132131+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-12-05T18:45:04.605384300+01:00[Europe/Amsterdam]")
 public class Event {
 
   private Long id;
@@ -34,7 +38,7 @@ public class Event {
 
   private String name;
 
-  private String description = null;
+  private JsonNullable<String> description = JsonNullable.undefined();
 
   public Event id(Long id) {
     this.id = id;
@@ -137,7 +141,7 @@ public class Event {
   }
 
   public Event description(String description) {
-    this.description = description;
+    this.description = JsonNullable.of(description);
     return this;
   }
 
@@ -148,11 +152,11 @@ public class Event {
   
   @Schema(name = "description", example = "this is a conference that deals with submitting papers to review.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("description")
-  public String getDescription() {
+  public JsonNullable<String> getDescription() {
     return description;
   }
 
-  public void setDescription(String description) {
+  public void setDescription(JsonNullable<String> description) {
     this.description = description;
   }
 
@@ -170,12 +174,23 @@ public class Event {
         Objects.equals(this.endDate, event.endDate) &&
         Objects.equals(this.isCancelled, event.isCancelled) &&
         Objects.equals(this.name, event.name) &&
-        Objects.equals(this.description, event.description);
+        equalsNullable(this.description, event.description);
+  }
+
+  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
+    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, startDate, endDate, isCancelled, name, description);
+    return Objects.hash(id, startDate, endDate, isCancelled, name, hashCodeNullable(description));
+  }
+
+  private static <T> int hashCodeNullable(JsonNullable<T> a) {
+    if (a == null) {
+      return 1;
+    }
+    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
   }
 
   @Override

@@ -1,6 +1,5 @@
 package nl.tudelft.sem.template.domain.user;
 
-import java.util.Objects;
 import javax.persistence.AttributeConverter;
 
 /**
@@ -9,7 +8,7 @@ import javax.persistence.AttributeConverter;
 public class LinkAttributeConverter implements AttributeConverter<Link, String> {
     @Override
     public String convertToDatabaseColumn(Link attribute) {
-        return Objects.toString(attribute);
+        return attribute.toString();
     }
 
     @Override

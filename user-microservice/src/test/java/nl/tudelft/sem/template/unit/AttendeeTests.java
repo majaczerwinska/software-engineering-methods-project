@@ -11,53 +11,60 @@ import nl.tudelft.sem.template.domain.attendee.Confirmation;
 import nl.tudelft.sem.template.domain.attendee.ConfirmationAttributeConverter;
 import nl.tudelft.sem.template.domain.attendee.Role;
 import nl.tudelft.sem.template.domain.attendee.RoleAttributeConverter;
-import nl.tudelft.sem.template.domain.event.Event;
-import nl.tudelft.sem.template.domain.track.Track;
-import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.enums.RoleTitle;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class AttendeeTests {
 
-    static AppUser user;
-    static Track track;
-    static Event event;
+
     static Attendee nullAttendee;
     static Attendee attendeeEquals;
     static Attendee attendeeEquals2;
     static Attendee setterAttendee;
 
     /**
-     * Setups the variables for the tests.
+     * Setups teh variables for the tests.
      */
     @BeforeAll
     public static void setup() {
-        user = new AppUser();
-        track = new Track();
-        event = new Event();
 
         nullAttendee = new Attendee(
-                0L,
+                1L,
+                3L,
+                4L,
+                null,
                 new Role(RoleTitle.ATTENDEE),
-                new Confirmation(true),
-                null, null, null);
+                new Confirmation(true)
+        );
 
         setterAttendee = new Attendee(
-                1L,
+                6L,
+                4L,
+                4L,
+                5L,
                 new Role(RoleTitle.ATTENDEE),
-                new Confirmation(false),
-                event, track, user);
+                new Confirmation(false)
+        );
 
-        attendeeEquals = new Attendee(2L,
-                new Role(RoleTitle.PC_CHAIR),
-                new Confirmation(true),
-                event, track, user);
 
-        attendeeEquals2 = new Attendee(2L,
+        attendeeEquals = new Attendee(
+                5L,
+                3L,
+                4L,
+                5L,
                 new Role(RoleTitle.PC_CHAIR),
-                new Confirmation(true),
-                event, track, user);
+                new Confirmation(true)
+        );
+
+        attendeeEquals2 = new Attendee(
+                5L,
+                3L,
+                4L,
+                5L,
+                new Role(RoleTitle.PC_CHAIR),
+                new Confirmation(true)
+        );
     }
 
     @Test
@@ -69,11 +76,11 @@ public class AttendeeTests {
     void allArgsConstorTests() {
         assertNotNull(nullAttendee);
 
-        // Check the confirmation
+        //Check the confirmation
         assertNotNull(nullAttendee.getConfirmation());
         assertEquals(nullAttendee.isConfirmed(), true);
 
-        // Check the role
+        //Check the role
         assertNotNull(nullAttendee.getRole());
         assertEquals(nullAttendee.getRole().getRoleTitle(), RoleTitle.ATTENDEE);
 
@@ -89,8 +96,10 @@ public class AttendeeTests {
         assertNotEquals(cnf.isConfirmed(), setterAttendee.isConfirmed());
     }
 
+
     @Test
     void equalsTests() {
+
         assertEquals(attendeeEquals, attendeeEquals);
         assertNotEquals(attendeeEquals, null);
         assertNotEquals(attendeeEquals, 1231231L);
@@ -102,9 +111,10 @@ public class AttendeeTests {
     @Test
     void hashCodeTests() {
 
-        // Just to cover this base
-        assertEquals(nullAttendee.hashCode(), Objects.hash(0L));
+        //Just to cover this base
+        assertEquals(nullAttendee.hashCode(), Objects.hash(1L));
     }
+
 
     @Test
     void confirmationConverterTest() {
@@ -124,5 +134,8 @@ public class AttendeeTests {
         assertEquals(role.getRoleTitle(), RoleTitle.SUB_REVIEWER);
         assertEquals(conv.convertToDatabaseColumn(role), "SUB_REVIEWER");
     }
+
+
+
 
 }
