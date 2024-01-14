@@ -33,7 +33,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith({SpringExtension.class, MockitoExtension.class})
+@ExtendWith({ SpringExtension.class, MockitoExtension.class })
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -63,7 +63,8 @@ public class EventControllerTests {
         LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         event = new nl.tudelft.sem.template.domain.event.Event(
-            startDate, endDate, new IsCancelled(false), new EventName("name"), new EventDescription("desc")).toModelEvent();
+                startDate, endDate, new IsCancelled(false), new EventName("name"), new EventDescription("desc"))
+                .toModelEvent();
         appUser = new AppUser(new Email("test@test.net"), new Name("name"));
     }
 

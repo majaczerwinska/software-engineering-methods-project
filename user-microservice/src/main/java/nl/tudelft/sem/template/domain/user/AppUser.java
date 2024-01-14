@@ -1,12 +1,16 @@
 package nl.tudelft.sem.template.domain.user;
 
+import java.util.List;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,13 +18,11 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
-import nl.tudelft.sem.template.events.UserWasCreatedEvent;
-
+import nl.tudelft.sem.template.domain.attendee.Attendee;
 
 /**
  * A DDD entity representing an application user in our domain.
  */
-
 
 @Entity
 @Table(name = "users")
@@ -35,7 +37,7 @@ public class AppUser extends HasEvents {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
     @Convert(converter = EmailAttributeConverter.class)
@@ -48,7 +50,7 @@ public class AppUser extends HasEvents {
     private Name name;
 
     @Column(name = "affiliation", nullable = true)
-    @Convert(converter =  UserAffiliationAttributeConverter.class)
+    @Convert(converter = UserAffiliationAttributeConverter.class)
     private UserAffiliation affiliation;
 
     @Column(name = "link", nullable = true)
@@ -59,24 +61,21 @@ public class AppUser extends HasEvents {
     @Convert(converter = CommunicationAttributeConverter.class)
     private Communication communication;
 
-    //    @ManyToMany
-    //    @JoinTable(
-    //            name = "user_event",
-    //            joinColumns = @JoinColumn(name = "user_id"),
-    //            inverseJoinColumns = @JoinColumn(name = "event_id")
-    //    )
-    //    private Set<Event> events = new HashSet<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attendee> attendance;
 
+    public AppUser(Long id) {
+        this.id = id;
+    }
 
     /**
      * Create new application user.
      *
-     * @param email    The Email for the new user
+     * @param email The Email for the new user
      */
     public AppUser(Email email,
-                   Name name, UserAffiliation affiliation, Link link, Communication communication) {
+            Name name, UserAffiliation affiliation, Link link, Communication communication) {
         this.email = email;
-        this.recordThat(new UserWasCreatedEvent(email));
         this.name = name;
         this.affiliation = affiliation;
         this.link = link;
@@ -101,5 +100,14 @@ public class AppUser extends HasEvents {
     @Override
     public int hashCode() {
         return Objects.hash(email);
+    }
+
+    /**
+     * Extends the accessor to a public visibility.
+     *
+     * @param object The log to be recorded.
+     */
+    public void recordLog(Object object) {
+        this.recordThat(object);
     }
 }
