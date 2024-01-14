@@ -47,30 +47,28 @@ public class AttendeeServiceTests {
 
         @BeforeAll
     public static void setup() {
-        user = new AppUser();
-        track = new Track();
-        event = new Event();
+        user = new AppUser(1L);
+        track = new Track(1L);
+        event = new Event(1L);
         }
 
 
     @Test
     public void createAttendeeTest() {
+        Long trackId = null;
 
         // Given
-        Long userId = 1231231L;
-        Long eventId = 612412L;
-
         // Self-enroll for the first time
         // When
-        service.enroll(userId, eventId, null, RoleTitle.ATTENDEE);
+        service.enroll(user.getId(), event.getId(), null, RoleTitle.ATTENDEE);
 
         // Then
-        assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackId(userId, eventId, null));
+        assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackId(user.getId(), event.getId(), trackId));
 
         // Self-enroll for the second time throws exception on duplicate creation
         // When & Then
         var e = assertThrows(IllegalArgumentException.class, () -> {
-                service.enroll(userId, eventId, null, RoleTitle.ATTENDEE);
+                service.enroll(user.getId(), event.getId(), null, RoleTitle.ATTENDEE);
             }
         );
 
@@ -83,9 +81,9 @@ public class AttendeeServiceTests {
     //     RoleTitle role = RoleTitle.AUTHOR;
 
     //     // When
-    //     service.invite(user, userId, eventId, trackId, role);
-    //     service.accept(userId, userId, eventId, trackId);
-    //     Attendee attendee = service.getAttendance(userId, eventId, trackId);
+    //     service.invite(user, user.getId(), event.getId(), track.getId(), role);
+    //     service.accept(user.getId(), user.getId(), event.getId(), track.getId());
+    //     Attendee attendee = service.getAttendance(user.getId(), event.getId(), track.getId());
 
     //     // Then
     //     assertEquals(attendee.getUser(), user);
@@ -98,19 +96,19 @@ public class AttendeeServiceTests {
     // @Test
     // public void findAttendeeNullTrackTest() {
     //     // Given
-    //     Long userId = 5L;
-    //     Long eventId = 10L;
-    //     Long trackId = null;
+    //     Long user.getId() = 5L;
+    //     Long event.getId() = 10L;
+    //     Long track.getId() = null;
     //     RoleTitle role = RoleTitle.ATTENDEE;
 
     //     // When
-    //     service.invite(userId, userId, eventId, trackId, role);
-    //     service.accept(userId, userId, eventId, trackId);
-    //     Attendee attendee = service.getAttendance(userId, eventId, trackId);
+    //     service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
+    //     service.accept(user.getId(), user.getId(), event.getId(), track.getId());
+    //     Attendee attendee = service.getAttendance(user.getId(), event.getId(), track.getId());
 
     //     // Then
-    //     assertEquals(attendee.getUserId(), userId);
-    //     assertEquals(attendee.getEventId(), eventId);
+    //     assertEquals(attendee.getUserId(), user.getId());
+    //     assertEquals(attendee.getEventId(), event.getId());
     //     assertNull(attendee.getTrackId());
     //     assertTrue(attendee.getConfirmation().isConfirmed());
     //     assertEquals(attendee.getRole().getRoleTitle(), role);
@@ -131,17 +129,14 @@ public class AttendeeServiceTests {
     public void unconfirmedRetrievalGetAttendanceTest() {
 
         // Given
-        Long userId = 5L;
-        Long eventId = 10L;
-        Long trackId = 51L;
         RoleTitle role = RoleTitle.AUTHOR;
 
         // When
-        service.invite(userId, userId, eventId, trackId, role);
+        service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
 
         // Then
         Exception e = assertThrows(NoSuchElementException.class, () -> {
-                service.getAttendance(userId, eventId, trackId);
+                service.getAttendance(user.getId(), event.getId(), track.getId());
             }
         );
         assertEquals(e.getMessage(), "No confirmed attendance can be found.");
@@ -151,99 +146,84 @@ public class AttendeeServiceTests {
     public void unconfirmedIsInvitedTest() {
 
         // Given
-        Long userId = 5L;
-        Long eventId = 10L;
-        Long trackId = 51L;
         RoleTitle role = RoleTitle.AUTHOR;
 
         // When
-        service.invite(userId, userId, eventId, trackId, role);
+        service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
 
         // Then
-        assertTrue(service.isInvited(userId, eventId, trackId));
-        assertFalse(service.isInvited(userId + 1L, eventId, trackId));
+        assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackId(user.getId(), event.getId(), track.getId()));
+        assertFalse(attendeeRepository.existsByUserIdAndEventIdAndTrackId(user.getId() + 1L, event.getId(), track.getId()));
     }
 
     @Test
     public void nullTrackIdIsInvitedTest() {
 
         // Given
-        Long userId = 5L;
-        Long eventId = 10L;
-        Long trackId = null;
         RoleTitle role = RoleTitle.ATTENDEE;
 
         // When
-        service.invite(userId, userId, eventId, trackId, role);
+        service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
 
         // Then
-        assertTrue(service.isInvited(userId, eventId, trackId));
+        assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackId(user.getId(), event.getId(), track.getId()));
     }
 
     @Test
     public void changedConfirmationIsAttendingTest() {
 
         // Given
-        Long userId = 5L;
-        Long eventId = 10L;
-        Long trackId = 51L;
         RoleTitle role = RoleTitle.AUTHOR;
 
         // When
-        service.invite(userId, userId, eventId, trackId, role);
+        service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
 
         // Then
-        assertFalse(service.isAttending(userId, eventId, trackId));
+        assertFalse(attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), event.getId(), track.getId(), true));
 
         // When
-        service.accept(userId, userId, eventId, trackId);
+        service.accept(user.getId(), user.getId(), event.getId(), track.getId());
 
         // Then
-        assertTrue(service.isAttending(userId, eventId, trackId));
+        assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), event.getId(), track.getId(), true));
     }
 
     @Test
     public void nullTrackIdIsAttendingTest() {
 
         // Given
-        Long userId = 5L;
-        Long eventId = 10L;
-        Long trackId = null;
         RoleTitle role = RoleTitle.ATTENDEE;
 
         // When
-        service.invite(userId, userId, eventId, trackId, role);
+        service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
 
         // Then
-        assertFalse(service.isAttending(userId, eventId, trackId));
+        assertFalse(attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), event.getId(), track.getId(), true));
 
         // When
-        service.accept(userId, userId, eventId, trackId);
+        service.accept(user.getId(), user.getId(), event.getId(), track.getId());
 
         // Then
-        assertTrue(service.isAttending(userId, eventId, trackId));
+        assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), event.getId(), track.getId(), true));
     }
 
     @Test
     public void getAttendanceByUserTest() {
 
         // Given
-        Long userId = 5L;
-        Long eventId = 10L;
-        Long trackId = 51L;
         RoleTitle role = RoleTitle.AUTHOR;
 
         int num = 10;
 
         // When
         for (int i = 0; i < num; i++) {
-            service.invite(userId, userId, eventId, trackId + i, role);
-            service.accept(userId, userId, eventId, trackId + i);
+            service.invite(user.getId(), user.getId(), event.getId(), track.getId() + i, role);
+            service.accept(user.getId(), user.getId(), event.getId(), track.getId() + i);
         }
 
         // Then
         Exception e = assertThrows(NoSuchElementException.class, () -> {
-                service.getAttendanceByUser(userId + 1L);
+                service.getAttendanceByUser(user.getId() + 1L);
             }
         );
 
@@ -251,7 +231,7 @@ public class AttendeeServiceTests {
 
 
         // Then
-        List<Attendee> retrieved = service.getAttendanceByUser(userId);
+        List<Attendee> retrieved = service.getAttendanceByUser(user.getId());
         assertEquals(retrieved.size(), num);
 
         for (int i = 0; i < num; i++) {
@@ -263,22 +243,19 @@ public class AttendeeServiceTests {
     public void getAttendanceByEventTest() {
 
         // Given
-        Long userId = 5L;
-        Long eventId = 10L;
-        Long trackId = 51L;
         RoleTitle role = RoleTitle.AUTHOR;
 
         int num = 10;
 
         // When
         for (int i = 0; i < num; i++) {
-            service.invite(userId + i, userId + i, eventId, trackId, role);
-            service.accept(userId + i, userId + i, eventId, trackId);
+            service.invite(user.getId() + i, user.getId() + i, event.getId(), track.getId(), role);
+            service.accept(user.getId() + i, user.getId() + i, event.getId(), track.getId());
         }
 
         // Then
         Exception e = assertThrows(NoSuchElementException.class, () -> {
-                service.getAttendanceByEvent(eventId + 1L);
+                service.getAttendanceByEvent(event.getId() + 1L);
             }
         );
 
@@ -286,7 +263,7 @@ public class AttendeeServiceTests {
 
 
         // Then
-        List<Attendee> retrieved = service.getAttendanceByEvent(eventId);
+        List<Attendee> retrieved = service.getAttendanceByEvent(event.getId());
         assertEquals(retrieved.size(), num);
 
         for (int i = 0; i < num; i++) {
@@ -298,17 +275,14 @@ public class AttendeeServiceTests {
     public void getAttendanceByTrackTest() {
 
         // Given
-        Long userId = 5L;
-        Long eventId = 10L;
-        Long trackId = 51L;
         RoleTitle role = RoleTitle.AUTHOR;
 
         int num = 10;
 
         // When
         for (int i = 0; i < num; i++) {
-            service.invite(userId + i, userId + i, eventId, trackId, role);
-            service.accept(userId + i, userId + i, eventId, trackId);
+            service.invite(user.getId() + i, user.getId() + i, event.getId(), track.getId(), role);
+            service.accept(user.getId() + i, user.getId() + i, event.getId(), track.getId());
         }
 
         // Then
@@ -317,7 +291,7 @@ public class AttendeeServiceTests {
             }
         );
         Exception e = assertThrows(NoSuchElementException.class, () -> {
-                service.getAttendanceByTrack(trackId + 1L);
+                service.getAttendanceByTrack(track.getId() + 1L);
             }
         );
 
@@ -325,7 +299,7 @@ public class AttendeeServiceTests {
 
 
         // Then
-        List<Attendee> retrieved = service.getAttendanceByTrack(trackId);
+        List<Attendee> retrieved = service.getAttendanceByTrack(track.getId());
         assertEquals(retrieved.size(), num);
 
         for (int i = 0; i < num; i++) {
@@ -337,25 +311,22 @@ public class AttendeeServiceTests {
     public void modifyTitleTest() {
 
         // Given
-        Long userId = 5L;
-        Long eventId = 10L;
-        Long trackId = 51L;
         RoleTitle role = RoleTitle.AUTHOR;
         RoleTitle modifiedRole = RoleTitle.ATTENDEE;
 
         // When - Then
         Exception e = assertThrows(NoSuchElementException.class, () -> {
-            service.modifyTitle(userId, userId, eventId, trackId, modifiedRole);
+            service.modifyTitle(user.getId(), user.getId(), event.getId(), track.getId(), modifiedRole);
             }
         );
         assertEquals(e.getMessage(), "No such attendance is found; cannot be modified.");
 
         // When
-        service.invite(userId, userId, eventId, trackId, role);
-        service.accept(userId, userId, eventId, trackId);
-        service.modifyTitle(userId, userId, eventId, trackId, modifiedRole);
+        service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
+        service.accept(user.getId(), user.getId(), event.getId(), track.getId());
+        service.modifyTitle(user.getId(), user.getId(), event.getId(), track.getId(), modifiedRole);
 
-        Attendee attendee = service.getAttendance(userId, eventId, trackId);
+        Attendee attendee = service.getAttendance(user.getId(), event.getId(), track.getId());
 
         // Then
         assertEquals(attendee.getRole().getRoleTitle(), modifiedRole);
@@ -365,24 +336,21 @@ public class AttendeeServiceTests {
     public void deleteAttendanceTest() {
 
         // Given
-        Long userId = 5L;
-        Long eventId = 10L;
-        Long trackId = 51L;
         RoleTitle role = RoleTitle.AUTHOR;
 
         // When - Then
         Exception e = assertThrows(NoSuchElementException.class, () -> {
-                service.resign(userId, eventId, trackId);
+                service.resign(user.getId(), event.getId(), track.getId());
             }
         );
         assertEquals(e.getMessage(), "No such attendance can be found, so no deletion is possible.");
 
         // When
-        service.invite(userId, userId, eventId, trackId, role);
-        service.accept(userId, userId, eventId, trackId);
-        service.resign(userId, eventId, trackId);
+        service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
+        service.accept(user.getId(), user.getId(), event.getId(), track.getId());
+        service.resign(user.getId(), event.getId(), track.getId());
 
         // Then
-        assertFalse(service.isInvited(userId, eventId, trackId));
+        assertFalse(attendeeRepository.existsByUserIdAndEventIdAndTrackId(user.getId(), event.getId(), track.getId()));
     }
 }

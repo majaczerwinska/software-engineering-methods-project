@@ -60,6 +60,10 @@ public class Attendee extends HasEvents {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private AppUser user;
 
+    public Attendee(Long id) {
+        this.id = id;
+    }
+
     public Attendee(Role role, Confirmation confirmation, Event event, Track track, AppUser user) {
         this.role = role;
         this.confirmation = confirmation;
@@ -68,7 +72,6 @@ public class Attendee extends HasEvents {
         this.event = event;
         this.user = user;
     }
-
 
     /**
      * A getter accessor method to bypass the value object {@link Confirmation}

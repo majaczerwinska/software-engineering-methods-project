@@ -41,7 +41,7 @@ public class AppUser extends HasEvents {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
     @Convert(converter = EmailAttributeConverter.class)
@@ -67,6 +67,10 @@ public class AppUser extends HasEvents {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attendee> attendance;
+
+    public AppUser(Long id) {
+        this.id = id;
+    }
 
     /**
      * Create new application user.

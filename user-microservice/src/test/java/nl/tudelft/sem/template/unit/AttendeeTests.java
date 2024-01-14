@@ -39,25 +39,27 @@ public class AttendeeTests {
         event = new Event();
 
         nullAttendee = new Attendee(
+            0L,
                 new Role(RoleTitle.ATTENDEE),
                 new Confirmation(true),
-                event, track, user
+                null, null, null
         );
 
         setterAttendee = new Attendee(
+            1L,
                 new Role(RoleTitle.ATTENDEE),
                 new Confirmation(false),
                 event, track, user
         );
 
 
-        attendeeEquals = new Attendee(
+        attendeeEquals = new Attendee(2L,
                 new Role(RoleTitle.PC_CHAIR),
                 new Confirmation(true),
                 event, track, user
         );
 
-        attendeeEquals2 = new Attendee(
+        attendeeEquals2 = new Attendee(2L,
                 new Role(RoleTitle.PC_CHAIR),
                 new Confirmation(true),
                 event, track, user
@@ -96,7 +98,6 @@ public class AttendeeTests {
 
     @Test
     void equalsTests() {
-
         assertEquals(attendeeEquals, attendeeEquals);
         assertNotEquals(attendeeEquals, null);
         assertNotEquals(attendeeEquals, 1231231L);
@@ -109,7 +110,7 @@ public class AttendeeTests {
     void hashCodeTests() {
 
         //Just to cover this base
-        assertEquals(nullAttendee.hashCode(), Objects.hash(1L));
+        assertEquals(nullAttendee.hashCode(), Objects.hash(0L));
     }
 
 

@@ -69,7 +69,7 @@ public class AttendeeService {
             throws IllegalArgumentException {
 
         // Check that no such attendance already exists
-        if (isInvited(userId, eventId, trackId)) {
+        if (attendeeRepository.existsByUserIdAndEventIdAndTrackId(userId, eventId, trackId)) {
             throw new IllegalArgumentException("Attendance instance already exists.");
         }
 
@@ -122,44 +122,6 @@ public class AttendeeService {
     }
 
     // Public Methods
-
-    /**
-     * Verifies the attendance of a user in the given event and track. Can
-     * handle nullable {@code trackId} track identifiers.
-     *
-     * <p>This method DOES NOT discriminate on the basis of the confirmation
-     * status of the attendance (compare to {@link #isAttending}).
-     *
-     * @param userId the user identifier
-     * @param eventId the event identifier
-     * @param trackId the track identifier, potentially nullable
-     * @return Returns TRUE if such an attendance exists in the repository;
-     *          otherwise, returns FALSE.
-     */
-    public boolean isInvited(Long userId, Long eventId,
-                             @Nullable Long trackId) {
-
-        return attendeeRepository.existsByUserIdAndEventIdAndTrackId(userId, eventId, trackId);
-    }
-
-    /**
-     * Verifies the confirmed attendance of a user in the given event and
-     * track. Can handle nullable {@code trackId} track identifiers.
-     *
-     * <p>This method DOES discriminate in terms of the confirmation status
-     * of the attendance (compare to {@link #isInvited}).
-     *
-     * @param userId the user identifier
-     * @param eventId the event identifier
-     * @param trackId the track identifier, potentially nullable
-     * @return Returns TRUE if such a confirmed attendance exists; otherwise,
-     *          returns FALSE.
-     */
-    public boolean isAttending(Long userId, Long eventId,
-                               @Nullable Long trackId) {
-
-        return attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(userId, eventId, trackId, true);
-    }
 
     /**
      * Retrieves the confirmed Attendee instance corresponding to the given

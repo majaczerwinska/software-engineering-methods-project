@@ -75,6 +75,10 @@ public class Track extends HasEvents {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "track", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attendee> attendees;
 
+    public Track(Long id) {
+        this.id = id;
+    }
+
     /**
      * a constructor for Track.
      * where the deadlines can be inputted as the latest time,
