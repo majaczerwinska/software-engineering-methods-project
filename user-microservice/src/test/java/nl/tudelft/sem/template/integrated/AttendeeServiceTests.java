@@ -10,6 +10,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import javax.transaction.Transactional;
+
 import nl.tudelft.sem.template.Application;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.attendee.AttendeeRepository;
@@ -41,11 +44,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
-// activate profiles to have spring use mocks during auto-injection of certain beans.
+// activate profiles to have spring use mocks during auto-injection of certain
+// beans.
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AttendeeServiceTests {
@@ -69,22 +71,22 @@ public class AttendeeServiceTests {
     static Track track;
     static Event event;
 
-        @BeforeAll
+    @BeforeAll
     public static void setup() {
         LocalDate date0 = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         LocalDate date1 = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
-            user = new AppUser(new Email("test@test.test"), new Name("name"), null, null, null);
-            event = new Event(date0, date1, new IsCancelled(false), new EventName("name"), new EventDescription("desc"));
-            track = new Track(new Title("title"), new Description("desc"), new PaperRequirement(PaperType.FULL_PAPER), date0, date1, event);
-        }
-
+        user = new AppUser(new Email("test@test.test"), new Name("name"), null, null, null);
+        event = new Event(date0, date1, new IsCancelled(false), new EventName("name"), new EventDescription("desc"));
+        track = new Track(new Title("title"), new Description("desc"), new PaperRequirement(PaperType.FULL_PAPER),
+                date0, date1, event);
+    }
 
     @Test
     public void createAttendeeTest() {
         Long trackId = null;
 
         // Given
-                 userRepository.save(user);
+        userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
 
@@ -98,51 +100,58 @@ public class AttendeeServiceTests {
         // Self-enroll for the second time throws exception on duplicate creation
         // When & Then
         var e = assertThrows(IllegalArgumentException.class, () -> {
-                service.enroll(user.getId(), event.getId(), null, RoleTitle.ATTENDEE);
-            }
-        );
+            service.enroll(user.getId(), event.getId(), null, RoleTitle.ATTENDEE);
+        });
 
         assertEquals(e.getMessage(), "Attendance instance already exists.");
     }
 
-    // @Test
-    // public void findAttendeeTest() {
-    //     // Given
-    //     RoleTitle role = RoleTitle.AUTHOR;
+    @Test
+    @Transactional
+    public void findAttendeeTest() {
+        // Given
+        RoleTitle role = RoleTitle.AUTHOR;
+        user = userRepository.save(user);
+        event = eventRepository.save(event);
+        track = trackRepository.save(track);
 
-    //     // When
-    //     service.invite(user, user.getId(), event.getId(), track.getId(), role);
-    //     service.accept(user.getId(), user.getId(), event.getId(), track.getId());
-    //     Attendee attendee = service.getAttendance(user.getId(), event.getId(), track.getId());
+        // When
+        service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
+        service.accept(user.getId(), user.getId(), event.getId(), track.getId());
+        Attendee attendee = service.getAttendance(user.getId(), event.getId(),
+                track.getId());
 
-    //     // Then
-    //     assertEquals(attendee.getUser(), user);
-    //     assertEquals(attendee.getEvent(), event);
-    //     assertEquals(attendee.getTrack(), track);
-    //     assertTrue(attendee.getConfirmation().isConfirmed());
-    //     assertEquals(attendee.getRole().getRoleTitle(), role);
-    // }
+        // Then
+        assertEquals(attendee.getUser(), user);
+        assertEquals(attendee.getEvent(), event);
+        assertEquals(attendee.getTrack(), track);
+        assertTrue(attendee.getConfirmation().isConfirmed());
+        assertEquals(attendee.getRole().getRoleTitle(), role);
+    }
 
-    // @Test
-    // public void findAttendeeNullTrackTest() {
-    //     // Given
-    //     Long user.getId() = 5L;
-    //     Long event.getId() = 10L;
-    //     Long track.getId() = null;
-    //     RoleTitle role = RoleTitle.ATTENDEE;
+    @Test
+    @Transactional
+    public void findAttendeeNullTrackTest() {
+        // Given
+        RoleTitle role = RoleTitle.ATTENDEE;
+        user = userRepository.save(user);
+        event = eventRepository.save(event);
 
-    //     // When
-    //     service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
-    //     service.accept(user.getId(), user.getId(), event.getId(), track.getId());
-    //     Attendee attendee = service.getAttendance(user.getId(), event.getId(), track.getId());
+        // When
+        service.invite(user.getId(), user.getId(), event.getId(), null,
+                role);
+        service.accept(user.getId(), user.getId(), event.getId(), null);
+        Attendee attendee = service.getAttendance(user.getId(), event.getId(),
+                null);
 
-    //     // Then
-    //     assertEquals(attendee.getUserId(), user.getId());
-    //     assertEquals(attendee.getEventId(), event.getId());
-    //     assertNull(attendee.getTrackId());
-    //     assertTrue(attendee.getConfirmation().isConfirmed());
-    //     assertEquals(attendee.getRole().getRoleTitle(), role);
-    // }
+        // Then
+        assertEquals(attendee.getUser().getId(), user.getId());
+        assertEquals(attendee.getUser(), user);
+        assertEquals(attendee.getEvent(), event);
+        assertNull(attendee.getTrack());
+        assertTrue(attendee.getConfirmation().isConfirmed());
+        assertEquals(attendee.getRole().getRoleTitle(), role);
+    }
 
     @Test
     public void nonExistentRetrievalGetAttendanceTest() {
@@ -150,8 +159,7 @@ public class AttendeeServiceTests {
         // When-Then
         Exception e = assertThrows(NoSuchElementException.class, () -> {
             service.getAttendance(1L, 1L, 1L);
-            }
-        );
+        });
         assertEquals(e.getMessage(), "No such attendance can be found.");
     }
 
@@ -160,7 +168,7 @@ public class AttendeeServiceTests {
 
         // Given
         RoleTitle role = RoleTitle.AUTHOR;
-         userRepository.save(user);
+        userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
 
@@ -169,10 +177,8 @@ public class AttendeeServiceTests {
 
         // Then
         Exception e = assertThrows(NoSuchElementException.class, () -> {
-                service.getAttendance(user.getId(), event.getId(), track.getId());
-            }
-        );
-        assertEquals(e.getMessage(), "No confirmed attendance can be found.");
+            service.getAttendance(user.getId(), event.getId(), track.getId());
+        });
     }
 
     @Test
@@ -180,7 +186,7 @@ public class AttendeeServiceTests {
 
         // Given
         RoleTitle role = RoleTitle.AUTHOR;
-                 userRepository.save(user);
+        userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
 
@@ -189,7 +195,8 @@ public class AttendeeServiceTests {
 
         // Then
         assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackId(user.getId(), event.getId(), track.getId()));
-        assertFalse(attendeeRepository.existsByUserIdAndEventIdAndTrackId(user.getId() + 1L, event.getId(), track.getId()));
+        assertFalse(
+                attendeeRepository.existsByUserIdAndEventIdAndTrackId(user.getId() + 1L, event.getId(), track.getId()));
     }
 
     @Test
@@ -197,7 +204,7 @@ public class AttendeeServiceTests {
 
         // Given
         RoleTitle role = RoleTitle.ATTENDEE;
-                 userRepository.save(user);
+        userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
 
@@ -213,7 +220,7 @@ public class AttendeeServiceTests {
 
         // Given
         RoleTitle role = RoleTitle.AUTHOR;
-                 userRepository.save(user);
+        userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
 
@@ -221,13 +228,15 @@ public class AttendeeServiceTests {
         service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
 
         // Then
-        assertFalse(attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), event.getId(), track.getId(), new Confirmation(true)));
+        assertFalse(attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), event.getId(),
+                track.getId(), new Confirmation(true)));
 
         // When
         service.accept(user.getId(), user.getId(), event.getId(), track.getId());
 
         // Then
-        assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), event.getId(), track.getId(), new Confirmation(true)));
+        assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), event.getId(),
+                track.getId(), new Confirmation(true)));
     }
 
     @Test
@@ -235,7 +244,7 @@ public class AttendeeServiceTests {
 
         // Given
         RoleTitle role = RoleTitle.ATTENDEE;
-                 userRepository.save(user);
+        userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
 
@@ -243,124 +252,16 @@ public class AttendeeServiceTests {
         service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
 
         // Then
-        assertFalse(attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), event.getId(), track.getId(), new Confirmation(true)));
+        assertFalse(attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), event.getId(),
+                track.getId(), new Confirmation(true)));
 
         // When
         service.accept(user.getId(), user.getId(), event.getId(), track.getId());
 
         // Then
-        assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), event.getId(), track.getId(), new Confirmation(true)));
+        assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), event.getId(),
+                track.getId(), new Confirmation(true)));
     }
-
-    // @Test
-    // public void getAttendanceByUserTest() {
-
-    //     // Given
-    //     RoleTitle role = RoleTitle.AUTHOR;
-    //              userRepository.save(user);
-    //     eventRepository.save(event);
-    //     trackRepository.save(track);
-
-    //     int num = 10;
-
-    //     // When
-    //     for (int i = 0; i < num; i++) {
-    //         service.invite(user.getId(), user.getId(), event.getId(), track.getId() + i, role);
-    //         service.accept(user.getId(), user.getId(), event.getId(), track.getId() + i);
-    //     }
-
-    //     // Then
-    //     Exception e = assertThrows(NoSuchElementException.class, () -> {
-    //             service.getAttendanceByUser(user.getId() + 1L);
-    //         }
-    //     );
-
-    //     assertEquals(e.getMessage(), "No confirmed attendance associated with this user can be found.");
-
-
-    //     // Then
-    //     List<Attendee> retrieved = service.getAttendanceByUser(user.getId());
-    //     assertEquals(retrieved.size(), num);
-
-    //     for (int i = 0; i < num; i++) {
-    //         assertEquals(retrieved.get(i).getUser(), user);
-    //     }
-    // }
-
-    // @Test
-    // public void getAttendanceByEventTest() {
-
-    //     // Given
-    //     RoleTitle role = RoleTitle.AUTHOR;
-    //              userRepository.save(user);
-    //     eventRepository.save(event);
-    //     trackRepository.save(track);
-
-    //     int num = 10;
-
-    //     // When
-    //     for (int i = 0; i < num; i++) {
-    //         service.invite(user.getId() + i, user.getId() + i, event.getId(), track.getId(), role);
-    //         service.accept(user.getId() + i, user.getId() + i, event.getId(), track.getId());
-    //     }
-
-    //     // Then
-    //     Exception e = assertThrows(NoSuchElementException.class, () -> {
-    //             service.getAttendanceByEvent(event.getId() + 1L);
-    //         }
-    //     );
-
-    //     assertEquals(e.getMessage(), "No confirmed attendance associated with this event can be found.");
-
-
-    //     // Then
-    //     List<Attendee> retrieved = service.getAttendanceByEvent(event.getId());
-    //     assertEquals(retrieved.size(), num);
-
-    //     for (int i = 0; i < num; i++) {
-    //         assertEquals(retrieved.get(i).getEvent(), event);
-    //     }
-    // }
-
-    // @Test
-    // public void getAttendanceByTrackTest() {
-
-
-    //     // Given
-    //     RoleTitle role = RoleTitle.AUTHOR;
-    //              userRepository.save(user);
-    //     eventRepository.save(event);
-    //     trackRepository.save(track);
-
-    //     int num = 10;
-
-    //     // When
-    //     for (int i = 0; i < num; i++) {
-    //         service.invite(user.getId() + i, user.getId() + i, event.getId(), track.getId(), role);
-    //         service.accept(user.getId() + i, user.getId() + i, event.getId(), track.getId());
-    //     }
-
-    //     // Then
-    //     assertThrows(NullPointerException.class, () -> {
-    //             service.getAttendanceByTrack(null);
-    //         }
-    //     );
-    //     Exception e = assertThrows(NoSuchElementException.class, () -> {
-    //             service.getAttendanceByTrack(track.getId() + 1L);
-    //         }
-    //     );
-
-    //     assertEquals(e.getMessage(), "No confirmed attendance associated with this track can be found.");
-
-
-    //     // Then
-    //     List<Attendee> retrieved = service.getAttendanceByTrack(track.getId());
-    //     assertEquals(retrieved.size(), num);
-
-    //     for (int i = 0; i < num; i++) {
-    //         assertEquals(retrieved.get(i).getTrack(), track);
-    //     }
-    // }
 
     @Test
     public void modifyTitleTest() {
@@ -368,15 +269,14 @@ public class AttendeeServiceTests {
         // Given
         RoleTitle role = RoleTitle.AUTHOR;
         RoleTitle modifiedRole = RoleTitle.ATTENDEE;
-                 userRepository.save(user);
+        userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
 
         // When - Then
         Exception e = assertThrows(NoSuchElementException.class, () -> {
             service.modifyTitle(user.getId(), user.getId(), event.getId(), track.getId(), modifiedRole);
-            }
-        );
+        });
         assertEquals(e.getMessage(), "No such attendance is found; cannot be modified.");
 
         // When
@@ -395,15 +295,14 @@ public class AttendeeServiceTests {
 
         // Given
         RoleTitle role = RoleTitle.AUTHOR;
-                 userRepository.save(user);
+        userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
 
         // When - Then
         Exception e = assertThrows(NoSuchElementException.class, () -> {
-                service.resign(user.getId(), event.getId(), track.getId());
-            }
-        );
+            service.resign(user.getId(), event.getId(), track.getId());
+        });
         assertEquals(e.getMessage(), "No such attendance can be found, so no deletion is possible.");
 
         // When

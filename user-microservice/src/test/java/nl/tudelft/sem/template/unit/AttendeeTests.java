@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 public class AttendeeTests {
 
-
     static AppUser user;
     static Track track;
     static Event event;
@@ -39,31 +38,26 @@ public class AttendeeTests {
         event = new Event();
 
         nullAttendee = new Attendee(
-            0L,
+                0L,
                 new Role(RoleTitle.ATTENDEE),
                 new Confirmation(true),
-                null, null, null
-        );
+                null, null, null);
 
         setterAttendee = new Attendee(
-            1L,
+                1L,
                 new Role(RoleTitle.ATTENDEE),
                 new Confirmation(false),
-                event, track, user
-        );
-
+                event, track, user);
 
         attendeeEquals = new Attendee(2L,
                 new Role(RoleTitle.PC_CHAIR),
                 new Confirmation(true),
-                event, track, user
-        );
+                event, track, user);
 
         attendeeEquals2 = new Attendee(2L,
                 new Role(RoleTitle.PC_CHAIR),
                 new Confirmation(true),
-                event, track, user
-        );
+                event, track, user);
     }
 
     @Test
@@ -75,11 +69,11 @@ public class AttendeeTests {
     void allArgsConstorTests() {
         assertNotNull(nullAttendee);
 
-        //Check the confirmation
+        // Check the confirmation
         assertNotNull(nullAttendee.getConfirmation());
         assertEquals(nullAttendee.isConfirmed(), true);
 
-        //Check the role
+        // Check the role
         assertNotNull(nullAttendee.getRole());
         assertEquals(nullAttendee.getRole().getRoleTitle(), RoleTitle.ATTENDEE);
 
@@ -95,7 +89,6 @@ public class AttendeeTests {
         assertNotEquals(cnf.isConfirmed(), setterAttendee.isConfirmed());
     }
 
-
     @Test
     void equalsTests() {
         assertEquals(attendeeEquals, attendeeEquals);
@@ -109,10 +102,9 @@ public class AttendeeTests {
     @Test
     void hashCodeTests() {
 
-        //Just to cover this base
-        assertEquals(nullAttendee.hashCode(), Objects.hash(0L));
+        // Just to cover this base
+        assertEquals(nullAttendee.hashCode(), Objects.hash(0l));
     }
-
 
     @Test
     void confirmationConverterTest() {
@@ -132,8 +124,5 @@ public class AttendeeTests {
         assertEquals(role.getRoleTitle(), RoleTitle.SUB_REVIEWER);
         assertEquals(conv.convertToDatabaseColumn(role), "SUB_REVIEWER");
     }
-
-
-
 
 }

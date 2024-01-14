@@ -146,18 +146,12 @@ public class AttendeeService {
     public Attendee getAttendance(Long userId, Long eventId, @Nullable Long trackId)
             throws NoSuchElementException {
 
-        Optional<Attendee> retrievedAttendee = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId,
-                trackId);
+        Optional<Attendee> retrievedAttendee = attendeeRepository.findByUserIdAndEventIdAndTrackIdAndConfirmation(userId, eventId,
+            trackId, new Confirmation(true));
 
         // Exception handling for when the repository can find the instance
         if (retrievedAttendee.isEmpty()) {
             throw new NoSuchElementException("No such attendance can be found.");
-        }
-
-        // Exception handling for when the attendance is not confirmed (i.e. still an
-        // invitation)
-        if (!retrievedAttendee.get().isConfirmed()) {
-            throw new NoSuchElementException("No confirmed attendance can be found.");
         }
 
         return retrievedAttendee.get();
