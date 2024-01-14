@@ -6,11 +6,10 @@ import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.enums.RoleTitle;
-import nl.tudelft.sem.template.model.Attendee;
 import nl.tudelft.sem.template.model.Event;
-import nl.tudelft.sem.template.model.Role;
 import nl.tudelft.sem.template.services.AttendeeService;
 import nl.tudelft.sem.template.services.EventService;
+import nl.tudelft.sem.template.services.RoleService;
 import nl.tudelft.sem.template.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,20 +26,23 @@ public class EventController implements EventApi {
     private final transient EventService eventService;
     private final transient AttendeeService attendeeService;
     private final transient UserService userService;
+    private final transient RoleService roleService;
 
     /**
      * Instantiates a new controller.
      *
      * @param authManager Spring Security component used to authenticate and
      *                    authorize the user
+     * @param roleService
      */
     @Autowired
     public EventController(AuthManager authManager, EventService eventService, AttendeeService attendeeService,
-            UserService userService) {
+                           UserService userService, RoleService roleService) {
         this.authManager = authManager;
         this.eventService = eventService;
         this.attendeeService = attendeeService;
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @Override
@@ -65,20 +67,12 @@ public class EventController implements EventApi {
     @Override
     @Transactional
     public ResponseEntity<Void> deleteEvent(Long eventId) {
-        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
-        if (user == null) {
+        if (roleService.hasPermission(userService, authManager, attendeeService, eventId, null, 0)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-//        Role role = attendeeService.getAttendance(user.getId(), eventId, null).getRole();
-//        if (!.equals(Role.GENERAL_CHAIR)) {
-//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-//        }
-        if (!eventService.eventExistsById(eventId)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (!eventService.deleteEvent(eventId)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        //Optional<Attendee> attendance = attendeeService.findAttendee(user.getId(), eventId, null);
-        //if(user == null || )
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

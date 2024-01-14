@@ -72,4 +72,13 @@ public class EventService {
         }
         return null;
     }
+
+    @Transactional
+    public boolean deleteEvent(Long id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
 }
