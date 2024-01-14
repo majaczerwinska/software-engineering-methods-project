@@ -49,14 +49,14 @@ public class TrackService {
     @Transactional
     public Track createTrack(String title, String description, LocalDate submitDeadline, LocalDate reviewDeadline,
             PaperType paperType, Long eventId) throws IllegalArgumentException {
-        if (eventId < 0){
+        if (eventId < 0) {
             throw new IllegalArgumentException(invalidEventId);
         }
-        if (title == null){
+        if (title == null) {
             throw new IllegalArgumentException(nullTitle);
         }
         Optional<Event> event = eventRepository.findById(eventId);
-        if (event.isEmpty()){
+        if (event.isEmpty()) {
             throw new IllegalArgumentException(invalidEventId);
         }
         Track track = new Track(new Title(title), new Description(description), new PaperRequirement(paperType),
@@ -93,7 +93,7 @@ public class TrackService {
     public Track updateTrack(Long id, String title, String description, LocalDate submitDeadline,
             LocalDate reviewDeadline, PaperType paperType, Long eventId)
             throws IllegalArgumentException, NoSuchElementException {
-        if (title == null){
+        if (title == null) {
             throw new IllegalArgumentException(nullTitle);
         }
         Optional<Track> inDb = trackRepository.findByTitleAndEventId(new Title(title), eventId);
@@ -104,7 +104,7 @@ public class TrackService {
             throw new NoSuchElementException("Track with id:" + id + " does not exist.");
         }
         Optional<Event> event = eventRepository.findById(eventId);
-        if (event.isEmpty()){
+        if (event.isEmpty()) {
             throw new IllegalArgumentException(invalidEventId);
         }
         Track track = new Track(id, new Title(title), new Description(description), new PaperRequirement(paperType),

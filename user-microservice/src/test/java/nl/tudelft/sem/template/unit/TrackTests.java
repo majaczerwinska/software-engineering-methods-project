@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.transaction.Transactional;
-
 import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.domain.track.Description;
 import nl.tudelft.sem.template.domain.track.PaperRequirement;
@@ -55,11 +54,12 @@ public class TrackTests {
 
     @Test
     void allConstructorTest() {
+        Track idTrack = new Track(12L);
+        assertEquals(12L, idTrack.getId());
         assertNotNull(fullTrack1);
         assertNotNull(fullTrack2);
         assertNotNull(emptyTrack);
         assertNull(nullTrack);
-        assertNotNull(fullTrack2.getId());
     }
 
     @Test
@@ -147,6 +147,8 @@ public class TrackTests {
 
         fullTrack1.setEvent(new Event(22L));
         assertEquals(fullTrack1.getEvent().getId(), 22L);
+
+        assertNull(fullTrack1.getAttendees());
     }
 
     @Test

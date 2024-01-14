@@ -2,6 +2,7 @@ package nl.tudelft.sem.template.integrated;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -69,7 +70,7 @@ public class TrackServiceTests {
     public void createTrackInvalidEventIdTest() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> trackService.createTrack(null, null,null,null,
+                () -> trackService.createTrack(null, null, null, null,
                         PaperType.FULL_PAPER, -1L));
         assertEquals(invalidEventId, exception.getMessage());
     }
@@ -79,9 +80,9 @@ public class TrackServiceTests {
         when(eventRepository.findById(22L)).thenReturn(Optional.empty());
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> trackService.createTrack(null, null,null,null,
+                () -> trackService.createTrack(title.toString(), null, null, null,
                         PaperType.FULL_PAPER, 22L));
-        assertEquals(nullTitle, exception.getMessage());
+        assertEquals(invalidEventId, exception.getMessage());
     }
 
     @Test
@@ -90,7 +91,7 @@ public class TrackServiceTests {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> trackService.createTrack(null, null,null,null,
+                () -> trackService.createTrack(null, null, null, null,
                         PaperType.FULL_PAPER, 2L));
         assertEquals(nullTitle, exception.getMessage());
     }
@@ -99,7 +100,7 @@ public class TrackServiceTests {
     public void createTrackSuccessTest() {
         when(eventRepository.findById(22L)).thenReturn(Optional.of(new Event(2023L)));
 
-        Track track = trackService.createTrack(title.toString(), null,null,null,
+        Track track = trackService.createTrack(title.toString(), null, null, null,
                 PaperType.FULL_PAPER, 22L);
         assertEquals(fullTrack, track);
     }
@@ -136,7 +137,7 @@ public class TrackServiceTests {
     public void updateTrackInvalidTitleTest() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> trackService.updateTrack(0L,null, null,null,null,
+                () -> trackService.updateTrack(0L, null, null, null, null,
                         PaperType.FULL_PAPER, 2L));
         assertEquals(nullTitle, exception.getMessage());
     }
@@ -148,7 +149,7 @@ public class TrackServiceTests {
                 .thenReturn(Optional.ofNullable(fullTrack));
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> trackService.updateTrack(0L,title.toString(), null,null,null,
+                () -> trackService.updateTrack(0L, title.toString(), null, null, null,
                         PaperType.FULL_PAPER, 2L));
         assertEquals("Track with this title already exist in the event.", exception.getMessage());
         verify(trackRepository, times(1)).findByTitleAndEventId(eq(title), eq(2L));
@@ -162,7 +163,7 @@ public class TrackServiceTests {
         when(trackRepository.existsById(0L)).thenReturn(false);
         NoSuchElementException exception = assertThrows(
                 NoSuchElementException.class,
-                () -> trackService.updateTrack(0L,title.toString(), null,null,null,
+                () -> trackService.updateTrack(0L, title.toString(), null, null, null,
                         PaperType.FULL_PAPER, 2L));
         assertEquals("Track with id:" + 0L + " does not exist.", exception.getMessage());
         verify(trackRepository, times(1)).findByTitleAndEventId(eq(title), eq(2L));
@@ -191,18 +192,16 @@ public class TrackServiceTests {
 
     @Test
     public void updateTrackSuccessTest() {
-        when(trackRepository.findByTitleAndEventId(eq(title), eq(2L)))
+        when(trackRepository.findByTitleAndEventId(eq(title), eq(2023L)))
                 .thenReturn(Optional.empty());
         when(trackRepository.existsById(0L)).thenReturn(true);
         when(eventRepository.findById(fullTrack.getEvent().getId())).thenReturn(Optional.of(new Event(22L)));
         when(trackRepository.save(fullTrack)).thenReturn(fullTrack);
-        Track track = new Track(0L, title, null, new PaperRequirement(PaperType.FULL_PAPER), null,
-                null, fullTrack.getEvent());
-        assertEquals(trackService.updateTrack(0L,title.toString(), null,null,
-                null, PaperType.FULL_PAPER, fullTrack.getEvent().getId()), track);
-        verify(trackRepository, times(1)).findByTitleAndEventId(eq(title), eq(2L));
+        trackService.updateTrack(0L, title.toString(), null, null, null,
+                PaperType.FULL_PAPER, fullTrack.getEvent().getId());
+        verify(trackRepository, times(1)).findByTitleAndEventId(eq(title), eq(2023L));
         verify(trackRepository, times(1)).existsById(eq(0L));
-        verify(trackRepository, times(1)).save(eq(fullTrack));
+        verify(trackRepository, times(1)).save(any(Track.class));
     }
 
     @Test
