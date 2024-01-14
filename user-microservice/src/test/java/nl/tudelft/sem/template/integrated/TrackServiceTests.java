@@ -1,16 +1,5 @@
 package nl.tudelft.sem.template.integrated;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import nl.tudelft.sem.template.Application;
 import nl.tudelft.sem.template.domain.track.Description;
 import nl.tudelft.sem.template.domain.track.PaperRequirement;
@@ -27,6 +16,16 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * integrated tests for track service.
@@ -37,14 +36,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ActiveProfiles("test")
 public class TrackServiceTests {
 
+    private static final String nullTitle = "Null reference for track title";
+    private static final String invalidId = "Invalid track id";
     private static Track fullTrack;
     private static Title title;
     @Mock
     private transient TrackRepository trackRepository;
     @InjectMocks
     private transient TrackService trackService;
-    private static final String nullTitle = "Null reference for track title";
-    private static final String invalidId = "Invalid track id";
 
     /**
      * set up a track using all arg constructor.
