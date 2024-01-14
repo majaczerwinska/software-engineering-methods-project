@@ -83,6 +83,19 @@ public class Event extends HasEvents {
         this.description = description;
     }
 
+        /**
+     * Constructor with nullable description.
+     */
+    public Event(Long id, LocalDate startDate, LocalDate endDate, IsCancelled isCancelled, EventName name,
+            EventDescription description) {
+        this.id = id;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isCancelled = isCancelled;
+        this.name = name;
+        this.description = description;
+    }
+
     /**
      * Convert self into an API Model Event.
      */

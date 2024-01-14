@@ -11,6 +11,9 @@ import nl.tudelft.sem.template.domain.attendee.Confirmation;
 import nl.tudelft.sem.template.domain.attendee.ConfirmationAttributeConverter;
 import nl.tudelft.sem.template.domain.attendee.Role;
 import nl.tudelft.sem.template.domain.attendee.RoleAttributeConverter;
+import nl.tudelft.sem.template.domain.event.Event;
+import nl.tudelft.sem.template.domain.track.Track;
+import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.enums.RoleTitle;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,52 +21,46 @@ import org.junit.jupiter.api.Test;
 public class AttendeeTests {
 
 
+    static AppUser user;
+    static Track track;
+    static Event event;
     static Attendee nullAttendee;
     static Attendee attendeeEquals;
     static Attendee attendeeEquals2;
     static Attendee setterAttendee;
 
     /**
-     * Setups teh variables for the tests.
+     * Setups the variables for the tests.
      */
     @BeforeAll
     public static void setup() {
+        user = new AppUser();
+        track = new Track();
+        event = new Event();
 
         nullAttendee = new Attendee(
-                1L,
-                3L,
-                4L,
-                null,
                 new Role(RoleTitle.ATTENDEE),
-                new Confirmation(true)
+                new Confirmation(true),
+                event, track, user
         );
 
         setterAttendee = new Attendee(
-                6L,
-                4L,
-                4L,
-                5L,
                 new Role(RoleTitle.ATTENDEE),
-                new Confirmation(false)
+                new Confirmation(false),
+                event, track, user
         );
 
 
         attendeeEquals = new Attendee(
-                5L,
-                3L,
-                4L,
-                5L,
                 new Role(RoleTitle.PC_CHAIR),
-                new Confirmation(true)
+                new Confirmation(true),
+                event, track, user
         );
 
         attendeeEquals2 = new Attendee(
-                5L,
-                3L,
-                4L,
-                5L,
                 new Role(RoleTitle.PC_CHAIR),
-                new Confirmation(true)
+                new Confirmation(true),
+                event, track, user
         );
     }
 
