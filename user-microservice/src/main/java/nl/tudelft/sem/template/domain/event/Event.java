@@ -69,10 +69,6 @@ public class Event extends HasEvents {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attendee> attendees;
 
-    public Event(Long id) {
-        this.id = id;
-    }
-
     /**
      * Constructor with nullable description.
      */

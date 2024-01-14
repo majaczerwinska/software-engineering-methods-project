@@ -1,12 +1,16 @@
 package nl.tudelft.sem.template.integrated;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import nl.tudelft.sem.template.Application;
 import nl.tudelft.sem.template.domain.event.Event;
+import nl.tudelft.sem.template.domain.event.EventDescription;
+import nl.tudelft.sem.template.domain.event.EventName;
 import nl.tudelft.sem.template.domain.event.EventRepository;
+import nl.tudelft.sem.template.domain.event.IsCancelled;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.Name;
@@ -51,17 +55,32 @@ public class EventServiceTests {
 
     @Test
     public void createEventTest() {
-
-        // Given
         user = userRepository.save(user);
         LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
 
-        // Create Event for the first time
-        // When
         Event returnedEvent = service.createEvent(startDate, endDate, false, "name", "desc", "test@test.test");
 
-        // Then
         assertTrue(eventRepository.existsById(returnedEvent.getId()));
+    }
+
+    @Test
+    public void updateEventTest() {
+                user = userRepository.save(user);
+        LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+        LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+
+        LocalDate startDateNew = LocalDate.parse("2024-01-19T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+        LocalDate endDateNew = LocalDate.parse("2024-01-11T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+
+        Event createdEvent = service.createEvent(startDate, endDate, false, "name", "desc", "test@test.test");
+
+        Event updatedEvent = service.updateEvent(createdEvent.getId(), startDateNew, endDateNew, true, "NAME", "DESC");
+        assertEquals(updatedEvent.getId(), createdEvent.getId());
+        assertEquals(updatedEvent.getStartDate(), startDateNew);
+        assertEquals(updatedEvent.getEndDate(), endDateNew);
+        assertEquals(updatedEvent.getIsCancelled(), new IsCancelled(true));
+        assertEquals(updatedEvent.getName(), new EventName("NAME"));
+        assertEquals(updatedEvent.getDescription(), new EventDescription("DESC"));
     }
 }

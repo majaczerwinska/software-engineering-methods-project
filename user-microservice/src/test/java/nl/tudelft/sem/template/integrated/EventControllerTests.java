@@ -8,7 +8,10 @@ import java.time.format.DateTimeFormatter;
 import nl.tudelft.sem.template.Application;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.controllers.EventController;
+import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.attendee.AttendeeRepository;
+import nl.tudelft.sem.template.domain.attendee.Confirmation;
+import nl.tudelft.sem.template.domain.attendee.Role;
 import nl.tudelft.sem.template.domain.event.EventDescription;
 import nl.tudelft.sem.template.domain.event.EventName;
 import nl.tudelft.sem.template.domain.event.EventRepository;
@@ -17,6 +20,7 @@ import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserRepository;
+import nl.tudelft.sem.template.enums.RoleTitle;
 import nl.tudelft.sem.template.model.Event;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,5 +94,8 @@ public class EventControllerTests {
         assertEquals(event.getIsCancelled(), responseEvent.getIsCancelled());
         assertEquals(event.getName(), responseEvent.getName());
         assertEquals(event.getDescription(), responseEvent.getDescription());
+
+        Attendee attendee = attendeeRepository.findByUserIdAndEventIdAndTrackIdAndConfirmation(appUser.getId(), responseEvent.getId(), null, new Confirmation(true)).get();
+        assertEquals(attendee.getRole().getRoleTitle(), RoleTitle.GENERAL_CHAIR);
     }
 }
