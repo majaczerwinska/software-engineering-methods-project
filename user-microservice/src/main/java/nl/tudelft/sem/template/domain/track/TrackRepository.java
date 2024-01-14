@@ -59,7 +59,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @param eventId the event to check for
      * @return true if event with input title exist in the input event
      */
-    boolean existsByTitleAndEvent(Title title, Event event);
+    boolean existsByTitleAndEventId(Title title, Long eventId);
 
     /**
      * check if event with input title exist.

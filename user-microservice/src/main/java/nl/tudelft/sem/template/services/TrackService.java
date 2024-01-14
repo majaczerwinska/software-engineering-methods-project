@@ -39,7 +39,6 @@ public class TrackService {
     /**
      * Creates a new track.
      *
-     * @param track - the track to be created
      * @return - the created track
      */
     @Transactional
@@ -73,7 +72,6 @@ public class TrackService {
     /**
      * Updates an existing track account and saves it in the repository.
      *
-     * @param track - the updated track account to be saved.
      * @return the updated track that was saved.
      */
     @Transactional

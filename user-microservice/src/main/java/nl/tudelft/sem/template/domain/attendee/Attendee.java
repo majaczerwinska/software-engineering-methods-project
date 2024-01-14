@@ -62,6 +62,9 @@ public class Attendee extends HasEvents {
         this.id = id;
     }
 
+    /**
+     * A constructor.
+     */
     public Attendee(Role role, Confirmation confirmation, Event event, Track track, AppUser user) {
         this.role = role;
         this.confirmation = confirmation;

@@ -77,10 +77,7 @@ public class AttendeeService {
         }
 
         Event event = eventRepository.findById(eventId).get();
-        Track track = null;
-        if (trackId != null) {
-            track = trackRepository.findById(trackId).get();
-        }
+        Track track = trackRepository.findById(trackId).orElse(null);
         AppUser user = userRepository.findById(userId).get();
 
         Attendee attendee = new Attendee(
@@ -146,8 +143,8 @@ public class AttendeeService {
     public Attendee getAttendance(Long userId, Long eventId, @Nullable Long trackId)
             throws NoSuchElementException {
 
-        Optional<Attendee> retrievedAttendee = attendeeRepository.findByUserIdAndEventIdAndTrackIdAndConfirmation(userId, eventId,
-            trackId, new Confirmation(true));
+        Optional<Attendee> retrievedAttendee = attendeeRepository.findByUserIdAndEventIdAndTrackIdAndConfirmation(userId,
+            eventId, trackId, new Confirmation(true));
 
         // Exception handling for when the repository can find the instance
         if (retrievedAttendee.isEmpty()) {

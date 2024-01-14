@@ -8,11 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.NoSuchElementException;
-
 import javax.transaction.Transactional;
-
 import nl.tudelft.sem.template.Application;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.attendee.AttendeeRepository;
@@ -34,7 +31,6 @@ import nl.tudelft.sem.template.domain.user.UserRepository;
 import nl.tudelft.sem.template.enums.RoleTitle;
 import nl.tudelft.sem.template.model.PaperType;
 import nl.tudelft.sem.template.services.AttendeeService;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,6 +67,9 @@ public class AttendeeServiceTests {
     static Track track;
     static Event event;
 
+    /**
+     * Initialize globals.
+     */
     @BeforeAll
     public static void setup() {
         LocalDate date0 = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
@@ -83,7 +82,6 @@ public class AttendeeServiceTests {
 
     @Test
     public void createAttendeeTest() {
-        Long trackId = null;
 
         // Given
         userRepository.save(user);
@@ -95,7 +93,7 @@ public class AttendeeServiceTests {
         service.enroll(user.getId(), event.getId(), null, RoleTitle.ATTENDEE);
 
         // Then
-        assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackId(user.getId(), event.getId(), trackId));
+        assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackId(user.getId(), event.getId(), null));
 
         // Self-enroll for the second time throws exception on duplicate creation
         // When & Then
@@ -110,10 +108,10 @@ public class AttendeeServiceTests {
     @Transactional
     public void findAttendeeTest() {
         // Given
-        RoleTitle role = RoleTitle.AUTHOR;
         user = userRepository.save(user);
         event = eventRepository.save(event);
         track = trackRepository.save(track);
+        RoleTitle role = RoleTitle.AUTHOR;
 
         // When
         service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
@@ -133,9 +131,9 @@ public class AttendeeServiceTests {
     @Transactional
     public void findAttendeeNullTrackTest() {
         // Given
-        RoleTitle role = RoleTitle.ATTENDEE;
         user = userRepository.save(user);
         event = eventRepository.save(event);
+        RoleTitle role = RoleTitle.ATTENDEE;
 
         // When
         service.invite(user.getId(), user.getId(), event.getId(), null,
@@ -167,10 +165,10 @@ public class AttendeeServiceTests {
     public void unconfirmedRetrievalGetAttendanceTest() {
 
         // Given
-        RoleTitle role = RoleTitle.AUTHOR;
         userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
+        RoleTitle role = RoleTitle.AUTHOR;
 
         // When
         service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
@@ -185,10 +183,10 @@ public class AttendeeServiceTests {
     public void unconfirmedIsInvitedTest() {
 
         // Given
-        RoleTitle role = RoleTitle.AUTHOR;
         userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
+        RoleTitle role = RoleTitle.AUTHOR;
 
         // When
         service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
@@ -203,10 +201,10 @@ public class AttendeeServiceTests {
     public void nullTrackIdIsInvitedTest() {
 
         // Given
-        RoleTitle role = RoleTitle.ATTENDEE;
         userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
+        RoleTitle role = RoleTitle.ATTENDEE;
 
         // When
         service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
@@ -219,10 +217,10 @@ public class AttendeeServiceTests {
     public void changedConfirmationIsAttendingTest() {
 
         // Given
-        RoleTitle role = RoleTitle.AUTHOR;
         userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
+        RoleTitle role = RoleTitle.AUTHOR;
 
         // When
         service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
@@ -243,10 +241,10 @@ public class AttendeeServiceTests {
     public void nullTrackIdIsAttendingTest() {
 
         // Given
-        RoleTitle role = RoleTitle.ATTENDEE;
         userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
+        RoleTitle role = RoleTitle.ATTENDEE;
 
         // When
         service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
@@ -267,11 +265,11 @@ public class AttendeeServiceTests {
     public void modifyTitleTest() {
 
         // Given
-        RoleTitle role = RoleTitle.AUTHOR;
-        RoleTitle modifiedRole = RoleTitle.ATTENDEE;
         userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
+        RoleTitle role = RoleTitle.AUTHOR;
+        RoleTitle modifiedRole = RoleTitle.ATTENDEE;
 
         // When - Then
         Exception e = assertThrows(NoSuchElementException.class, () -> {
@@ -294,10 +292,10 @@ public class AttendeeServiceTests {
     public void deleteAttendanceTest() {
 
         // Given
-        RoleTitle role = RoleTitle.AUTHOR;
         userRepository.save(user);
         eventRepository.save(event);
         trackRepository.save(track);
+        RoleTitle role = RoleTitle.AUTHOR;
 
         // When - Then
         Exception e = assertThrows(NoSuchElementException.class, () -> {

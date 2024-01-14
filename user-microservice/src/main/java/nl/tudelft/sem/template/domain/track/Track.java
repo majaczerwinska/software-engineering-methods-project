@@ -99,6 +99,9 @@ public class Track extends HasEvents {
         this.recordThat(new TrackCreatedEvent(event.getId(), this.id));
     }
 
+    /**
+     * A constructor with Id.
+     */
     public Track(Long id, Title title, Description description, PaperRequirement paperType,
             LocalDate submitDeadline, LocalDate reviewDeadline, Event event) {
         this.id = id;

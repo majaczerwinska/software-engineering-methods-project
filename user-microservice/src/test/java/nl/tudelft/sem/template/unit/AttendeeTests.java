@@ -103,7 +103,7 @@ public class AttendeeTests {
     void hashCodeTests() {
 
         // Just to cover this base
-        assertEquals(nullAttendee.hashCode(), Objects.hash(0l));
+        assertEquals(nullAttendee.hashCode(), Objects.hash(0L));
     }
 
     @Test
