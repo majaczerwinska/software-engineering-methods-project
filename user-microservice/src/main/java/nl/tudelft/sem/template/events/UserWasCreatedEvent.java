@@ -1,4 +1,4 @@
-package nl.tudelft.sem.template.logs;
+package nl.tudelft.sem.template.events;
 
 import nl.tudelft.sem.template.domain.user.Email;
 

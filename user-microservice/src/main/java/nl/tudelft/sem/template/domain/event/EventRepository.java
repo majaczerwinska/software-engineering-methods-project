@@ -12,21 +12,18 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findAll();
 
     /**
-     * idk I thought we may want this type of methods for filtering the events, but that would mean
-     * that events are associated with a user. This would imply adding a userId field in the Event class or
+     * idk I thought we may want this type of methods for filtering the events, but
+     * that would mean
+     * that events are associated with a user. This would imply adding a userId
+     * field in the Event class or
      * some relationship mapping in the Event class.
      */
-    //List<Event> findAllByUserId(Long id);
+    // List<Event> findAllByUserId(Long id);
 
-    //TODO: add more custom queries??
+    // TODO: add more custom queries??
 
     @Override
     Optional<Event> findById(Long id);
 
     boolean existsById(Long id);
-
-    @Override
-    Event save(Event event);
-
-
 }

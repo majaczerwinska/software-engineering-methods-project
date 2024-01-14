@@ -12,7 +12,7 @@ import org.springframework.data.domain.DomainEvents;
 /**
  * A base class for adding domain event support to an entity.
  */
-public abstract class HasLogs {
+public abstract class HasEvents {
     private final transient List<Object> domainEvents = new ArrayList<>();
 
     protected void recordThat(Object event) {

@@ -1,7 +1,7 @@
 package nl.tudelft.sem.template.domain.track;
 
 import lombok.EqualsAndHashCode;
-import nl.tudelft.sem.template.enums.PaperType;
+import nl.tudelft.sem.template.model.PaperType;
 
 
 /**
