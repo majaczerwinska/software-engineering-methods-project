@@ -1,10 +1,8 @@
 package nl.tudelft.sem.template.services;
 
 import java.time.LocalDate;
-
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.attendee.AttendeeRepository;
 import nl.tudelft.sem.template.domain.attendee.Confirmation;
@@ -19,7 +17,6 @@ import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.UserRepository;
 import nl.tudelft.sem.template.enums.RoleTitle;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,18 +34,17 @@ public class EventService {
     /**
      * A constructor dependency injection for the Event JPA Repository concrete
      * implementation.
-     *
-     * @param repository the event repository injection
      */
     @Autowired
-    public EventService(EventRepository eventRepository, UserRepository userRepository, AttendeeRepository attendeeRepository) {
+    public EventService(EventRepository eventRepository, UserRepository userRepository,
+        AttendeeRepository attendeeRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.attendeeRepository = attendeeRepository;
     }
 
     /**
-     * Creates a new event,
+     * Creates a new event.
      */
     @Transactional
     public Event createEvent(LocalDate startDate, LocalDate endDate, boolean isCancelled, String name,
@@ -60,17 +56,19 @@ public class EventService {
 
         AppUser user = userRepository.findByEmail(new Email(email)).get();
 
-        Attendee attendee = new Attendee(new Role(RoleTitle.GENERAL_CHAIR), new Confirmation(true), returnedEvent, null, user);
+        Attendee attendee = new Attendee(new Role(RoleTitle.GENERAL_CHAIR), new Confirmation(true), returnedEvent, null,
+            user);
         attendeeRepository.save(attendee);
 
         return returnedEvent;
     }
 
     /**
-     * Updates a new event,
+     * Updates an event.
      */
     @Transactional
-    public Event updateEvent(Long id, LocalDate startDate, LocalDate endDate, boolean isCancelled, String name, String description) {
+    public Event updateEvent(Long id, LocalDate startDate, LocalDate endDate, boolean isCancelled, String name,
+        String description) {
         Event event = eventRepository.findById(id).get();
         event.setStartDate(startDate);
         event.setEndDate(endDate);

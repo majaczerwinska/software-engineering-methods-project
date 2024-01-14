@@ -7,7 +7,6 @@ import nl.tudelft.sem.template.domain.attendee.Confirmation;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.UserRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -26,9 +25,7 @@ public class RoleService {
     /**
      * Checks if the user has permission for a given event and track.
      *
-     * @param userService      The service for managing user-related operations.
      * @param authManager      Used for authentication-related checks.
-     * @param attendeeService  The service for attendee-related operations.
      * @param eventId          ID of the event
      * @param trackId          ID of the track (nullable if checking event-level permission).
      * @param level            The required permission level. (lower the number, the more permission user have)
@@ -40,7 +37,8 @@ public class RoleService {
         if (user == null) {
             return false;
         }
-        Attendee role = attendeeRepository.findByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), eventId, trackId, new Confirmation(true)).orElse(null);
+        Attendee role = attendeeRepository.findByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), eventId, trackId,
+            new Confirmation(true)).orElse(null);
         if (role == null) {
             return false;
         }

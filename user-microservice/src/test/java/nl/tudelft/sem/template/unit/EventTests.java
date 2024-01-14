@@ -68,7 +68,13 @@ public class EventTests {
     }
 
     @Test
-    void IsCancelledEqualsTests() {
+    void eventDescriptionHashCodeTest() {
+        EventDescription eventDescription = new EventDescription("DESC");
+        assertEquals(eventDescription.hashCode(), Objects.hash("DESC"));
+    }
+
+    @Test
+    void isCancelledEqualsTests() {
         IsCancelled isCancelledTrue = new IsCancelled(true);
         IsCancelled isCancelledTrueCopy = new IsCancelled(true);
         IsCancelled isCancelledFalse = new IsCancelled(false);
@@ -78,5 +84,11 @@ public class EventTests {
         assertNotEquals(isCancelledTrue, isCancelledFalse);
         assertNotEquals(isCancelledTrue, null);
         assertNotEquals(isCancelledTrue, true);
+    }
+
+    @Test
+    void isCancelledHashCodeTest() {
+        IsCancelled isCancelled = new IsCancelled(true);
+        assertEquals(isCancelled.hashCode(), Objects.hash(true));
     }
 }

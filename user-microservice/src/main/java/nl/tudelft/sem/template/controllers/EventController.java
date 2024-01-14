@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.controllers;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.api.EventApi;
 import nl.tudelft.sem.template.authentication.AuthManager;
@@ -53,6 +52,7 @@ public class EventController implements EventApi {
     }
 
     @Override
+    @SuppressWarnings("PMD")
     public ResponseEntity<Event> addEvent(
             Event event) {
         if (!userRepository.existsByEmail(new Email(authManager.getEmail()))) {
@@ -79,9 +79,8 @@ public class EventController implements EventApi {
             LocalDate endAfter,
             Boolean cancelled,
             String name) {
-        List<nl.tudelft.sem.template.domain.event.Event> events;
-        events = eventRepository.findByOptionalParams(startBefore, startAfter, endBefore, endAfter,
-                new IsCancelled(cancelled), new EventName(name));
+        List<nl.tudelft.sem.template.domain.event.Event> events = eventRepository.findByOptionalParams(startBefore,
+            startAfter, endBefore, endAfter, new IsCancelled(cancelled), new EventName(name));
 
         List<Event> returnEvents = events.stream().map(nl.tudelft.sem.template.domain.event.Event::toModelEvent)
                 .collect(Collectors.toList());
@@ -94,9 +93,8 @@ public class EventController implements EventApi {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        nl.tudelft.sem.template.domain.event.Event returnedEvent;
-        returnedEvent = eventService.updateEvent(event.getId(), event.getStartDate(),
-                event.getEndDate(), event.getIsCancelled(), event.getName(), event.getDescription());
+        nl.tudelft.sem.template.domain.event.Event returnedEvent = eventService.updateEvent(event.getId(),
+            event.getStartDate(), event.getEndDate(), event.getIsCancelled(), event.getName(), event.getDescription());
 
         return ResponseEntity.ok(returnedEvent.toModelEvent());
     }

@@ -30,4 +30,9 @@ public class EventDescription {
         EventDescription eventDescription = (EventDescription) o;
         return Objects.equals(text, eventDescription.text);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(text);
+    }
 }

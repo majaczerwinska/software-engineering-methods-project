@@ -16,7 +16,6 @@ import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserRepository;
 import nl.tudelft.sem.template.services.EventService;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,7 +65,7 @@ public class EventServiceTests {
 
     @Test
     public void updateEventTest() {
-                user = userRepository.save(user);
+        user = userRepository.save(user);
         LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
 

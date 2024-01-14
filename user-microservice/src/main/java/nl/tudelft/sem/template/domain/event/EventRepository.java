@@ -22,7 +22,20 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     // List<Event> findAllByUserId(Long id);
 
     // Unfortunately a custom query is unavoidable here :(
-    @Query("SELECT e FROM Event e WHERE (:startBefore IS NULL OR e.startDate < :startBefore) AND (:startAfter IS NULL OR e.startDate > :startAfter) AND (:endBefore IS NULL OR e.endDate < :endBefore) AND (:endAfter IS NULL OR e.endDate > :endAfter) AND (:cancelled IS NULL OR e.isCancelled = :cancelled) AND (:name IS NULL OR e.name = :name)")
+    @Query("SELECT e"
+            + " FROM Event e"
+            + " WHERE (:startBefore IS NULL"
+            + "        OR e.startDate < :startBefore)"
+            + "   AND (:startAfter IS NULL"
+            + "        OR e.startDate > :startAfter)"
+            + "   AND (:endBefore IS NULL"
+            + "        OR e.endDate < :endBefore)"
+            + "   AND (:endAfter IS NULL"
+            + "        OR e.endDate > :endAfter)"
+            + "   AND (:cancelled IS NULL"
+            + "        OR e.isCancelled = :cancelled)"
+            + "   AND (:name IS NULL"
+            + "        OR e.name = :name)")
     List<Event> findByOptionalParams(LocalDate startBefore,
             LocalDate startAfter,
             LocalDate endBefore,

@@ -27,4 +27,9 @@ public class IsCancelled {
         IsCancelled isCancelled = (IsCancelled) o;
         return Objects.equals(status, isCancelled.status);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(status);
+    }
 }
