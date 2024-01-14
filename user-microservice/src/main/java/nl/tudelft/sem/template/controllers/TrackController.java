@@ -114,7 +114,7 @@ public class TrackController implements TrackApi {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
             }
             if (!roleService.hasPermission(userService, authManager, attendeeService,
-                    trackService.getTrackById(trackId).getParentEventId(), trackId.longValue(), 0)) {
+                    trackService.getTrackById(trackId.longValue()).getEvent().getId(), trackId.longValue(), 0)) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }
             trackService.deleteTrackById(trackId.longValue());

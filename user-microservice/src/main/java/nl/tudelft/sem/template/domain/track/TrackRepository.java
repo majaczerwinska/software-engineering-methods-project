@@ -2,7 +2,7 @@ package nl.tudelft.sem.template.domain.track;
 
 import java.util.List;
 import java.util.Optional;
-import nl.tudelft.sem.template.domain.event.Event;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,16 +24,16 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @param id the id to look for
      * @return track that have this id
      */
-    Optional<Track> findById(long id);
+    Optional<Track> findById(Long id);
 
     /**
      * find track that have this title in the input event.
      *
      * @param title     the title to look for
-     * @param parentEventId     the event where the track belongs to
+     * @param eventId     the event where the track belongs to
      * @return track that have this title in the input event
      */
-    Optional<Track> findByTitleAndParentEventId(Title title, long parentEventId);
+    Optional<Track> findByTitleAndEventId(Title title, Long eventId);
 
     /**
      * find list of track that have this title.
@@ -46,10 +46,10 @@ public interface TrackRepository extends JpaRepository<Track, String> {
     /**
      * find list of track that in the event.
      *
-     * @param parentEventId the event id where the track belongs to
+     * @param eventId the event id where the track belongs to
      * @return list of track that in the event
      */
-    List<Track> findByParentEventId(long parentEventId);
+    List<Track> findByEventId(Long eventId);
 
     /**
      * check if event with input id exist.
@@ -57,16 +57,16 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @param id the id to check for
      * @return true if event with input id exist
      */
-    boolean existsById(long id);
+    boolean existsById(Long id);
 
     /**
      * check if event with input title exist in the input event.
      *
      * @param title             the title to check for
-     * @param parentEventId     the event to check for
+     * @param eventId     the event to check for
      * @return true if event with input title exist in the input event
      */
-    boolean existsByTitleAndParentEventId(Title title, long parentEventId);
+    boolean existsByTitleAndEventId(Title title, Long eventId);
 
     /**
      * check if event with input title exist.

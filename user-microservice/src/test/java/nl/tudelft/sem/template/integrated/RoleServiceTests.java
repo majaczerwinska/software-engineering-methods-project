@@ -10,6 +10,8 @@ import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.attendee.Confirmation;
 import nl.tudelft.sem.template.domain.attendee.Role;
+import nl.tudelft.sem.template.domain.event.Event;
+import nl.tudelft.sem.template.domain.track.Track;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.Name;
@@ -28,8 +30,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class RoleServiceTests {
 
     private static AppUser user;
-    private static long eventId;
-    private static long trackId;
+    private static Long eventId;
+    private static Long trackId;
     private static Attendee role;
     private static Email userEmail;
     @Mock
@@ -50,8 +52,8 @@ public class RoleServiceTests {
         user = new AppUser(userEmail, new Name("name"));
         eventId = 33L;
         trackId = 520L;
-        role = new Attendee(1L, user.getId(), eventId, trackId,
-                new Role(RoleTitle.PC_CHAIR), new Confirmation(true));
+        role = new Attendee(new Role(RoleTitle.PC_CHAIR), new Confirmation(true),
+                new Event(), new Track(), user);
         when(authManager.getEmail()).thenReturn(userEmail.toString());
     }
 

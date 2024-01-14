@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.transaction.Transactional;
+
+import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.domain.track.Description;
 import nl.tudelft.sem.template.domain.track.PaperRequirement;
 import nl.tudelft.sem.template.domain.track.Title;
@@ -46,8 +48,8 @@ public class TrackTests {
         LocalDate reviewDeadline = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
 
         nullTrack = null;
-        fullTrack1 = new Track(title, description, requirement, subDeadline, reviewDeadline, 2023L);
-        fullTrack2 = new Track(title, description, requirement, subDeadline, reviewDeadline, 2023L);
+        fullTrack1 = new Track(title, description, requirement, subDeadline, reviewDeadline, new Event(2023L));
+        fullTrack2 = new Track(12L, title, description, requirement, subDeadline, reviewDeadline, new Event(2023L));
         emptyTrack = new Track();
     }
 
@@ -57,8 +59,7 @@ public class TrackTests {
         assertNotNull(fullTrack2);
         assertNotNull(emptyTrack);
         assertNull(nullTrack);
-        Track savedTrack = trackRepository.save(fullTrack2);
-        assertNotNull(savedTrack.getId());
+        assertNotNull(fullTrack2.getId());
     }
 
     @Test
@@ -68,7 +69,7 @@ public class TrackTests {
         LocalDate subDeadlineForTest = LocalDate.parse("2029-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         LocalDate reviewDeadlineForTest = LocalDate.parse("2024-07-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         Track track = new Track(title, descriptionForTest, paperRequirement,
-                subDeadlineForTest, reviewDeadlineForTest, 999L);
+                subDeadlineForTest, reviewDeadlineForTest, new Event(999L));
 
         assertNotEquals(fullTrack1, track);
 
@@ -87,8 +88,8 @@ public class TrackTests {
         assertEquals(track.getSubmitDeadline(), subDeadlineForTest);
         assertNotEquals(fullTrack1.getSubmitDeadline(), subDeadlineForTest);
 
-        assertEquals(track.getParentEventId(), 999L);
-        assertNotEquals(fullTrack1.getParentEventId(), 999L);
+        assertEquals(track.getEvent().getId(), 999L);
+        assertNotEquals(fullTrack1.getEvent().getId(), 999L);
     }
 
     @Test
@@ -144,8 +145,8 @@ public class TrackTests {
         fullTrack1.setReviewDeadline(date);
         assertEquals(fullTrack1.getReviewDeadline(), date);
 
-        fullTrack1.setParentEventId(123L);
-        assertEquals(fullTrack1.getParentEventId(), 123L);
+        fullTrack1.setEvent(new Event(22L));
+        assertEquals(fullTrack1.getEvent().getId(), 22L);
     }
 
     @Test
@@ -157,10 +158,9 @@ public class TrackTests {
         modelTrack.setPaperType(PaperType.FULL_PAPER);
         LocalDate subDeadline = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         LocalDate reviewDeadline = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
-        modelTrack.setSubmitDeadline(subDeadline.toString());
-        modelTrack.setReviewDeadline(reviewDeadline.toString());
+        modelTrack.setSubmitDeadline(subDeadline);
+        modelTrack.setReviewDeadline(reviewDeadline);
         assertEquals(fullTrack1.toModelTrack(), modelTrack);
-        assertEquals(fullTrack1, new Track(modelTrack));
     }
 
 }

@@ -37,7 +37,7 @@ public class Track extends HasEvents {
     @Id
     @Column(name = "id", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "title", nullable = false)
     @Convert(converter = TitleAttributeConverter.class)
@@ -110,7 +110,7 @@ public class Track extends HasEvents {
      *
      * @param id for this track
      */
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -190,7 +190,7 @@ public class Track extends HasEvents {
         }
         return Objects.equals(title.toString(), track.title.toString())
                 && Objects.equals(paperType.toPaperType(), track.paperType.toPaperType())
-                && Objects.equals(event, track.getEvent());
+                && Objects.equals(event.getId(), track.getEvent().getId());
     }
 
     /** The hashcode will be stored as the id of this entity.
@@ -212,8 +212,8 @@ public class Track extends HasEvents {
         track.setTitle(this.title.toString());
         track.setDescription(this.description.toString());
         track.setPaperType(this.paperType.toPaperType());
-        track.setSubmitDeadline(this.submitDeadline.toString());
-        track.setReviewDeadline(this.reviewDeadline.toString());
+        track.setSubmitDeadline(this.submitDeadline);
+        track.setReviewDeadline(this.reviewDeadline);
         track.setEventId(this.event.getId());
         return track;
     }

@@ -15,6 +15,7 @@ import java.util.Objects;
 import nl.tudelft.sem.template.Application;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.controllers.TrackController;
+import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.domain.track.Description;
 import nl.tudelft.sem.template.domain.track.PaperRequirement;
 import nl.tudelft.sem.template.domain.track.Title;
@@ -75,7 +76,7 @@ public class TrackControllerTests {
         LocalDate subDeadline = LocalDate.now().plusDays(7);
         LocalDate reviewDeadline = LocalDate.now().plusDays(14);
         domainTrack = new nl.tudelft.sem.template.domain.track.Track(title, description,
-                paperRequirement, subDeadline, reviewDeadline, 52L);
+                paperRequirement, subDeadline, reviewDeadline, new Event(52L));
         modelTrack = domainTrack.toModelTrack();
     }
 
@@ -119,7 +120,10 @@ public class TrackControllerTests {
                 eq(0)
         )).thenReturn(true);
 
-        when(trackService.createTrack(eq(domainTrack))).thenThrow(new IllegalArgumentException());
+        when(trackService.createTrack(modelTrack.getTitle(), modelTrack.getDescription(),
+                modelTrack.getSubmitDeadline(), modelTrack.getReviewDeadline(),
+                modelTrack.getPaperType(), modelTrack.getEventId()))
+                .thenThrow(new IllegalArgumentException());
 
         // Run
         ResponseEntity<Track> response = trackController.addTrack(modelTrack);
@@ -135,7 +139,9 @@ public class TrackControllerTests {
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(0));
-        verify(trackService, times(1)).createTrack(eq(domainTrack));
+        verify(trackService, times(1)).createTrack(modelTrack.getTitle(),
+                modelTrack.getDescription(), modelTrack.getSubmitDeadline(), modelTrack.getReviewDeadline(),
+                modelTrack.getPaperType(), modelTrack.getEventId());
     }
 
     @Test
@@ -150,7 +156,9 @@ public class TrackControllerTests {
                 eq(0)
         )).thenReturn(true);
 
-        when(trackService.createTrack(eq(domainTrack))).thenReturn(domainTrack);
+        when(trackService.createTrack(modelTrack.getTitle(), modelTrack.getDescription(),
+                modelTrack.getSubmitDeadline(), modelTrack.getReviewDeadline(),
+                modelTrack.getPaperType(), modelTrack.getEventId())).thenReturn(domainTrack);
 
         // Run
         ResponseEntity<Track> response = trackController.addTrack(modelTrack);
@@ -167,7 +175,9 @@ public class TrackControllerTests {
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(0));
-        verify(trackService, times(1)).createTrack(eq(domainTrack));
+        verify(trackService, times(1)).createTrack(modelTrack.getTitle(),
+                modelTrack.getDescription(), modelTrack.getSubmitDeadline(), modelTrack.getReviewDeadline(),
+                modelTrack.getPaperType(), modelTrack.getEventId());
     }
 
     @Test
@@ -210,7 +220,9 @@ public class TrackControllerTests {
                 eq(1)
         )).thenReturn(true);
 
-        when(trackService.updateTrack(eq(domainTrack))).thenThrow(new IllegalArgumentException());
+        when(trackService.updateTrack(modelTrack.getId(), modelTrack.getTitle(), modelTrack.getDescription(),
+                modelTrack.getSubmitDeadline(), modelTrack.getReviewDeadline(),
+                modelTrack.getPaperType(), modelTrack.getEventId())).thenThrow(new IllegalArgumentException());
 
         // Run
         ResponseEntity<Void> response = trackController.updateTrack(modelTrack);
@@ -226,7 +238,9 @@ public class TrackControllerTests {
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(1));
-        verify(trackService, times(1)).updateTrack(eq(domainTrack));
+        verify(trackService, times(1)).updateTrack(modelTrack.getId(),
+                modelTrack.getTitle(), modelTrack.getDescription(), modelTrack.getSubmitDeadline(),
+                modelTrack.getReviewDeadline(), modelTrack.getPaperType(), modelTrack.getEventId());
     }
 
     @Test
@@ -241,7 +255,9 @@ public class TrackControllerTests {
                 eq(1)
         )).thenReturn(true);
 
-        when(trackService.updateTrack(eq(domainTrack))).thenThrow(new NoSuchElementException());
+        when(trackService.updateTrack(modelTrack.getId(), modelTrack.getTitle(), modelTrack.getDescription(),
+                modelTrack.getSubmitDeadline(), modelTrack.getReviewDeadline(),
+                modelTrack.getPaperType(), modelTrack.getEventId())).thenThrow(new NoSuchElementException());
 
         // Run
         ResponseEntity<Void> response = trackController.updateTrack(modelTrack);
@@ -257,7 +273,9 @@ public class TrackControllerTests {
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(1));
-        verify(trackService, times(1)).updateTrack(eq(domainTrack));
+        verify(trackService, times(1)).updateTrack(modelTrack.getId(),
+                modelTrack.getTitle(), modelTrack.getDescription(), modelTrack.getSubmitDeadline(),
+                modelTrack.getReviewDeadline(), modelTrack.getPaperType(), modelTrack.getEventId());
     }
 
     @Test
@@ -272,7 +290,9 @@ public class TrackControllerTests {
                 eq(1)
         )).thenReturn(true);
 
-        when(trackService.updateTrack(eq(domainTrack))).thenReturn(domainTrack);
+        when(trackService.updateTrack(modelTrack.getId(), modelTrack.getTitle(), modelTrack.getDescription(),
+                modelTrack.getSubmitDeadline(), modelTrack.getReviewDeadline(),
+                modelTrack.getPaperType(), modelTrack.getEventId())).thenReturn(domainTrack);
 
         // Run
         ResponseEntity<Void> response = trackController.updateTrack(modelTrack);
@@ -288,7 +308,9 @@ public class TrackControllerTests {
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(1));
-        verify(trackService, times(1)).updateTrack(eq(domainTrack));
+        verify(trackService, times(1)).updateTrack(modelTrack.getId(),
+                modelTrack.getTitle(), modelTrack.getDescription(), modelTrack.getSubmitDeadline(),
+                modelTrack.getReviewDeadline(), modelTrack.getPaperType(), modelTrack.getEventId());
     }
 
     @Test
@@ -298,7 +320,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(domainTrack.getParentEventId()),
+                eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0)
         )).thenReturn(false);
@@ -316,7 +338,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(domainTrack.getParentEventId()),
+                eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0));
     }
@@ -332,7 +354,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(domainTrack.getParentEventId()),
+                eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0));
     }
@@ -344,7 +366,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(domainTrack.getParentEventId()),
+                eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0)
         )).thenReturn(true);
@@ -362,7 +384,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(domainTrack.getParentEventId()),
+                eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0));
         verify(trackService, times(1)).getTrackById(eq(33L));
@@ -376,7 +398,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(domainTrack.getParentEventId()),
+                eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0)
         )).thenReturn(true);
@@ -394,7 +416,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(domainTrack.getParentEventId()),
+                eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0));
         verify(trackService, times(1)).getTrackById(eq(33L));
@@ -408,7 +430,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(domainTrack.getParentEventId()),
+                eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0)
         )).thenReturn(true);
@@ -426,7 +448,7 @@ public class TrackControllerTests {
                 any(UserService.class),
                 any(AuthManager.class),
                 any(AttendeeService.class),
-                eq(domainTrack.getParentEventId()),
+                eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0));
         verify(trackService, times(1)).getTrackById(eq(33L));
@@ -510,7 +532,7 @@ public class TrackControllerTests {
 
     @Test
     public void getTrackWithoutPermission() {
-        long eventId = 52L;
+        Long eventId = 52L;
         Title title = new Title("Test title");
         PaperType p = PaperType.FULL_PAPER;
         // Mock
@@ -530,7 +552,7 @@ public class TrackControllerTests {
 
     @Test
     public void getTrackByTitleInEvent() {
-        long eventId = 52L;
+        Long eventId = 52L;
         Title title = new Title("Test title");
         PaperType p = PaperType.FULL_PAPER;
         // Mock
@@ -572,7 +594,7 @@ public class TrackControllerTests {
 
     @Test
     public void getTrackByEvent() {
-        long eventId = 52L;
+        Long eventId = 52L;
         PaperType p = PaperType.FULL_PAPER;
         // Mock
         when(authManager.getEmail()).thenReturn(userEmail.toString());
