@@ -1,12 +1,16 @@
 package nl.tudelft.sem.template.domain.attendee;
 
 import java.util.Objects;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +19,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
+import nl.tudelft.sem.template.domain.event.Event;
+import nl.tudelft.sem.template.domain.track.Track;
+import nl.tudelft.sem.template.domain.user.AppUser;
 
 /**
  * An DDD entity that represents an attendee/role in the domain.
@@ -25,7 +32,6 @@ import nl.tudelft.sem.template.domain.HasEvents;
 @Table(name = "attendees")
 @Getter
 @NoArgsConstructor(force = true)
-@RequiredArgsConstructor
 @AllArgsConstructor
 public class Attendee extends HasEvents {
 
@@ -35,31 +41,33 @@ public class Attendee extends HasEvents {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Contains the identifier for the user
-    @Column(name = "userId", nullable = false)
-    @NonNull
-    private final Long userId;
-
-    // Contains the identifier of the associated event.
-    @Column(name = "eventId", nullable = false)
-    @NonNull
-    private final Long eventId;
-
-    // Contains the identifier of the associated track, if any.
-    @Column(name = "trackId", nullable = true)
-    private final Long trackId;
-
     @Setter
     @Column(name = "role", nullable = false)
     @Convert(converter = RoleAttributeConverter.class)
-    @NonNull
     private Role role;
 
     // Indicates whether the conferred role was accepted.
     @Column(name = "confirmed", nullable = false)
     @Convert(converter = ConfirmationAttributeConverter.class)
-    @NonNull
     private Confirmation confirmation;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private Event event;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = true)
+    private Track track;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private AppUser user;
+
+    public Attendee(Role role, Confirmation confirmation, Event event, Track track, AppUser user) {
+        this.role = role;
+        this.confirmation = confirmation;
+        this.event = event;
+        this.track = track;
+        this.event = event;
+        this.user = user;
+    }
 
 
     /**

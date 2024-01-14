@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import nl.tudelft.sem.template.domain.track.Title;
+
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 

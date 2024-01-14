@@ -1,12 +1,17 @@
 package nl.tudelft.sem.template.domain.user;
 
+import java.util.List;
 import java.util.Objects;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +19,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
+import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.events.UserWasCreatedEvent;
 
 
@@ -59,14 +65,8 @@ public class AppUser extends HasEvents {
     @Convert(converter = CommunicationAttributeConverter.class)
     private Communication communication;
 
-    //    @ManyToMany
-    //    @JoinTable(
-    //            name = "user_event",
-    //            joinColumns = @JoinColumn(name = "user_id"),
-    //            inverseJoinColumns = @JoinColumn(name = "event_id")
-    //    )
-    //    private Set<Event> events = new HashSet<>();
-
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attendee> attendance;
 
     /**
      * Create new application user.

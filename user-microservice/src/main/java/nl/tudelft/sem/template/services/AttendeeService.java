@@ -9,6 +9,12 @@ import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.attendee.AttendeeRepository;
 import nl.tudelft.sem.template.domain.attendee.Confirmation;
 import nl.tudelft.sem.template.domain.attendee.Role;
+import nl.tudelft.sem.template.domain.event.Event;
+import nl.tudelft.sem.template.domain.event.EventRepository;
+import nl.tudelft.sem.template.domain.track.Track;
+import nl.tudelft.sem.template.domain.track.TrackRepository;
+import nl.tudelft.sem.template.domain.user.AppUser;
+import nl.tudelft.sem.template.domain.user.UserRepository;
 import nl.tudelft.sem.template.enums.RoleTitle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
@@ -21,17 +27,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class AttendeeService {
 
-    private final transient AttendeeRepository repository;
+    private final transient AttendeeRepository attendeeRepository;
+    private final transient UserRepository userRepository;
+    private final transient EventRepository eventRepository;
+    private final transient TrackRepository trackRepository;
 
     /**
      * A constructor dependency injection for the Attendee JPA Repository concrete
      * implementation.
      *
-     * @param repository the attendee repository injection
+     * @param attendeeRepository the attendee repository injection
      */
     @Autowired
-    public AttendeeService(AttendeeRepository repository) {
-        this.repository = repository;
+    public AttendeeService(AttendeeRepository attendeeRepository, UserRepository userRepository, EventRepository eventRepository, TrackRepository trackRepository) {
+        this.attendeeRepository = attendeeRepository;
+        this.userRepository = userRepository;
+        this.eventRepository = eventRepository;
+        this.trackRepository = trackRepository;
     }
 
     // Private Methods
@@ -61,34 +73,18 @@ public class AttendeeService {
             throw new IllegalArgumentException("Attendance instance already exists.");
         }
 
-        Attendee attendee = new Attendee(userId, eventId, trackId,
-                new Role(role), new Confirmation(confirmed));
+        Event event = eventRepository.findById(eventId).get();
+        Track track = null;
+        if (trackId != null) {
+            track = trackRepository.findById(trackId).get();}
+        AppUser user = userRepository.findById(userId).get();
+
+        Attendee attendee = new Attendee(
+            new Role(role), new Confirmation(confirmed), event, track, user);
 
         // Commits the new attendance to the repository
-        repository.save(attendee);
+        attendeeRepository.save(attendee);
 
-    }
-
-    /**
-     * Optionally retrieves the attendance instance corresponding to the given
-     * identifiers from the database. This method handles the nullable behaviour
-     * of the {@code trackId} track identifier.
-     *
-     * <p>This method is intended to be used
-     * internally within the service class; refer to the other public methods
-     * within this service class for out-of-class retrieval invocations.
-     *
-     * @param userId the user identifier to use in retrieval
-     * @param eventId the event identifier to use in retrieval
-     * @param trackId the track identifier to use in retrieval, potentially nullable
-     * @return the optional Attendee instance retrieved from the database
-     */
-    private Optional<Attendee> findAttendee(Long userId, Long eventId,
-                                            @Nullable Long trackId) {
-        if (trackId == null) {
-            return repository.find(userId, eventId);
-        }
-        return repository.find(userId, eventId, trackId);
     }
 
     /**
@@ -111,7 +107,7 @@ public class AttendeeService {
     @Transactional
     private void deleteAttendance(Long userId, Long eventId, @Nullable Long trackId)
             throws NoSuchElementException {
-        Optional<Attendee> retrievedAttendance = findAttendee(userId, eventId, trackId);
+        Optional<Attendee> retrievedAttendance = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId, trackId);
 
         // Exception handling for when no attendances can be found.
         if (retrievedAttendance.isEmpty()) {
@@ -121,7 +117,7 @@ public class AttendeeService {
         Attendee attendee = retrievedAttendance.get();
 
         // Deletes the Attendee instance associated with the given composite key.
-        repository.delete(attendee);
+        attendeeRepository.delete(attendee);
 
     }
 
@@ -143,10 +139,7 @@ public class AttendeeService {
     public boolean isInvited(Long userId, Long eventId,
                              @Nullable Long trackId) {
 
-        if (trackId == null) {
-            return repository.exists(userId, eventId);
-        }
-        return repository.exists(userId, eventId, trackId);
+        return attendeeRepository.existsByUserIdAndEventIdAndTrackId(userId, eventId, trackId);
     }
 
     /**
@@ -165,12 +158,7 @@ public class AttendeeService {
     public boolean isAttending(Long userId, Long eventId,
                                @Nullable Long trackId) {
 
-        Confirmation cnf = new Confirmation(true);
-
-        if (trackId == null) {
-            return repository.existsConfirmed(userId, eventId, cnf);
-        }
-        return repository.existsConfirmed(userId, eventId, trackId, cnf);
+        return attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(userId, eventId, trackId, true);
     }
 
     /**
@@ -189,7 +177,7 @@ public class AttendeeService {
     public Attendee getAttendance(Long userId, Long eventId, @Nullable Long trackId)
             throws NoSuchElementException {
 
-        Optional<Attendee> retrievedAttendee = findAttendee(userId, eventId, trackId);
+        Optional<Attendee> retrievedAttendee = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId, trackId);
 
         // Exception handling for when the repository can find the instance
         if (retrievedAttendee.isEmpty()) {
@@ -217,7 +205,7 @@ public class AttendeeService {
     public List<Attendee> getAttendanceByUser(Long userId)
             throws NoSuchElementException {
 
-        List<Attendee> retrievedList = repository.findByUser(userId, new Confirmation(true));
+        List<Attendee> retrievedList = attendeeRepository.findByUserIdAndConfirmation(userId, true);
 
         // Exception handling for when no attendances can be found.
         if (retrievedList.isEmpty()) {
@@ -240,7 +228,7 @@ public class AttendeeService {
     public List<Attendee> getAttendanceByEvent(Long eventId)
             throws NoSuchElementException {
 
-        List<Attendee> retrievedList = repository.findByEvent(eventId, new Confirmation(true));
+        List<Attendee> retrievedList = attendeeRepository.findByEventIdAndConfirmation(eventId, true);
 
         // Exception handling for when no attendances can be found.
         if (retrievedList.isEmpty()) {
@@ -263,7 +251,7 @@ public class AttendeeService {
     public List<Attendee> getAttendanceByTrack(@NonNull Long trackId)
             throws NoSuchElementException {
 
-        List<Attendee> retrievedList = repository.findByTrack(trackId, new Confirmation(true));
+        List<Attendee> retrievedList = attendeeRepository.findByTrackIdAndConfirmation(trackId, true);
 
         // Exception handling for when no attendances can be found.
         if (retrievedList.isEmpty()) {
@@ -303,7 +291,7 @@ public class AttendeeService {
     public void accept(Long executorId, Long userId, Long eventId, Long trackId) {
 
         //Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId, trackId);
-        Optional<Attendee> retrievedAttendance = findAttendee(userId, eventId, trackId);
+        Optional<Attendee> retrievedAttendance = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId, trackId);
 
         if (retrievedAttendance.isEmpty()) {
             throw new NoSuchElementException();
@@ -312,7 +300,7 @@ public class AttendeeService {
         Attendee attendee = retrievedAttendance.get();
         attendee.setConfirmation(true);
 
-        repository.save(attendee);
+        attendeeRepository.save(attendee);
 
         //TODO accept an invitation
     }
@@ -394,7 +382,7 @@ public class AttendeeService {
             throws NoSuchElementException {
 
         //Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId, trackId);
-        Optional<Attendee> retrievedAttendance = findAttendee(userId, eventId, trackId);
+        Optional<Attendee> retrievedAttendance = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId, trackId);
 
         // Exception handling for when the repository can find the instance
         if (retrievedAttendance.isEmpty()) {
@@ -406,6 +394,6 @@ public class AttendeeService {
         attendee.setRole(new Role(role));
 
         // Commit the changes
-        repository.save(attendee);
+        attendeeRepository.save(attendee);
     }
 }

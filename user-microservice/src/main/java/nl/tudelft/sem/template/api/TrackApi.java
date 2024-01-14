@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-11T14:29:55.907856+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-14T04:30:26.331132131+01:00[Europe/Amsterdam]")
 @Validated
 @Tag(name = "Track Management", description = "end-points that provide track-related functionalities.")
 public interface TrackApi {
@@ -79,7 +79,7 @@ public interface TrackApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"review_deadline\" : \"2022/11/24, 21:59\", \"event_id\" : 5, \"submit_deadline\" : \"2022/11/24, 21:59\", \"description\" : \"track 1 is ..., aims to ...\", \"id\" : 10, \"title\" : \"track Title 1\" }";
+                    String exampleString = "{ \"review_deadline\" : \"2000-01-23\", \"event_id\" : 5, \"submit_deadline\" : \"2000-01-23\", \"description\" : \"track 1 is ..., aims to ...\", \"id\" : 10, \"title\" : \"track Title 1\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -163,7 +163,7 @@ public interface TrackApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"review_deadline\" : \"2022/11/24, 21:59\", \"event_id\" : 5, \"submit_deadline\" : \"2022/11/24, 21:59\", \"description\" : \"track 1 is ..., aims to ...\", \"id\" : 10, \"title\" : \"track Title 1\" }, { \"review_deadline\" : \"2022/11/24, 21:59\", \"event_id\" : 5, \"submit_deadline\" : \"2022/11/24, 21:59\", \"description\" : \"track 1 is ..., aims to ...\", \"id\" : 10, \"title\" : \"track Title 1\" } ]";
+                    String exampleString = "[ { \"review_deadline\" : \"2000-01-23\", \"event_id\" : 5, \"submit_deadline\" : \"2000-01-23\", \"description\" : \"track 1 is ..., aims to ...\", \"id\" : 10, \"title\" : \"track Title 1\" }, { \"review_deadline\" : \"2000-01-23\", \"event_id\" : 5, \"submit_deadline\" : \"2000-01-23\", \"description\" : \"track 1 is ..., aims to ...\", \"id\" : 10, \"title\" : \"track Title 1\" } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -212,7 +212,7 @@ public interface TrackApi {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"review_deadline\" : \"2022/11/24, 21:59\", \"event_id\" : 5, \"submit_deadline\" : \"2022/11/24, 21:59\", \"description\" : \"track 1 is ..., aims to ...\", \"id\" : 10, \"title\" : \"track Title 1\" }";
+                    String exampleString = "{ \"review_deadline\" : \"2000-01-23\", \"event_id\" : 5, \"submit_deadline\" : \"2000-01-23\", \"description\" : \"track 1 is ..., aims to ...\", \"id\" : 10, \"title\" : \"track Title 1\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

@@ -1,19 +1,27 @@
 package nl.tudelft.sem.template.domain.event;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import nl.tudelft.sem.template.domain.HasEvents;
+import nl.tudelft.sem.template.domain.attendee.Attendee;
+import nl.tudelft.sem.template.domain.track.Track;
+
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
 
 /**
@@ -56,6 +64,12 @@ public class Event extends HasEvents {
     @Column(name = "description", nullable = false)
     @Convert(converter = EventDescriptionAttributeConverter.class)
     private EventDescription description;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Track> tracks;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attendee> attendees;
 
     /**
      * Constructor with nullable description.

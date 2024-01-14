@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import nl.tudelft.sem.template.domain.event.Event;
+
 /**
  * A DDD repository for querying and persisting track aggregate roots.
  */
@@ -16,7 +18,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @param id the id to look for
      * @return track that have this id
      */
-    Optional<Track> findById(String id);
+    Optional<Track> findById(Long id);
 
     /**
      * find track that have this title in the input event.
@@ -25,7 +27,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @param parentEventId     the event where the track belongs to
      * @return track that have this title in the input event
      */
-    Optional<Track> findByTitleAndParentEventId(Title title, Long parentEventId);
+    Optional<Track> findByTitleAndEventId(Title title, Long eventId);
 
     /**
      * find list of track that have this title.
@@ -41,7 +43,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @param parentEventId the event id where the track belongs to
      * @return list of track that in the event
      */
-    List<Track> findByParentEventId(Long parentEventId);
+    List<Track> findByEventId(Long eventId);
 
     /**
      * check if event with input id exist.
@@ -58,7 +60,7 @@ public interface TrackRepository extends JpaRepository<Track, String> {
      * @param parentEventId     the event to check for
      * @return true if event with input title exist in the input event
      */
-    boolean existsByTitleAndParentEventId(Title title, Long parentEventId);
+    boolean existsByTitleAndEvent(Title title, Event event);
 
     /**
      * check if event with input title exist.

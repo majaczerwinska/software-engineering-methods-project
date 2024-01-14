@@ -63,7 +63,7 @@ public class TrackController implements TrackApi {
             + "#track.getEventId(), #track.getId(), 0)") // 401
     public ResponseEntity<Track> addTrack(Track track) {
         try {
-            trackService.createTrack(new nl.tudelft.sem.template.domain.track.Track(track));
+            trackService.createTrack(track.getTitle(), track.getDescription(), track.getSubmitDeadline(), track.getReviewDeadline(), track.getPaperType(), track.getEventId());
             return ResponseEntity.ok(track);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
@@ -82,7 +82,7 @@ public class TrackController implements TrackApi {
             + "#track.getEventId(), #track.getId(), 1)") // 401
     public ResponseEntity<Void> updateTrack(@Valid @RequestBody(required = false) Track track) {
         try {
-            trackService.updateTrack(new nl.tudelft.sem.template.domain.track.Track(track));
+            trackService.updateTrack(track.getId(), track.getTitle(), track.getDescription(), track.getSubmitDeadline(), track.getReviewDeadline(), track.getPaperType(), track.getEventId());
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400

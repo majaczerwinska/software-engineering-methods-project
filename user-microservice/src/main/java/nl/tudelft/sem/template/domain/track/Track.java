@@ -3,17 +3,28 @@ package nl.tudelft.sem.template.domain.track;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import nl.tudelft.sem.template.domain.HasEvents;
+import nl.tudelft.sem.template.domain.attendee.Attendee;
+import nl.tudelft.sem.template.domain.event.Event;
+import nl.tudelft.sem.template.domain.event.EventRepository;
 import nl.tudelft.sem.template.events.TrackCreatedEvent;
 import nl.tudelft.sem.template.events.TrackDeadlineChangedEvent;
 import nl.tudelft.sem.template.events.TrackDescriptionChangedEvent;
@@ -30,6 +41,7 @@ import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDa
 @Entity
 @Table(name = "tracks")
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class Track extends HasEvents {
     @Id
@@ -49,24 +61,19 @@ public class Track extends HasEvents {
     @Convert(converter = PaperRequirementAttributeConverter.class)
     private PaperRequirement paperType;
 
-    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "submitDeadline", nullable = false)
     @Convert(converter = LocalDateConverter.class)
     private LocalDate submitDeadline;
 
-    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "reviewDeadline", nullable = false)
     @Convert(converter = LocalDateConverter.class)
     private LocalDate reviewDeadline;
 
-    //@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    //@JoinColumn(name = "eventId", referencedColumnName = "id")
-    //@JsonBackReference
-    //@Column(name = "event", nullable = false)
-    //@Convert(converter = ParentEventAttributeConverter.class)
-    //From Yair: The converter is not correct. How can it serialize an event instance?
-    @Column(name = "parentEventId", nullable = false)
-    private Long parentEventId;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private Event event;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "track", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attendee> attendees;
 
     /**
      * a constructor for Track.
@@ -81,30 +88,26 @@ public class Track extends HasEvents {
      * @param parentEventId  the event this track belongs to
      */
     public Track(Title title, Description description, PaperRequirement paperType,
-                 LocalDate submitDeadline, LocalDate reviewDeadline, Long parentEventId) {
+                 LocalDate submitDeadline, LocalDate reviewDeadline, Event event) {
         this.title = title;
         this.description = description;
         this.paperType = paperType;
         this.submitDeadline = submitDeadline;
         this.reviewDeadline = reviewDeadline;
-        this.parentEventId = parentEventId;
-        this.recordThat(new TrackCreatedEvent(parentEventId, this.id));
+        this.event = event;
+        this.recordThat(new TrackCreatedEvent(event.getId(), this.id));
     }
 
-
-    /**
-     * a converter for Track. form model to domain
-     *
-     * @param track the track in model format
-     */
-    public Track(nl.tudelft.sem.template.model.Track track) {
-        this.title = new Title(track.getTitle());
-        this.description = new Description(track.getDescription());
-        this.paperType = new PaperRequirement(track.getPaperType());
-        this.submitDeadline = LocalDate.parse(track.getSubmitDeadline());
-        this.reviewDeadline = LocalDate.parse(track.getReviewDeadline());
-        this.parentEventId = track.getEventId();
-        this.recordThat(new TrackCreatedEvent(parentEventId, this.id));
+    public Track(Long id, Title title, Description description, PaperRequirement paperType,
+                 LocalDate submitDeadline, LocalDate reviewDeadline, Event event) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.paperType = paperType;
+        this.submitDeadline = submitDeadline;
+        this.reviewDeadline = reviewDeadline;
+        this.event = event;
+        this.recordThat(new TrackCreatedEvent(event.getId(), this.id));
     }
 
     /**
@@ -171,12 +174,12 @@ public class Track extends HasEvents {
      *
      * @param parentEventId which this track belongs to
      */
-    public void setParentEventId(Long parentEventId) {
-        Long temp = this.parentEventId;
-        this.parentEventId = parentEventId;
-        this.recordThat(new TrackRemovedEvent(temp, this.id));
+    public void setEvent(Event event) {
+        Event temp = this.event;
+        this.event = event;
+        this.recordThat(new TrackRemovedEvent(temp.getId(), this.id));
         this.recordThat(new TrackParentEventChangedEvent(this));
-        this.recordThat(new TrackCreatedEvent(parentEventId, this.id));
+        this.recordThat(new TrackCreatedEvent(event.getId(), this.id));
     }
 
     /**
@@ -194,7 +197,7 @@ public class Track extends HasEvents {
             return false;
         }
         Track track = (Track) o;
-        return title.equals(track.title) && parentEventId.equals(track.parentEventId);
+        return title.equals(track.title) && event.getId().equals(track.event.getId());
     }
 
     /**
@@ -204,7 +207,7 @@ public class Track extends HasEvents {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(title, parentEventId);
+        return Objects.hash(title, event.getId());
     }
 
     /**
@@ -234,9 +237,9 @@ public class Track extends HasEvents {
         track.setTitle(this.title.toString());
         track.setDescription(this.description.toString());
         track.setPaperType(this.paperType.toPaperType());
-        track.setSubmitDeadline(this.submitDeadline.toString());
-        track.setReviewDeadline(this.reviewDeadline.toString());
-        track.setEventId(this.parentEventId);
+        track.setSubmitDeadline(this.submitDeadline);
+        track.setReviewDeadline(this.reviewDeadline);
+        track.setEventId(this.event.getId());
         return track;
     }
 }
