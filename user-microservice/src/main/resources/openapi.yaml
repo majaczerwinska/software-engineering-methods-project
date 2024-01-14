@@ -18,6 +18,32 @@ tags:
     description: end-points that facilitate a user's interaction with invitations to events.
 paths:
   /attendee:
+    post:
+      tags:
+        - Event Management
+      summary: Create a new attendee.
+      description: The invitation system should be used by human users of the API. This endpoint is only designed to be used by other microservices.
+      operationId: createAttendee
+      requestBody:
+        description: Attendee to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Attendee'
+      responses:
+        '200':
+          description: Operation executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendee'
+        '401':
+          description: Unauthorized access.
+        '409':
+          description: Attendee already exists.
+      security:
+        - api_key: [ ]
+
     get:
       tags:
         - Event Management
@@ -862,10 +888,12 @@ components:
           example: "track 1 is ..., aims to ..."
         submit_deadline:
           type: string
+          format: date
           description: the deadline for all paper submissions
           example: "2022/11/24, 21:59"
         review_deadline:
           type: string
+          format: date
           description: the deadline for all paper reviews
           example: "2022/11/24, 21:59"
         paper_type:

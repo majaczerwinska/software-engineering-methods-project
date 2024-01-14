@@ -5,11 +5,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import nl.tudelft.sem.template.model.Role;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -23,7 +19,7 @@ import javax.annotation.Generated;
  * Attendee
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-12-05T18:45:04.605384300+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-14T04:30:26.331132131+01:00[Europe/Amsterdam]")
 public class Attendee {
 
   private Long id;
@@ -32,7 +28,7 @@ public class Attendee {
 
   private Long userId;
 
-  private JsonNullable<Long> trackId = JsonNullable.undefined();
+  private Long trackId = null;
 
   private Role role;
 
@@ -97,7 +93,7 @@ public class Attendee {
   }
 
   public Attendee trackId(Long trackId) {
-    this.trackId = JsonNullable.of(trackId);
+    this.trackId = trackId;
     return this;
   }
 
@@ -108,11 +104,11 @@ public class Attendee {
   
   @Schema(name = "track_id", example = "10", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("track_id")
-  public JsonNullable<Long> getTrackId() {
+  public Long getTrackId() {
     return trackId;
   }
 
-  public void setTrackId(JsonNullable<Long> trackId) {
+  public void setTrackId(Long trackId) {
     this.trackId = trackId;
   }
 
@@ -148,24 +144,13 @@ public class Attendee {
     return Objects.equals(this.id, attendee.id) &&
         Objects.equals(this.eventId, attendee.eventId) &&
         Objects.equals(this.userId, attendee.userId) &&
-        equalsNullable(this.trackId, attendee.trackId) &&
+        Objects.equals(this.trackId, attendee.trackId) &&
         Objects.equals(this.role, attendee.role);
-  }
-
-  private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
-    return a == b || (a != null && b != null && a.isPresent() && b.isPresent() && Objects.deepEquals(a.get(), b.get()));
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, eventId, userId, hashCodeNullable(trackId), role);
-  }
-
-  private static <T> int hashCodeNullable(JsonNullable<T> a) {
-    if (a == null) {
-      return 1;
-    }
-    return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
+    return Objects.hash(id, eventId, userId, trackId, role);
   }
 
   @Override
