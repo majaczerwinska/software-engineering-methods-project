@@ -54,4 +54,29 @@ public class EventTests {
     void hashCodeTests() {
         assertEquals(eventNullDesc.hashCode(), Objects.hash(eventNullDesc.getId()));
     }
+
+    @Test
+    void eventDescriptionEqualsTests() {
+        EventDescription eventDescription0 = new EventDescription("DESC");
+        EventDescription eventDescription0Copy = new EventDescription("DESC");
+        EventDescription eventDescription1 = new EventDescription("desc");
+        assertEquals(eventDescription0, eventDescription0);
+        assertEquals(eventDescription0, eventDescription0Copy);
+        assertNotEquals(eventDescription0, eventDescription1);
+        assertNotEquals(eventDescription0, null);
+        assertNotEquals(eventDescription0, "DESC");
+    }
+
+    @Test
+    void IsCancelledEqualsTests() {
+        IsCancelled isCancelledTrue = new IsCancelled(true);
+        IsCancelled isCancelledTrueCopy = new IsCancelled(true);
+        IsCancelled isCancelledFalse = new IsCancelled(false);
+
+        assertEquals(isCancelledTrue, isCancelledTrue);
+        assertEquals(isCancelledTrue, isCancelledTrueCopy);
+        assertNotEquals(isCancelledTrue, isCancelledFalse);
+        assertNotEquals(isCancelledTrue, null);
+        assertNotEquals(isCancelledTrue, true);
+    }
 }

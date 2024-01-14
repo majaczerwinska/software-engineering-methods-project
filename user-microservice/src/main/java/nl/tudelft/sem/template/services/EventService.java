@@ -71,11 +71,13 @@ public class EventService {
      */
     @Transactional
     public Event updateEvent(Long id, LocalDate startDate, LocalDate endDate, boolean isCancelled, String name, String description) {
-        if (!eventRepository.existsById(id)) {
-            throw new EntityNotFoundException();
-        }
-        Event newEvent = new Event(id, startDate, endDate, new IsCancelled(isCancelled), new EventName(name), new EventDescription(description));
-        Event returnedEvent = eventRepository.save(newEvent);
+        Event event = eventRepository.findById(id).get();
+        event.setStartDate(startDate);
+        event.setEndDate(endDate);
+        event.setIsCancelled(new IsCancelled(isCancelled));
+        event.setName(new EventName(name));
+        event.setEventDescription(new EventDescription(description));
+        Event returnedEvent = eventRepository.save(event);
         return returnedEvent;
     }
 }

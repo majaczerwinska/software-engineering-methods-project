@@ -31,12 +31,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class EventController implements EventApi {
 
     private final transient AuthManager authManager;
-    private final transient EventService eventService;
     private final transient UserRepository userRepository;
+    private final transient EventService eventService;
     private final transient EventRepository eventRepository;
     private final transient RoleService roleService;
-    private final transient UserService userService;
-    private final transient AttendeeService attendeeService;
 
     /**
      * Instantiates a new controller.
@@ -46,18 +44,15 @@ public class EventController implements EventApi {
      */
     @Autowired
     public EventController(AuthManager authManager, EventService eventService,
-        UserRepository userRepository, EventRepository eventRepository, RoleService roleService, UserService userService, AttendeeService attendeeService) {
+            UserRepository userRepository, EventRepository eventRepository, RoleService roleService) {
         this.authManager = authManager;
         this.eventService = eventService;
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.roleService = roleService;
-        this.userService = userService;
-        this.attendeeService = attendeeService;
     }
 
     @Override
-    @Transactional
     public ResponseEntity<Event> addEvent(
             Event event) {
         if (!userRepository.existsByEmail(new Email(authManager.getEmail()))) {
@@ -77,7 +72,6 @@ public class EventController implements EventApi {
     }
 
     @Override
-    @Transactional
     public ResponseEntity<List<Event>> findEvent(
             LocalDate startBefore,
             LocalDate startAfter,
@@ -86,12 +80,8 @@ public class EventController implements EventApi {
             Boolean cancelled,
             String name) {
         List<nl.tudelft.sem.template.domain.event.Event> events;
-        try {
-            events = eventRepository.findByOptionalParams(startBefore, startAfter, endBefore, endAfter,
-                    new IsCancelled(cancelled), new EventName(name));
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        events = eventRepository.findByOptionalParams(startBefore, startAfter, endBefore, endAfter,
+                new IsCancelled(cancelled), new EventName(name));
 
         List<Event> returnEvents = events.stream().map(nl.tudelft.sem.template.domain.event.Event::toModelEvent)
                 .collect(Collectors.toList());
@@ -99,19 +89,14 @@ public class EventController implements EventApi {
     }
 
     @Override
-    @Transactional
     public ResponseEntity<Event> updateEvent(Event event) {
-        if (!roleService.hasPermission(userService, authManager, attendeeService, event.getId(), null, 0)) {
+        if (!roleService.hasPermission(authManager, event.getId(), null, 0)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         nl.tudelft.sem.template.domain.event.Event returnedEvent;
-        try {
-            returnedEvent = eventService.updateEvent(event.getId(), event.getStartDate(),
-                    event.getEndDate(), event.getIsCancelled(), event.getName(), event.getDescription());
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        returnedEvent = eventService.updateEvent(event.getId(), event.getStartDate(),
+                event.getEndDate(), event.getIsCancelled(), event.getName(), event.getDescription());
 
         return ResponseEntity.ok(returnedEvent.toModelEvent());
     }

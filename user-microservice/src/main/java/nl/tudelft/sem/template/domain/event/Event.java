@@ -108,6 +108,30 @@ public class Event extends HasEvents {
         return returnedEvent;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setIsCancelled(IsCancelled isCancelled) {
+        this.isCancelled = isCancelled;
+    }
+
+    public void setName(EventName name) {
+        this.name = name;
+    }
+
+    public void setEventDescription(EventDescription description) {
+        this.description = description;
+    }
+
     /**
      * Equality is only based on the identifier.
      */
