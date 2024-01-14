@@ -5,9 +5,8 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.time.LocalDate;
 import nl.tudelft.sem.template.model.PaperType;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -21,7 +20,7 @@ import javax.annotation.Generated;
  * Track
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-14T04:30:26.331132131+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2023-12-05T18:45:04.605384300+01:00[Europe/Amsterdam]")
 public class Track {
 
   private Long id;
@@ -30,11 +29,9 @@ public class Track {
 
   private String description;
 
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-  private LocalDate submitDeadline;
+  private String submitDeadline;
 
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-  private LocalDate reviewDeadline;
+  private String reviewDeadline;
 
   private PaperType paperType;
 
@@ -100,7 +97,7 @@ public class Track {
     this.description = description;
   }
 
-  public Track submitDeadline(LocalDate submitDeadline) {
+  public Track submitDeadline(String submitDeadline) {
     this.submitDeadline = submitDeadline;
     return this;
   }
@@ -109,18 +106,18 @@ public class Track {
    * the deadline for all paper submissions
    * @return submitDeadline
   */
-  @Valid 
-  @Schema(name = "submit_deadline", description = "the deadline for all paper submissions", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  
+  @Schema(name = "submit_deadline", example = "2022/11/24, 21:59", description = "the deadline for all paper submissions", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("submit_deadline")
-  public LocalDate getSubmitDeadline() {
+  public String getSubmitDeadline() {
     return submitDeadline;
   }
 
-  public void setSubmitDeadline(LocalDate submitDeadline) {
+  public void setSubmitDeadline(String submitDeadline) {
     this.submitDeadline = submitDeadline;
   }
 
-  public Track reviewDeadline(LocalDate reviewDeadline) {
+  public Track reviewDeadline(String reviewDeadline) {
     this.reviewDeadline = reviewDeadline;
     return this;
   }
@@ -129,14 +126,14 @@ public class Track {
    * the deadline for all paper reviews
    * @return reviewDeadline
   */
-  @Valid 
-  @Schema(name = "review_deadline", description = "the deadline for all paper reviews", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  
+  @Schema(name = "review_deadline", example = "2022/11/24, 21:59", description = "the deadline for all paper reviews", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("review_deadline")
-  public LocalDate getReviewDeadline() {
+  public String getReviewDeadline() {
     return reviewDeadline;
   }
 
-  public void setReviewDeadline(LocalDate reviewDeadline) {
+  public void setReviewDeadline(String reviewDeadline) {
     this.reviewDeadline = reviewDeadline;
   }
 

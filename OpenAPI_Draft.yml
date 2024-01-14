@@ -213,7 +213,7 @@ paths:
             type: integer
       responses:
         '204':
-          description: User account found successfully
+          description: User account found sucessfully
         '400':
           description: Invalid userID supplied
         '401':
@@ -237,7 +237,7 @@ paths:
             type: string
       responses:
         '204':
-          description: User account found successfully
+          description: User account found sucessfully
         '400':
           description: Invalid userID supplied
         '401':
@@ -465,15 +465,15 @@ paths:
           description: Track object not found
       security:
         - api_key: [ ]
-  /track/{trackId}:
+  /track/{trackID}:
     get:
       tags:
         - track
       summary: get track by id
-      description: returns track with id == trackId
+      description: returns track with id == trackID
       operationId: getTrack
       parameters:
-        - name: trackId
+        - name: trackID
           in: path
           description: id of the track that is being fetching
           required: true
@@ -501,7 +501,7 @@ paths:
       description: This allows removing tracks.
       operationId: deleteTrack
       parameters:
-        - name: trackId
+        - name: trackID
           in: path
           description: id of the track that is being fetching
           required: true
@@ -511,7 +511,7 @@ paths:
         '204':
           description: Track successfully deleted
         '400':
-          description: Invalid trackId supplied
+          description: Invalid trackID supplied
         '401':
           description: UnauthorizedError
         '404':
@@ -770,14 +770,12 @@ components:
           example: "track 1 is ..., aims to ..."
         submit_deadline:
           type: string
-          format: date
           description: the deadline for all paper submissions
-          example: "2022-11-24"
+          example: "2022/11/24, 21:59"
         review_deadline:
           type: string
-          format: date
           description: the deadline for all paper submissions
-          example: "2022-11-24"
+          example: "2022/11/24, 21:59"
         paperType:
           type: string
           description: the required paper type for this track
