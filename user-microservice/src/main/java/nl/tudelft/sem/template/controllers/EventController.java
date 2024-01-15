@@ -33,7 +33,6 @@ public class EventController implements EventApi {
      *
      * @param authManager Spring Security component used to authenticate and
      *                    authorize the user
-     * @param roleService
      */
     @Autowired
     public EventController(AuthManager authManager, EventService eventService, AttendeeService attendeeService,
@@ -67,7 +66,7 @@ public class EventController implements EventApi {
     @Override
     @Transactional
     public ResponseEntity<Void> deleteEvent(Long eventId) {
-        if (roleService.hasPermission(userService, authManager, attendeeService, eventId, null, 0)) {
+        if (!roleService.hasPermission(userService, authManager, attendeeService, eventId, null, 0)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         if (!eventService.deleteEvent(eventId)) {

@@ -79,7 +79,7 @@ public class TrackService {
             LocalDate reviewDeadline, PaperType paperType, Long eventId)
             throws IllegalArgumentException, NoSuchElementException {
         Optional<Track> inDb = trackRepository.findByTitleAndEventId(new Title(title), eventId);
-        if (inDb.isPresent() && inDb.get().getId() != id) {
+        if (inDb.isPresent() && !inDb.get().getId().equals(id)) {
             throw new IllegalArgumentException("Track with this title already exist in the event.");
         }
         if (trackRepository.existsById(id)) {

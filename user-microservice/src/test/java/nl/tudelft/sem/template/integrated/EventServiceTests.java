@@ -1,13 +1,20 @@
 package nl.tudelft.sem.template.integrated;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
-
 import nl.tudelft.sem.template.Application;
-import nl.tudelft.sem.template.domain.event.*;
+import nl.tudelft.sem.template.domain.event.Event;
+import nl.tudelft.sem.template.domain.event.EventDescription;
+import nl.tudelft.sem.template.domain.event.EventName;
+import nl.tudelft.sem.template.domain.event.EventRepository;
+import nl.tudelft.sem.template.domain.event.IsCancelled;
 import nl.tudelft.sem.template.services.EventService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,8 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
@@ -41,6 +46,9 @@ public class EventServiceTests {
     private EventDescription description;
     private Event savedEvent;
 
+    /**
+     * Creates a new event and saves it to the repository.
+     */
     @BeforeEach
     public void setup() {
         id = 1L;

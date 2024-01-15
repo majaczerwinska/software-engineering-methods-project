@@ -73,6 +73,12 @@ public class EventService {
         return null;
     }
 
+    /**
+     * Deletes the event with the given id.
+     *
+     * @param id event id
+     * @return true if event was deleted successfully, false otherwise
+     */
     @Transactional
     public boolean deleteEvent(Long id) {
         if (repository.existsById(id)) {
