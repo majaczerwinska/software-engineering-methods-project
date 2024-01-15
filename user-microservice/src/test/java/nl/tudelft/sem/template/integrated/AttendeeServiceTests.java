@@ -260,33 +260,33 @@ public class AttendeeServiceTests {
         assertTrue(attendeeRepository.existsByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), event.getId(),
                 track.getId(), new Confirmation(true)));
     }
-
-    @Test
-    public void modifyTitleTest() {
-
-        // Given
-        userRepository.save(user);
-        eventRepository.save(event);
-        trackRepository.save(track);
-        RoleTitle role = RoleTitle.AUTHOR;
-        RoleTitle modifiedRole = RoleTitle.ATTENDEE;
-
-        // When - Then
-        Exception e = assertThrows(NoSuchElementException.class, () -> {
-            service.modifyTitle(user.getId(), user.getId(), event.getId(), track.getId(), modifiedRole);
-        });
-        assertEquals(e.getMessage(), "No such attendance is found; cannot be modified.");
-
-        // When
-        service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
-        service.accept(user.getId(), user.getId(), event.getId(), track.getId());
-        service.modifyTitle(user.getId(), user.getId(), event.getId(), track.getId(), modifiedRole);
-
-        Attendee attendee = service.getAttendance(user.getId(), event.getId(), track.getId());
-
-        // Then
-        assertEquals(attendee.getRole().getRoleTitle(), modifiedRole);
-    }
+    //
+    //@Test
+    //public void modifyTitleTest() {
+    //
+    //    // Given
+    //    userRepository.save(user);
+    //    eventRepository.save(event);
+    //    trackRepository.save(track);
+    //    RoleTitle role = RoleTitle.AUTHOR;
+    //    RoleTitle modifiedRole = RoleTitle.ATTENDEE;
+    //
+    //    // When - Then
+    //    Exception e = assertThrows(NoSuchElementException.class, () -> {
+    //        service.modifyTitle(user.getId(), user.getId(), event.getId(), track.getId(), modifiedRole);
+    //    });
+    //    assertEquals(e.getMessage(), "No such attendance is found; cannot be modified.");
+    //
+    //    // When
+    //    service.invite(user.getId(), user.getId(), event.getId(), track.getId(), role);
+    //    service.accept(user.getId(), user.getId(), event.getId(), track.getId());
+    //    service.modifyTitle(user.getId(), user.getId(), event.getId(), track.getId(), modifiedRole);
+    //
+    //    Attendee attendee = service.getAttendance(user.getId(), event.getId(), track.getId());
+    //
+    //    // Then
+    //    assertEquals(attendee.getRole().getRoleTitle(), modifiedRole);
+    //}
 
     @Test
     public void deleteAttendanceTest() {

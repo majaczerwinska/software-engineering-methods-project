@@ -122,4 +122,23 @@ public class Attendee extends HasEvents {
     public void recordLog(Object object) {
         this.recordThat(object);
     }
+
+
+    /**
+     * A converter from the Domain representation to the API Model representation.
+     *
+     * @return An API model Attendee instance.
+     */
+    public nl.tudelft.sem.template.model.Attendee toModel() {
+        nl.tudelft.sem.template.model.Attendee model = new nl.tudelft.sem.template.model.Attendee();
+        model.setId(this.id);
+        model.setUserId(this.getUser().getId());
+        model.setEventId(this.getEvent().getId());
+        if (this.track != null) {
+            model.setTrackId(this.track.getId());
+        }
+        model.setRole(nl.tudelft.sem.template.model.Role.valueOf(this.role.getRoleTitle().name()));
+
+        return model;
+    }
 }

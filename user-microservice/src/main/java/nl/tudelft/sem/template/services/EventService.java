@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.services;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.domain.event.EventDescription;
@@ -46,5 +47,17 @@ public class EventService {
                 new EventDescription(description));
 
         return repository.save(event);
+    }
+
+
+    /**
+     * Retrieves an event.
+     *
+     * @param id the event identifier
+     * @return the corresponding event.
+     */
+    @Transactional
+    public Event getEventById(long id) {
+        return repository.findById(id).orElse(null);
     }
 }

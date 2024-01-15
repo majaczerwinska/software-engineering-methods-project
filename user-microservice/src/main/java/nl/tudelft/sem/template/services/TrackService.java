@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.services;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.domain.event.Event;
@@ -79,7 +80,7 @@ public class TrackService {
             LocalDate reviewDeadline, PaperType paperType, Long eventId)
             throws IllegalArgumentException, NoSuchElementException {
         Optional<Track> inDb = trackRepository.findByTitleAndEventId(new Title(title), eventId);
-        if (inDb.isPresent() && inDb.get().getId() != id) {
+        if (inDb.isPresent() && !Objects.equals(inDb.get().getId(), id)) {
             throw new IllegalArgumentException("Track with this title already exist in the event.");
         }
         if (trackRepository.existsById(id)) {

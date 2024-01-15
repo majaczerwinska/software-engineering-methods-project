@@ -63,12 +63,13 @@ public class AttendeeService {
      * @param eventId the event identifier of the attendance to be created
      * @param trackId the track identifier of the attendance to be created
      * @param role    the role of the new attendance
+     * @return the newly created instance.
      * @throws IllegalArgumentException specifies that the attendance already
      *                                  exists, and that no changes have been made
      *                                  to the repository.
      */
     @Transactional
-    public void createAttendance(Long userId, Long eventId, Long trackId, RoleTitle role, boolean confirmed)
+    public Attendee createAttendance(Long userId, Long eventId, Long trackId, RoleTitle role, boolean confirmed)
             throws IllegalArgumentException {
 
         // Check that no such attendance already exists
@@ -84,7 +85,7 @@ public class AttendeeService {
                 new Role(role), new Confirmation(confirmed), event, track, user);
 
         // Commits the new attendance to the repository
-        attendeeRepository.save(attendee);
+        return attendeeRepository.save(attendee);
 
     }
 
@@ -107,7 +108,7 @@ public class AttendeeService {
      *                                place.
      */
     @Transactional
-    private void deleteAttendance(Long userId, Long eventId, @Nullable Long trackId)
+    public void deleteAttendance(Long userId, Long eventId, @Nullable Long trackId)
             throws NoSuchElementException {
         Optional<Attendee> retrievedAttendance = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId,
                 trackId);
@@ -198,6 +199,38 @@ public class AttendeeService {
         }
 
         return retrievedList;
+    }
+
+    /**
+     * Retrieves the attendance corresponding to the given
+     * identifiers.
+     *
+     * @param id the Attendee identifier
+     * @return corresponding Attendee
+     */
+    public boolean existsById(Long id) {
+
+        return attendeeRepository.existsById(id);
+    }
+
+    /**
+     * Retrieves the attendance corresponding to the given
+     * identifiers.
+     *
+     * @param id the Attendee identifier
+     */
+    public void deleteById(Long id) {
+        attendeeRepository.deleteById(id);
+    }
+
+    /**
+     * Retrieves the attendance corresponding to the given
+     * identifiers.
+     *
+     * @param id the Attendee identifier
+     */
+    public Attendee getById(Long id) {
+        return attendeeRepository.findById(id).orElse(null);
     }
 
     /**
@@ -335,23 +368,19 @@ public class AttendeeService {
      * does not exist.
      *
      * @param executorId the executor (user) identifier
-     * @param userId     the user identifier
-     * @param eventId    the event identifier
-     * @param trackId    the track identifier, potentially nullable
+     * @param id         the attendance identifier
      * @param role       the new role
      * @throws NoSuchElementException indicates that no such attendance
      *                                exists, and, therefore, that no modification
      *                                can take place.
      */
     @Transactional
-    public void modifyTitle(Long executorId, Long userId, Long eventId,
-            @Nullable Long trackId, RoleTitle role)
+    public Attendee modifyTitle(Long executorId, Long id, RoleTitle role)
             throws NoSuchElementException {
 
         // Optional<Attendee> retrievedExecutor = findAttendee(executorId, eventId,
         // trackId);
-        Optional<Attendee> retrievedAttendance = attendeeRepository.findByUserIdAndEventIdAndTrackId(userId, eventId,
-                trackId);
+        Optional<Attendee> retrievedAttendance = attendeeRepository.findById(id);
 
         // Exception handling for when the repository can find the instance
         if (retrievedAttendance.isEmpty()) {
@@ -363,6 +392,6 @@ public class AttendeeService {
         attendee.setRole(new Role(role));
 
         // Commit the changes
-        attendeeRepository.save(attendee);
+        return attendeeRepository.save(attendee);
     }
 }
