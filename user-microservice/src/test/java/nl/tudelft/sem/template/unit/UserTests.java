@@ -144,6 +144,15 @@ public class UserTests {
 
     }
 
+    @Test
+    public void requiredArgsConstructorTest() {
+        Email email = new Email("user@example.com");
+        AppUser user = new AppUser(email);
+
+        assertEquals(email, user.getEmail());
+        assertNotNull(user);
+    }
+
 
     @Test
     void equalsTests() {
@@ -168,8 +177,6 @@ public class UserTests {
 
         // user1 and user2 have different emails, so different hashcode
         assertNotEquals(user1.hashCode(), user2.hashCode());
-
-
     }
 
     @Test
