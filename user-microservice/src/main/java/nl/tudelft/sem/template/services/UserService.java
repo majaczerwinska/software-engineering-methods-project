@@ -100,7 +100,7 @@ public class UserService {
      *
      * @param userId - id of the to be deleted user
      */
-    public void deleteUser(long userId) {
+    public void deleteUser(long userId) throws IllegalArgumentException, NoSuchElementException {
         if (userId < 0) {
             throw new IllegalArgumentException("Invalid user data");
         }
