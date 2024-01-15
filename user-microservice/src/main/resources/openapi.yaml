@@ -890,10 +890,12 @@ components:
           example: "track 1 is ..., aims to ..."
         submit_deadline:
           type: string
+          format: date
           description: the deadline for all paper submissions
           example: "2022/11/24, 21:59"
         review_deadline:
           type: string
+          format: date
           description: the deadline for all paper reviews
           example: "2022/11/24, 21:59"
         paper_type:
