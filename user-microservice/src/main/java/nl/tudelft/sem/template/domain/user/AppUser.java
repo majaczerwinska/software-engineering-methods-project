@@ -17,12 +17,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
+import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
 import nl.tudelft.sem.template.model.User;
 
 
 /**
  * A DDD entity representing an application user in our domain.
  */
+
 
 @Entity
 @Table(name = "users")
@@ -128,6 +130,7 @@ public class AppUser extends HasEvents {
                    UserAffiliation affiliation, Link link, Communication communication) {
         this.id = id;
         this.email = email;
+
         this.firstName = firstName;
         this.lastName = lastName;
         this.affiliation = affiliation;
