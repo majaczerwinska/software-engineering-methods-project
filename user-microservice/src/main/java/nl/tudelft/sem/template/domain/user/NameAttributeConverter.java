@@ -1,12 +1,14 @@
 package nl.tudelft.sem.template.domain.user;
 
+import java.util.Objects;
 import javax.persistence.AttributeConverter;
+
 
 
 public class NameAttributeConverter implements AttributeConverter<Name, String> {
     @Override
     public String convertToDatabaseColumn(Name attribute) {
-        return attribute.toString();
+        return Objects.toString(attribute);
     }
 
     @Override
