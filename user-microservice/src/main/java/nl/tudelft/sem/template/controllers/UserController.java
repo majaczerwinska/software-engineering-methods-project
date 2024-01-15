@@ -1,8 +1,8 @@
 package nl.tudelft.sem.template.controllers;
 
+import java.util.NoSuchElementException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.util.NoSuchElementException;
 import nl.tudelft.sem.template.api.UserApi;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.user.AppUser;
@@ -42,7 +42,7 @@ public class UserController implements UserApi {
      *
      * @param userId - id of the to be found user
      * @return - bad request if invalid id, unauthorized access if expired token,
-     * not found if user not found, appUser if user found
+     *           not found if user not found, appUser if user found
      */
     @Override
     @Transactional
@@ -62,7 +62,7 @@ public class UserController implements UserApi {
      *
      * @param email - email of the to be found user
      * @return - bad request if invalid email, unauthorized access if expired token,
-     * not found if user not found, appUser if user found
+     *           not found if user not found, appUser if user found
      */
     @Override
     @Transactional
@@ -141,7 +141,7 @@ public class UserController implements UserApi {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }
             AppUser user = userService.getUserByEmail(email);
-            if (user.getId() != userId){
+            if (user.getId() != userId) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }
             userService.deleteUser(userId);
