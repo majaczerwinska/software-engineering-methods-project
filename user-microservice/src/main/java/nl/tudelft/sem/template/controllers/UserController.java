@@ -112,11 +112,15 @@ public class UserController implements UserApi {
      */
     @Override
     @Transactional
-    @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "#track.getEventId(), #track.getId(), 0)") // 401
     public ResponseEntity<Void> updateAccount(@Valid @RequestBody User updatedUser) {
         // Check if the updatedUser is null or has missing required fields
         try {
+            if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
+            if (updatedUser == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
+            }
             userService.updateUser(new AppUser(updatedUser));
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
         } catch (IllegalArgumentException e) {

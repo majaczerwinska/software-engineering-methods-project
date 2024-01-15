@@ -184,6 +184,11 @@ public class UserControllerTest {
     public void updateAccountValidUser() {
         userRepository.save(appUser);
         User modelUser = appUser.toModelUser();
+
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+
         assertEquals(ResponseEntity.status(HttpStatus.NO_CONTENT).build(),
                 userController.updateAccount(modelUser));
     }
@@ -193,16 +198,46 @@ public class UserControllerTest {
         appUser.setId(-1L);
         userRepository.save(appUser);
         User modelUser = appUser.toModelUser();
+
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+
         assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(),
                 userController.updateAccount(modelUser));
     }
 
     @Test
     public void updateAccountUserNonExistent() {
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
         when(userService.updateUser(eq(appUser))).thenThrow(new NoSuchElementException());
         User modelUser = appUser.toModelUser();
         assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(),
                 userController.updateAccount(modelUser));
+    }
+
+    @Test
+    public void updateAccountUserUnauthorized() {
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(false);
+
+        User modelUser = appUser.toModelUser();
+        assertEquals(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(),
+                userController.updateAccount(modelUser));
+
+    }
+
+    @Test
+    public void updateAccountUserNull() {
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+
+        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(),
+                userController.updateAccount(null));
     }
 
     @Test
