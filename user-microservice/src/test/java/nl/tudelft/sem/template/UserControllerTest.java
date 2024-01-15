@@ -2,6 +2,7 @@ package nl.tudelft.sem.template;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.controllers.UserController;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Communication;
@@ -36,6 +37,8 @@ public class UserControllerTest {
 
     @Mock
     private  UserRepositoryTest userRepository;
+    @Mock
+    private AuthManager authManager;
 
     @InjectMocks
     private UserController userController;
@@ -49,7 +52,8 @@ public class UserControllerTest {
     public void setup() {
         userRepository = new UserRepositoryTest();
         userService = new UserService(userRepository);
-        userController = new UserController(userService);
+        authManager = new AuthManager();
+        userController = new UserController(userService, authManager);
         Long id = 1L;
         Email email = new Email("abc@fun.org");
         Name name = new Name("user");

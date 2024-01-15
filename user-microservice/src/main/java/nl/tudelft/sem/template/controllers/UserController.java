@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import nl.tudelft.sem.template.api.UserApi;
+import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.model.User;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserController implements UserApi {
     private final transient UserService userService;
+    private final transient AuthManager authManager;
 
     /**
      * Instantiates a new User controller.
@@ -29,8 +31,9 @@ public class UserController implements UserApi {
      * @param userService used to manage user services
      */
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthManager authManager) {
         this.userService = userService;
+        this.authManager = authManager;
     }
 
     /**
@@ -85,6 +88,9 @@ public class UserController implements UserApi {
     public ResponseEntity<User> createAccount(@Valid @RequestBody User user) {
         // Check if the appUser is null or has missing required fields
         try {
+            if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
             userService.createUser(new AppUser(user));
             return ResponseEntity.ok(user); // 200
         } catch (IllegalArgumentException e) {
