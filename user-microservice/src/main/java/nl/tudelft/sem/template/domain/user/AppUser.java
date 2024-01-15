@@ -74,6 +74,11 @@ public class AppUser extends HasEvents {
         this.id = id;
     }
 
+    public AppUser(Email email, Name firstName) {
+        this.email = email;
+        this.firstName = firstName;
+    }
+
     /**
      * Constructor.
      *
