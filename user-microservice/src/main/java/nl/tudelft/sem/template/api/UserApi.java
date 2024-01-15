@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-15T01:56:19.264204300+01:00[Europe/Berlin]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-14T23:25:19.487652300+01:00[Europe/Berlin]")
 @Validated
 @Tag(name = "User Account Management", description = "end-points for operations that deal with account registration, account deletion, and account information modifications.")
 public interface UserApi {

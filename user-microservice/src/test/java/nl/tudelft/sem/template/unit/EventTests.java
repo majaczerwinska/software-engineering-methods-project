@@ -37,8 +37,24 @@ public class EventTests {
     }
 
     @Test
-    void allArgsConstorTests() {
+    void allArgsConstructorTests() {
         assertNotNull(eventNullDesc);
+    }
+
+    @Test
+    void notAllArgsConstructorTest() {
+        LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+        LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+        IsCancelled ic = new IsCancelled(false);
+        EventName name = new EventName("test");
+        EventDescription desc = new EventDescription("test");
+        assertNotNull(new Event(startDate, endDate, ic, name, desc));
+    }
+
+    @Test
+    void testNoArgsConstructor() {
+        Event event = new Event();
+        assertNotNull(event);
     }
 
     @Test
@@ -53,5 +69,23 @@ public class EventTests {
     @Test
     void hashCodeTests() {
         assertEquals(eventNullDesc.hashCode(), Objects.hash(eventNullDesc.getId()));
+    }
+
+    @Test
+    void toModelTest() {
+        LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+        LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+        IsCancelled ic = new IsCancelled(false);
+        EventName name = new EventName("test");
+        EventDescription desc = new EventDescription("test");
+        Event domainEvent = new Event(startDate, endDate, ic, name, desc);
+        nl.tudelft.sem.template.model.Event modelEvent = domainEvent.toModelEvent();
+
+        assertEquals(domainEvent.getId(), modelEvent.getId());
+        assertEquals(domainEvent.getStartDate(), modelEvent.getStartDate());
+        assertEquals(domainEvent.getEndDate(), modelEvent.getEndDate());
+        assertEquals(domainEvent.getIsCancelled().getCancelStatus(), modelEvent.getIsCancelled());
+        assertEquals(domainEvent.getName().toString(), modelEvent.getName());
+        assertEquals(domainEvent.getDescription().toString(), modelEvent.getDescription());
     }
 }
