@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.services;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.domain.event.Event;
@@ -19,10 +20,14 @@ import org.springframework.stereotype.Service;
 /**
  * A DDD service for track.
  */
+// The redundancy of literals here is justified for the queries and the parameter alias.
 @Service
 public class TrackService {
     private final transient TrackRepository trackRepository;
     private final transient EventRepository eventRepository;
+    private static final String nullTitle = "Null reference for track title";
+    private static final String invalidId = "Invalid track id";
+    private static final String invalidEventId = "Invalid event id";
 
     /**
      * A constructor dependency injection for the track JPA Repository concrete
@@ -44,10 +49,20 @@ public class TrackService {
     @Transactional
     public Track createTrack(String title, String description, LocalDate submitDeadline, LocalDate reviewDeadline,
             PaperType paperType, Long eventId) throws IllegalArgumentException {
-        Event event = eventRepository.findById(eventId).get();
+        if (eventId < 0) {
+            throw new IllegalArgumentException(invalidEventId);
+        }
+        if (title == null) {
+            throw new IllegalArgumentException(nullTitle);
+        }
+        Optional<Event> event = eventRepository.findById(eventId);
+        if (event.isEmpty()) {
+            throw new IllegalArgumentException(invalidEventId);
+        }
         Track track = new Track(new Title(title), new Description(description), new PaperRequirement(paperType),
-                submitDeadline, reviewDeadline, event);
-        return trackRepository.save(track);
+                submitDeadline, reviewDeadline, event.get());
+        trackRepository.save(track);
+        return track;
     }
 
     /**
@@ -57,16 +72,16 @@ public class TrackService {
      * @return - the deleted track
      */
     @Transactional
-    public Track deleteTrackById(long id) throws NoSuchElementException {
+    public Track deleteTrackById(Long id) throws NoSuchElementException {
         if (id < 0) {
-            throw new IllegalArgumentException("Invalid track id: " + id);
+            throw new IllegalArgumentException(invalidId);
         }
-        if (!trackExistById(id)) {
+        Optional<Track> track = trackRepository.findById(id);
+        if (track.isEmpty()) {
             throw new NoSuchElementException("Track with id:" + id + " does not exist.");
         }
-        Track track = getTrackById(id);
-        trackRepository.delete(track);
-        return track;
+        trackRepository.delete(track.get());
+        return track.get();
     }
 
     /**
@@ -78,18 +93,24 @@ public class TrackService {
     public Track updateTrack(Long id, String title, String description, LocalDate submitDeadline,
             LocalDate reviewDeadline, PaperType paperType, Long eventId)
             throws IllegalArgumentException, NoSuchElementException {
+        if (title == null) {
+            throw new IllegalArgumentException(nullTitle);
+        }
         Optional<Track> inDb = trackRepository.findByTitleAndEventId(new Title(title), eventId);
-        if (inDb.isPresent() && inDb.get().getId() != id) {
+        if (inDb.isPresent() && !Objects.equals(inDb.get().getId(), id)) {
             throw new IllegalArgumentException("Track with this title already exist in the event.");
         }
-        if (trackRepository.existsById(id)) {
-            throw new NoSuchElementException("Track with id:" + id.toString() + " does not exist.");
+        if (!trackRepository.existsById(id)) {
+            throw new NoSuchElementException("Track with id:" + id + " does not exist.");
         }
-
-        Event event = eventRepository.findById(eventId).get();
+        Optional<Event> event = eventRepository.findById(eventId);
+        if (event.isEmpty()) {
+            throw new IllegalArgumentException(invalidEventId);
+        }
         Track track = new Track(id, new Title(title), new Description(description), new PaperRequirement(paperType),
-                submitDeadline, reviewDeadline, event);
-        return trackRepository.save(track);
+                submitDeadline, reviewDeadline, event.get());
+        trackRepository.save(track);
+        return track;
     }
 
     /**
@@ -98,26 +119,16 @@ public class TrackService {
      * @param id - id of a track
      * @return - track with this id if exists, else null
      */
-    public Track getTrackById(long id) throws NoSuchElementException, IllegalArgumentException {
-        if (id <= 0) {
-            throw new IllegalArgumentException("Invalid track ID");
+    public Track getTrackById(Long id) throws NoSuchElementException, IllegalArgumentException {
+        if (id < 0) {
+            throw new IllegalArgumentException(invalidId);
         }
-        Optional<Track> track = trackRepository.findById(String.valueOf(id));
+        Optional<Track> track = trackRepository.findById(id);
         if (track.isEmpty()) {
             throw new NoSuchElementException("Track with ID: " + id + " does not exist.");
         }
 
         return track.get();
-    }
-
-    /**
-     * Retrieves the track with the specified id.
-     *
-     * @param id - id of a track
-     * @return - track with this id if exists, else null
-     */
-    public boolean trackExistById(long id) {
-        return trackRepository.existsById(id);
     }
 
     /**
@@ -128,7 +139,7 @@ public class TrackService {
      */
     public List<Track> getTrackByTitle(Title title) throws NoSuchElementException, IllegalArgumentException {
         if (title == null || title.toString() == null) {
-            throw new IllegalArgumentException("Null reference for track title");
+            throw new IllegalArgumentException(nullTitle);
         }
         List<Track> tracks = trackRepository.findByTitle(title);
         if (tracks.isEmpty()) {
@@ -145,12 +156,12 @@ public class TrackService {
      */
     public List<Track> getTrackByParentEvent(Long parentEventId)
             throws NoSuchElementException, IllegalArgumentException {
-        if (parentEventId == null) {
-            throw new IllegalArgumentException("Null reference for parent event");
+        if (parentEventId == null || parentEventId < 0) {
+            throw new IllegalArgumentException(invalidEventId);
         }
         List<Track> tracks = trackRepository.findByEventId(parentEventId);
         if (tracks.isEmpty()) {
-            throw new NoSuchElementException("Track does not exist in event:" + parentEventId);
+            throw new NoSuchElementException("No Track exist in event: " + parentEventId);
         }
         return tracks;
     }
@@ -158,11 +169,18 @@ public class TrackService {
     /**
      * Retrieves track with the specified title within the specified event.
      *
-     * @param title         - title of a track
-     * @param parentEventId - parent event id of a track
+     * @param title         title of a track
+     * @param parentEventId parent event id of a track
      * @return - tracks within this event if exists, else null
      */
-    public Track getTrackByTitleInEvent(Title title, long parentEventId) throws NoSuchElementException {
+    public Track getTrackByTitleInEvent(Title title, Long parentEventId)
+            throws IllegalArgumentException, NoSuchElementException {
+        if (parentEventId < 0) {
+            throw new IllegalArgumentException("Invalid parent id");
+        }
+        if (title == null || title.toString() == null) {
+            throw new IllegalArgumentException(nullTitle);
+        }
         Optional<Track> track = trackRepository.findByTitleAndEventId(title, parentEventId);
         if (track.isEmpty()) {
             throw new NoSuchElementException("Track with title:" + title.toString()
@@ -170,4 +188,5 @@ public class TrackService {
         }
         return track.get();
     }
+
 }
