@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
-import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
 import nl.tudelft.sem.template.model.User;
 
 
