@@ -24,7 +24,7 @@ public class UserService {
      */
     public AppUser createUser(AppUser appUser) {
         // Check if the appUser is null or has missing required fields
-        if (appUser == null || appUser.getEmail() == null) {
+        if (appUser == null || !appUser.getEmail().toString().contains("@")) {
             throw new IllegalArgumentException("Invalid user data");
         }
 
@@ -100,7 +100,7 @@ public class UserService {
      *
      * @param userId - id of the to be deleted user
      */
-    public void deleteUser(long userId) {
+    public void deleteUser(long userId) throws IllegalArgumentException, NoSuchElementException {
         if (userId < 0) {
             throw new IllegalArgumentException("Invalid user data");
         }

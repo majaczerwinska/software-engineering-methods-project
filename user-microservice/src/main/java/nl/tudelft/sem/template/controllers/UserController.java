@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import nl.tudelft.sem.template.api.UserApi;
+import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.model.User;
@@ -22,20 +23,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserController implements UserApi {
     private final transient UserService userService;
+    private final transient AuthManager authManager;
 
     /**
      * Instantiates a new User controller.
      *
      * @param userService used to manage user services
+     * @param authManager Used for authentication-related checks.
      */
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthManager authManager) {
         this.userService = userService;
+        this.authManager = authManager;
     }
 
     /**
      * Checks whether a user with the given id exists, retrieves it if yes.
-
+     *
      * @param userId - id of the to be found user
      * @return - bad request if invalid id, unauthorized access if expired token,
      *           not found if user not found, appUser if user found
@@ -52,9 +56,10 @@ public class UserController implements UserApi {
         }
         return ResponseEntity.ok(userService.getUserById(userId).toModelUser());
     }
+
     /**
      * Checks whether a user with the given email address exists, retrieves it if yes.
-
+     *
      * @param email - email of the to be found user
      * @return - bad request if invalid email, unauthorized access if expired token,
      *           not found if user not found, appUser if user found
@@ -80,11 +85,14 @@ public class UserController implements UserApi {
      */
     @Override
     @Transactional
-    @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "#track.getEventId(), #track.getId(), 0)") // 401
     public ResponseEntity<User> createAccount(@Valid @RequestBody User user) {
-        // Check if the appUser is null or has missing required fields
         try {
+            if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
+            if (user == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
+            }
             userService.createUser(new AppUser(user));
             return ResponseEntity.ok(user); // 200
         } catch (IllegalArgumentException e) {
@@ -94,23 +102,25 @@ public class UserController implements UserApi {
                 return ResponseEntity.status(409).build(); // 409, user already exists
             }
         }
-
     }
 
     /**
      * This method updates an existing User Account.
      *
      * @param updatedUser - user account to be updated
-     *
      * @return responseEntity of method
      */
     @Override
     @Transactional
-    @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "#track.getEventId(), #track.getId(), 0)") // 401
     public ResponseEntity<Void> updateAccount(@Valid @RequestBody User updatedUser) {
         // Check if the updatedUser is null or has missing required fields
         try {
+            if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
+            if (updatedUser == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
+            }
             userService.updateUser(new AppUser(updatedUser));
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
         } catch (IllegalArgumentException e) {
@@ -128,10 +138,16 @@ public class UserController implements UserApi {
      */
     @Override
     @Transactional
-    @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "#track.getEventId(), #track.getId(), 0)") // 401
     public ResponseEntity<Void> deleteAccount(@PathVariable("userID") Long userId) {
         try {
+            Email email = new Email(authManager.getEmail());
+            if (!userService.userExistsByEmail(email)) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
+            AppUser user = userService.getUserByEmail(email);
+            if (user.getId() != userId) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
             userService.deleteUser(userId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
         } catch (IllegalArgumentException e) {

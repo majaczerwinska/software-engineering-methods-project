@@ -1,7 +1,14 @@
 package nl.tudelft.sem.template;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.util.NoSuchElementException;
+import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.controllers.UserController;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Communication;
@@ -9,28 +16,35 @@ import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.Link;
 import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserAffiliation;
-import nl.tudelft.sem.template.help.UserRepositoryTest;
+import nl.tudelft.sem.template.domain.user.UserRepository;
 import nl.tudelft.sem.template.model.User;
 import nl.tudelft.sem.template.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith({SpringExtension.class, MockitoExtension.class})
+
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
+// activate profiles to have spring use mocks during auto-injection of certain beans.
 @ActiveProfiles("test")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UserControllerTest {
 
+    @Mock
     private UserService userService;
-    private  UserRepositoryTest userRepository;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private AuthManager authManager;
+
+    @InjectMocks
     private UserController userController;
 
     private AppUser appUser;
@@ -40,9 +54,6 @@ public class UserControllerTest {
      */
     @BeforeEach
     public void setup() {
-        userRepository = new UserRepositoryTest();
-        userService = new UserService(userRepository);
-        userController = new UserController(userService);
         Long id = 1L;
         Email email = new Email("abc@fun.org");
         Name name = new Name("user");
@@ -81,31 +92,25 @@ public class UserControllerTest {
      */
     @Test
     public void getUserByIdUserExists() {
-        Email email = new Email("abc@cool.com");
-        Name name = new Name("test");
-        UserAffiliation userAffiliation = new UserAffiliation("test");
-        Link link = new Link("test");
-        Communication com = new Communication("communicateMe");
-        AppUser user = new AppUser(1L, email, name, name, userAffiliation, link, com);
-        userRepository.save(user);
-        AppUser appUser = userRepository.findById(String.valueOf(1L)).get();
+        when(userService.userExistsById(eq(1L))).thenReturn(true);
+        when(userService.getUserById(eq(1L))).thenReturn(appUser);
         assertEquals(appUser.toModelUser(), userController.getAccountByID(1L).getBody());
     }
 
     @Test
     public void getAccountByEmailUserExists() {
-        userRepository.save(appUser);
-        AppUser appUser1 = userRepository.findByEmail(appUser.getEmail()).get();
-        assertEquals(appUser1.toModelUser(),
+        when(userService.userExistsByEmail(eq(appUser.getEmail()))).thenReturn(true);
+        when(userService.getUserByEmail(eq(appUser.getEmail()))).thenReturn(appUser);
+        assertEquals(appUser.toModelUser(),
                 userController.getAccountByEmail(appUser.getEmail().toString()).getBody());
+        verify(userService, times(1)).userExistsByEmail(eq(appUser.getEmail()));
+        verify(userService, times(1)).getUserByEmail(eq(appUser.getEmail()));
     }
 
     @Test
     public void getAccountByEmailInvalidEmail() {
-        appUser.setEmail(new Email("notAnEmail"));
-        userRepository.save(appUser);
         assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(),
-                userController.getAccountByEmail(appUser.getEmail().toString()));
+                userController.getAccountByEmail("notAnEmail"));
     }
 
     @Test
@@ -116,20 +121,61 @@ public class UserControllerTest {
 
     @Test
     public void createAccountNullUser() {
-        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(),
-                userController.createAccount(null));
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+
+        ResponseEntity<User> response = userController.createAccount(null);
+
+        verify(authManager, times(1)).getEmail();
+        verify(userService, times(1)).userExistsByEmail(eq(email)); // Corrected verification
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void createAccountNullEmail() {
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+
+        appUser.setEmail(new Email("noEmail"));
+        User modelUser = appUser.toModelUser();
+
+        ResponseEntity<User> response = userController.createAccount(modelUser);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+    }
+
+    @Test
+    public void createAccountNonAuthUser() {
+        User modelUser = appUser.toModelUser();
+        when(authManager.getEmail()).thenReturn(appUser.getEmail().toString());
+        when(userService.userExistsByEmail(eq(appUser.getEmail()))).thenReturn(false);
+
+        ResponseEntity<User> response = userController.createAccount(modelUser);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        verify(authManager, times(1)).getEmail();
+        verify(userService, times(1)).userExistsByEmail(eq(appUser.getEmail()));
     }
 
     @Test
     public void createAccountValidUser() {
         User modelUser = appUser.toModelUser();
-        assertEquals(modelUser,
-                userController.createAccount(modelUser).getBody());
+        when(authManager.getEmail()).thenReturn(appUser.getEmail().toString());
+        when(userService.userExistsByEmail(eq(appUser.getEmail()))).thenReturn(true);
+        when(userService.createUser(eq(appUser))).thenReturn(appUser);
+        ResponseEntity<User> response = userController.createAccount(modelUser);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(authManager, times(1)).getEmail();
+        verify(userService, times(1)).userExistsByEmail(eq(appUser.getEmail()));
+        verify(userService, times(1)).createUser(eq(appUser));
     }
 
     @Test
     public void createAccountUserAlreadyExists() {
-        userRepository.save(appUser);
+        when(authManager.getEmail()).thenReturn(appUser.getEmail().toString());
+        when(userService.userExistsByEmail(eq(appUser.getEmail()))).thenReturn(true);
+        when(userService.createUser(eq(appUser))).thenThrow(new IllegalArgumentException("User already exists"));
         assertEquals(ResponseEntity.status(409).build(),
                 userController.createAccount(appUser.toModelUser()));
     }
@@ -138,6 +184,11 @@ public class UserControllerTest {
     public void updateAccountValidUser() {
         userRepository.save(appUser);
         User modelUser = appUser.toModelUser();
+
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+
         assertEquals(ResponseEntity.status(HttpStatus.NO_CONTENT).build(),
                 userController.updateAccount(modelUser));
     }
@@ -147,36 +198,104 @@ public class UserControllerTest {
         appUser.setId(-1L);
         userRepository.save(appUser);
         User modelUser = appUser.toModelUser();
+
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+
         assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(),
                 userController.updateAccount(modelUser));
     }
 
     @Test
-    public void updateAcountUserNonExistent() {
+    public void updateAccountUserNonExistent() {
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+        when(userService.updateUser(eq(appUser))).thenThrow(new NoSuchElementException());
         User modelUser = appUser.toModelUser();
         assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(),
                 userController.updateAccount(modelUser));
     }
 
     @Test
+    public void updateAccountUserUnauthorized() {
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(false);
+
+        User modelUser = appUser.toModelUser();
+        assertEquals(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(),
+                userController.updateAccount(modelUser));
+
+    }
+
+    @Test
+    public void updateAccountUserNull() {
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+
+        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(),
+                userController.updateAccount(null));
+    }
+
+    @Test
     public void deleteAccountValid() {
-        userRepository.save(appUser);
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+        when(userService.getUserByEmail(eq(email))).thenReturn(appUser);
         assertEquals(ResponseEntity.status(HttpStatus.NO_CONTENT).build(),
                 userController.deleteAccount(appUser.getId()));
     }
 
     @Test
     public void deleteAccountInvalidUser() {
-        appUser.setId(-1L);
-        userRepository.save(appUser);
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+        when(userService.getUserByEmail(eq(email))).thenReturn(appUser);
+        doThrow(new IllegalArgumentException()).when(userService).deleteUser(appUser.getId());
         assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(),
                 userController.deleteAccount(appUser.getId()));
     }
 
     @Test
     public void deleteAccountUserNonExistent() {
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+        when(userService.getUserByEmail(eq(email))).thenReturn(appUser);
+        doThrow(new NoSuchElementException()).when(userService).deleteUser(appUser.getId());
         assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(),
                 userController.deleteAccount(appUser.getId()));
+    }
+
+    @Test
+    public void deleteAccountUserUnauthorized() {
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(false);
+        ResponseEntity<Void> response = userController.deleteAccount(appUser.getId());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        verify(authManager, times(1)).getEmail();
+        verify(userService, times(1)).userExistsByEmail(eq(appUser.getEmail()));
+
+    }
+
+    @Test
+    public void deleteAccountUserUnauthorized2() {
+        AppUser user2 = new AppUser(2L);
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+        when(userService.getUserByEmail(email)).thenReturn(user2);
+        ResponseEntity<Void> response = userController.deleteAccount(appUser.getId());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        verify(authManager, times(1)).getEmail();
+        verify(userService, times(1)).userExistsByEmail(eq(appUser.getEmail()));
+
     }
 
 

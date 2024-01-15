@@ -1,8 +1,9 @@
-package nl.tudelft.sem.template.domain.user.converters;
+package nl.tudelft.sem.template.domain.user;
 
+import java.util.Objects;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import nl.tudelft.sem.template.domain.user.Email;
+
 
 /**
  * JPA Converter for the Email value object.
@@ -12,7 +13,7 @@ public class EmailAttributeConverter implements AttributeConverter<Email, String
 
     @Override
     public String convertToDatabaseColumn(Email attribute) {
-        return attribute.toString();
+        return Objects.toString(attribute);
     }
 
     @Override

@@ -1,0 +1,15 @@
+README.md
+pom.xml
+src/main/java/nl/tudelft/sem/template/api/ApiUtil.java
+src/main/java/nl/tudelft/sem/template/api/AttendeeApi.java
+src/main/java/nl/tudelft/sem/template/api/EventApi.java
+src/main/java/nl/tudelft/sem/template/api/InvitationsApi.java
+src/main/java/nl/tudelft/sem/template/api/TrackApi.java
+src/main/java/nl/tudelft/sem/template/api/UserApi.java
+src/main/java/nl/tudelft/sem/template/model/Attendee.java
+src/main/java/nl/tudelft/sem/template/model/Event.java
+src/main/java/nl/tudelft/sem/template/model/Invitation.java
+src/main/java/nl/tudelft/sem/template/model/PaperType.java
+src/main/java/nl/tudelft/sem/template/model/Role.java
+src/main/java/nl/tudelft/sem/template/model/Track.java
+src/main/java/nl/tudelft/sem/template/model/User.java
