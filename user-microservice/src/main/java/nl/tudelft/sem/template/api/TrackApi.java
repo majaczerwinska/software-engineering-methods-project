@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-15T14:39:45.518332500+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-15T15:17:04.312497300+01:00[Europe/Amsterdam]")
 @Validated
 @Tag(name = "Track Management", description = "end-points that provide track-related functionalities.")
 public interface TrackApi {

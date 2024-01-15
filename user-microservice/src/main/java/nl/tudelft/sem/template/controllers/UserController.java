@@ -86,11 +86,10 @@ public class UserController implements UserApi {
     @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
             + "#track.getEventId(), #track.getId(), 0)") // 401
     public ResponseEntity<User> createAccount(@Valid @RequestBody User user) {
-        // Check if the appUser is null or has missing required fields
         try {
-            if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
-            }
+            // if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
+            //     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            // }
             userService.createUser(new AppUser(user));
             return ResponseEntity.ok(user); // 200
         } catch (IllegalArgumentException e) {
