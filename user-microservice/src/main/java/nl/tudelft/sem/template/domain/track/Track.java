@@ -108,14 +108,14 @@ public class Track extends HasEvents {
     /**
      * method for changing the id of this track.
      *
-     * @param id to set id for this track
+     * @param id for this track
      */
-    private void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     /**
-     * method for changing the id of this track.
+     * method for changing the title of this track.
      *
      * @param title for this track
      */
@@ -168,11 +168,10 @@ public class Track extends HasEvents {
         this.event = event;
     }
 
-    /**
-     * method check the quality between this track and a unknown object.
+    /** the equals function for track.
      *
-     * @param o the object where this will be compared to
-     * @return the result of the test for equality
+     * @param o the object to compare to
+     * @return ture if they are the same
      */
     @Override
     public boolean equals(Object o) {
@@ -183,35 +182,24 @@ public class Track extends HasEvents {
             return false;
         }
         Track track = (Track) o;
-        return title.equals(track.title) && event.getId().equals(track.event.getId());
+        if (title == null) {
+            title = new Title(null);
+        }
+        if (track.title == null) {
+            track.setTitle(new Title(null));
+        }
+        return Objects.equals(title.toString(), track.title.toString())
+                && Objects.equals(paperType.toPaperType(), track.paperType.toPaperType())
+                && Objects.equals(event.getId(), track.getEvent().getId());
     }
 
-    /**
-     * method to generate a unique int for this entity.
+    /** The hashcode will be stored as the id of this entity.
      *
-     * @return a unique int for this entity and the hashcode will be stored as the
-     *         id of this entity
+     * @return a unique int for this entity
      */
     @Override
     public int hashCode() {
-        return Objects.hash(title, event.getId());
-    }
-
-    /**
-     * e.g.
-     * * Track"memory address of this task"[
-     * * id= 1
-     * * title = TrackName;
-     * * description = TrackInfo;
-     * * paperType = FULL_PAPER;
-     * * ...
-     * * ]
-     *
-     * @return in the MULTI_LINE_STYLE
-     */
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+        return Objects.hash(title, paperType, event.getId());
     }
 
     /**

@@ -47,6 +47,13 @@ public class EventTests {
     }
 
     @Test
+    void idArgConstructorTest() {
+        Event event = new Event(3L);
+        assertNotNull(event);
+        assertEquals(3, event.getId());
+    }
+
+    @Test
     void allArgsConstorTests() {
         assertNotNull(eventNullDesc);
     }
