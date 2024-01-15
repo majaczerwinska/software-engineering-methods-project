@@ -18,11 +18,10 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
+import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
-import nl.tudelft.sem.template.events.UserWasCreatedEvent;
 import nl.tudelft.sem.template.model.User;
 
-import nl.tudelft.sem.template.domain.attendee.Attendee;
 
 /**
  * A DDD entity representing an application user in our domain.
@@ -74,6 +73,11 @@ public class AppUser extends HasEvents {
         this.id = id;
     }
 
+    public AppUser(Email email, Name firstName) {
+        this.email = email;
+        this.firstName = firstName;
+    }
+
     /**
      * Constructor.
      *
@@ -87,7 +91,6 @@ public class AppUser extends HasEvents {
     public AppUser(Email email, Name firstName, Name lastName,
                    UserAffiliation affiliation, Link link, Communication communication) {
         this.email = email;
-        this.recordThat(new UserWasCreatedEvent(email));
         this.firstName = firstName;
         this.lastName = lastName;
         this.affiliation = affiliation;
@@ -106,7 +109,6 @@ public class AppUser extends HasEvents {
         }
         this.id = user.getId();
         this.email = new Email(user.getEmail());
-        this.recordThat(new UserWasCreatedEvent(new Email(user.getEmail())));
         this.firstName = new Name(user.getFirstName());
         this.lastName = new Name(user.getLastName());
         this.affiliation = new UserAffiliation(user.getAffiliation());
@@ -129,7 +131,6 @@ public class AppUser extends HasEvents {
                    UserAffiliation affiliation, Link link, Communication communication) {
         this.id = id;
         this.email = email;
-        this.recordThat(new UserWasCreatedEvent(email));
         this.firstName = firstName;
         this.lastName = lastName;
         this.affiliation = affiliation;

@@ -21,7 +21,7 @@ import javax.annotation.Generated;
  * Track
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-14T20:51:20.687243+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-15T14:39:45.518332500+01:00[Europe/Amsterdam]")
 public class Track {
 
   private Long id;
@@ -109,7 +109,7 @@ public class Track {
    * the deadline for all paper submissions
    * @return submitDeadline
   */
-  @Valid
+  @Valid 
   @Schema(name = "submit_deadline", description = "the deadline for all paper submissions", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("submit_deadline")
   public LocalDate getSubmitDeadline() {
@@ -129,7 +129,7 @@ public class Track {
    * the deadline for all paper reviews
    * @return reviewDeadline
   */
-  @Valid
+  @Valid 
   @Schema(name = "review_deadline", description = "the deadline for all paper reviews", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("review_deadline")
   public LocalDate getReviewDeadline() {
