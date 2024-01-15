@@ -7,8 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -19,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
-import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
 import nl.tudelft.sem.template.model.User;
 
 

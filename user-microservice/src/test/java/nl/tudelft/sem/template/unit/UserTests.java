@@ -2,20 +2,24 @@ package nl.tudelft.sem.template.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Communication;
+import nl.tudelft.sem.template.domain.user.CommunicationAttributeConverter;
 import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.domain.user.EmailAttributeConverter;
 import nl.tudelft.sem.template.domain.user.Link;
+import nl.tudelft.sem.template.domain.user.LinkAttributeConverter;
 import nl.tudelft.sem.template.domain.user.Name;
+import nl.tudelft.sem.template.domain.user.NameAttributeConverter;
 import nl.tudelft.sem.template.domain.user.UserAffiliation;
-import nl.tudelft.sem.template.domain.user.converters.CommunicationAttributeConverter;
-import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
-import nl.tudelft.sem.template.domain.user.converters.LinkAttributeConverter;
-import nl.tudelft.sem.template.domain.user.converters.NameAttributeConverter;
-import nl.tudelft.sem.template.domain.user.converters.UserAffiliationAttributeConverter;
+import nl.tudelft.sem.template.domain.user.UserAffiliationAttributeConverter;
+import nl.tudelft.sem.template.model.User;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
 
 public class UserTests {
 
@@ -60,6 +64,88 @@ public class UserTests {
     }
 
     @Test
+    public void allArgsConstructorTest() {
+        AppUser user = new AppUser(
+                1L,
+                new Email("user1@example.com"),
+                new Name("John"),
+                new Name("Doe"),
+                new UserAffiliation("Company A"),
+                new Link("http://user1.com"),
+                new Communication("user1@example.com")
+        );
+        assertEquals(1L, user.getId());
+        assertEquals("user1@example.com", user.getEmail().toString());
+        assertEquals("John", user.getFirstName().toString());
+        assertEquals("Doe", user.getLastName().toString());
+        assertEquals("Company A", user.getAffiliation().toString());
+        assertEquals("http://user1.com", user.getLink().toString());
+        assertEquals("user1@example.com", user.getCommunication().toString());
+
+    }
+
+    @Test
+    public void allArgsExceptIdConstructorTest() {
+        AppUser user = new AppUser(
+                new Email("user1@example.com"),
+                new Name("John"),
+                new Name("Doe"),
+                new UserAffiliation("Company A"),
+                new Link("http://user1.com"),
+                new Communication("user1@example.com")
+        );
+        Communication communication = new Communication("user1@example.com");
+        assertEquals("user1@example.com", user.getEmail().toString());
+        assertEquals("John", user.getFirstName().toString());
+        assertEquals("Doe", user.getLastName().toString());
+        assertEquals("Company A", user.getAffiliation().toString());
+        assertEquals("http://user1.com", user.getLink().toString());
+        assertEquals("user1@example.com", user.getCommunication().toString());
+
+    }
+
+    @Test
+    public void oneArgConstructorTest() {
+        AppUser user4 = new AppUser(1L);
+        assertNotNull(user4);
+        assertEquals(1L, user4.getId());
+    }
+
+    @Test
+    public void twoArgConstructorTest() {
+        AppUser user5 = new AppUser(new Email("email@gmail.com"), new Name("Pete"));
+        assertNotNull(user5);
+        assertEquals("email@gmail.com", user5.getEmail().toString());
+        assertEquals("Pete", user5.getFirstName().toString());
+    }
+
+    @Test
+    public void constructorWithUserModelTest() {
+        User userModel = new User();
+        userModel.setId(1L);
+        userModel.setEmail("user@example.com");
+        userModel.setFirstName("John");
+        userModel.setLastName("Doe");
+
+        AppUser appUser = new AppUser(userModel);
+
+        assertEquals(1L, appUser.getId());
+        assertEquals("user@example.com", appUser.getEmail().toString());
+        assertEquals("John", appUser.getFirstName().toString());
+        assertEquals("Doe", appUser.getLastName().toString());
+
+        User nullUser = null;
+        assertThrows(IllegalArgumentException.class, () -> new AppUser(nullUser));
+        userModel.setId(-1L);
+        assertThrows(IllegalArgumentException.class, () -> new AppUser(userModel));
+        userModel.setId(1L);
+        userModel.setEmail("noEmail");
+        assertThrows(IllegalArgumentException.class, () -> new AppUser(userModel));
+
+    }
+
+
+    @Test
     void equalsTests() {
         // Check if the equals method is implemented correctly
 
@@ -77,8 +163,6 @@ public class UserTests {
 
     @Test
     void hashCodeTests() {
-        // Check if the hashCode method is implemented correctly
-
         // user 1 and user 1 are the same
         assertEquals(user1.hashCode(), user1.hashCode());
 
@@ -168,6 +252,20 @@ public class UserTests {
         assertEquals(userAffiliation.toString(), "fireman");
         assertEquals(conv.convertToDatabaseColumn(userAffiliation), "fireman");
     }
+
+    @Test
+    void toModelUserTest() {
+        User userModel = user1.toModelUser();
+
+        assertEquals(user1.getId(), userModel.getId());
+        assertEquals(user1.getFirstName().toString(), userModel.getFirstName());
+        assertEquals(user1.getLastName().toString(), userModel.getLastName());
+        assertEquals(user1.getCommunication().toString(), userModel.getPreferredCommunication());
+        assertEquals(user1.getLink().toString(), userModel.getPersonalWebsite());
+        assertEquals(user1.getAffiliation().toString(), userModel.getAffiliation());
+        assertEquals(user1.getEmail().toString(), userModel.getEmail());
+    }
+
 
 
 }
