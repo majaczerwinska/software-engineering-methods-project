@@ -68,7 +68,7 @@ public class AttendeeService {
      *                                  to the repository.
      */
     @Transactional
-    public void createAttendance(Long userId, Long eventId, Long trackId, RoleTitle role, boolean confirmed)
+    private void createAttendance(Long userId, Long eventId, Long trackId, RoleTitle role, boolean confirmed)
             throws IllegalArgumentException {
 
         // Check that no such attendance already exists
