@@ -147,6 +147,17 @@ public class UserRepositoryTest implements UserRepository {
     }
 
     @Override
+    public Optional<AppUser> findById(Long id) {
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId() == id) {
+                AppUser user = users.get(i);
+                return Optional.ofNullable(user);
+            }
+        }
+        return Optional.ofNullable(null);
+    }
+
+    @Override
     public Optional<AppUser> findById(String s) {
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getId() == Long.parseLong(s)) {
