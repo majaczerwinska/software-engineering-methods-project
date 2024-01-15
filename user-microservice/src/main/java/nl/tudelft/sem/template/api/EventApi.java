@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-13T15:05:16.552183500+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-14T20:51:20.687243+01:00[Europe/Amsterdam]")
 @Validated
 @Tag(name = "Event Management", description = "end-points for features that help users create and manage events when permitted by their assigned role.")
 public interface EventApi {

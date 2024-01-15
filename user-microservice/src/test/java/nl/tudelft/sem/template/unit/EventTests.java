@@ -29,11 +29,11 @@ public class EventTests {
         LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         eventEquals0 = new Event(
-            id, startDate, endDate, new IsCancelled(false), new EventName("name"), new EventDescription("desc"));
+                id, startDate, endDate, new IsCancelled(false), new EventName("name"), new EventDescription("desc"));
         eventEquals1 = new Event(
-            id, startDate, endDate, new IsCancelled(false), new EventName("name"), new EventDescription("desc"));
+                id, startDate, endDate, new IsCancelled(false), new EventName("name"), new EventDescription("desc"));
         eventNullDesc = new Event(
-            124L, startDate, endDate, new IsCancelled(false), new EventName("name"), null);
+                124L, startDate, endDate, new IsCancelled(false), new EventName("name"), null);
     }
 
     @Test

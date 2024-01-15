@@ -1,12 +1,16 @@
 package nl.tudelft.sem.template.domain.user;
 
+import java.util.List;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +21,7 @@ import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.user.converters.EmailAttributeConverter;
 import nl.tudelft.sem.template.events.UserWasCreatedEvent;
 import nl.tudelft.sem.template.model.User;
-
+import nl.tudelft.sem.template.domain.attendee.Attendee;
 
 /**
  * A DDD entity representing an application user in our domain.
@@ -29,6 +33,7 @@ import nl.tudelft.sem.template.model.User;
 @Getter
 @Setter
 @NoArgsConstructor
+@RequiredArgsConstructor
 public class AppUser extends HasEvents {
     /**
      * Identifier for the application user.
@@ -39,6 +44,7 @@ public class AppUser extends HasEvents {
 
     @Column(name = "email", nullable = false, unique = true)
     @Convert(converter = EmailAttributeConverter.class)
+    @NonNull
     private Email email;
 
     @Column(name = "firstName", nullable = false)
@@ -49,26 +55,24 @@ public class AppUser extends HasEvents {
     @Convert(converter = NameAttributeConverter.class)
     private Name lastName;
 
-    @Column(name = "affiliation")
-    @Convert(converter =  UserAffiliationAttributeConverter.class)
+    @Column(name = "affiliation", nullable = true)
+    @Convert(converter = UserAffiliationAttributeConverter.class)
     private UserAffiliation affiliation;
 
-    @Column(name = "link")
+    @Column(name = "link", nullable = true)
     @Convert(converter = LinkAttributeConverter.class)
     private Link link;
 
-    @Column(name = "communication")
+    @Column(name = "communication", nullable = true)
     @Convert(converter = CommunicationAttributeConverter.class)
     private Communication communication;
 
-    //    @ManyToMany
-    //    @JoinTable(
-    //            name = "user_event",
-    //            joinColumns = @JoinColumn(name = "user_id"),
-    //            inverseJoinColumns = @JoinColumn(name = "event_id")
-    //    )
-    //    private Set<Event> events = new HashSet<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attendee> attendance;
 
+    public AppUser(Long id) {
+        this.id = id;
+    }
 
     /**
      * Constructor.
@@ -113,6 +117,7 @@ public class AppUser extends HasEvents {
     /**
      * Constructor for testing.
      *
+     * @param email The Email for the new user
      * @param id - id
      * @param email - email
      * @param firstName - first name
@@ -168,5 +173,14 @@ public class AppUser extends HasEvents {
         user.setAffiliation(this.affiliation.toString());
         user.setEmail(this.email.toString());
         return user;
+    }
+
+    /**
+     * Extends the accessor to a public visibility.
+     *
+     * @param object The log to be recorded.
+     */
+    public void recordLog(Object object) {
+        this.recordThat(object);
     }
 }
