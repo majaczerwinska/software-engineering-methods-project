@@ -133,6 +133,20 @@ public class UserControllerTest {
     }
 
     @Test
+    public void createAccountNullEmail() {
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+
+        appUser.setEmail(new Email("noEmail"));
+        User modelUser = appUser.toModelUser();
+
+        ResponseEntity<User> response = userController.createAccount(modelUser);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+    }
+
+    @Test
     public void createAccountNonAuthUser() {
         User modelUser = appUser.toModelUser();
         when(authManager.getEmail()).thenReturn(appUser.getEmail().toString());
@@ -221,6 +235,32 @@ public class UserControllerTest {
         doThrow(new NoSuchElementException()).when(userService).deleteUser(appUser.getId());
         assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(),
                 userController.deleteAccount(appUser.getId()));
+    }
+
+    @Test
+    public void deleteAccountUserUnauthorized() {
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(false);
+        ResponseEntity<Void> response = userController.deleteAccount(appUser.getId());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        verify(authManager, times(1)).getEmail();
+        verify(userService, times(1)).userExistsByEmail(eq(appUser.getEmail()));
+
+    }
+
+    @Test
+    public void deleteAccountUserUnauthorized2() {
+        AppUser user2 = new AppUser(2L);
+        Email email = appUser.getEmail();
+        when(authManager.getEmail()).thenReturn(email.toString());
+        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
+        when(userService.getUserByEmail(email)).thenReturn(user2);
+        ResponseEntity<Void> response = userController.deleteAccount(appUser.getId());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        verify(authManager, times(1)).getEmail();
+        verify(userService, times(1)).userExistsByEmail(eq(appUser.getEmail()));
+
     }
 
 
