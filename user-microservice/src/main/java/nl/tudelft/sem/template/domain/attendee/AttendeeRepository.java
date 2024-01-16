@@ -16,19 +16,39 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface AttendeeRepository extends JpaRepository<Attendee, Long> {
-    Optional<Attendee> findByUserIdAndEventIdAndTrackId(Long userId, Long eventId, Long trackId);
 
-    Optional<Attendee> findByUserIdAndEventIdAndTrackIdAndConfirmation(Long userId, Long eventId, Long trackId,
-            Confirmation confirmed);
+    Optional<Attendee> findByUserAndEventAndTrackAndConfirmation(AppUser user,
+                                                                 Event event,
+                                                                 Track track,
+                                                                 Confirmation confirmation);
 
-    List<Attendee> findByUserIdAndConfirmation(Long userId, Confirmation confirmed);
-
-    List<Attendee> findByEventIdAndConfirmation(Long eventId, Confirmation confirmed);
-
-    List<Attendee> findByTrackIdAndConfirmation(Long trackId, Confirmation confirmed);
+    List<Attendee> findByConfirmation(Confirmation confirmation);
 
     boolean existsByUserIdAndEventIdAndTrackId(Long userId, Long eventId, Long trackId);
 
     boolean existsByUserIdAndEventIdAndTrackIdAndConfirmation(Long userId, Long eventId, Long trackId,
             Confirmation confirmed);
+
+    /**
+     * A customized retrieval that filters on the basis of users, events,
+     * or track. The filtration occur only if a non-null filter is provided;
+     * otherwise, the filter is ignored.
+     *
+     * @param user              the user filter
+     * @param event             the event filter
+     * @param track             the track filter
+     * @param confirmation      the confirmation status filter
+     * @return                  all attendees that pass all the filters.
+     *
+     *
+     */
+    @Query("SELECT a FROM Attendee a "
+            + "WHERE (:user is null OR a.user = :user) "
+            + "AND (:event is null OR a.event = :event) "
+            + "AND (:track is null OR a.track = :track) "
+            + "AND (:confirmation is null OR a.confirmation = :confirmation)")
+    List<Attendee> findFiltered(@Param("user") AppUser user,
+                                @Param("event") Event event,
+                                @Param("track") Track track,
+                                @Param("confirmation") Confirmation confirmation);
 }

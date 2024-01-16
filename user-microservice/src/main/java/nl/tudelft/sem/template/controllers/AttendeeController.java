@@ -9,6 +9,7 @@ import nl.tudelft.sem.template.model.Attendee;
 import nl.tudelft.sem.template.model.Role;
 import nl.tudelft.sem.template.services.AttendeeService;
 import nl.tudelft.sem.template.services.EventService;
+import nl.tudelft.sem.template.services.InvitationService;
 import nl.tudelft.sem.template.services.TrackService;
 import nl.tudelft.sem.template.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,27 +31,33 @@ public class AttendeeController implements AttendeeApi {
     private final transient EventService eventService;
     private final transient TrackService trackService;
     private final transient AttendeeService attendeeService;
+    private final transient InvitationService invitationService;
 
 
     /**
      * Constructs a new Attendee controller.
      *
-     * @param authManager     Spring Security component used to authenticate and
-     *                        authorize the user
-     * @param attendeeService a constructor injection for the Attendee Service class.
-     * @param userService     a constructor injection for the User Service class.
-     * @param eventService    a constructor injection for the Event Service class.
-     * @param trackService    a constructor injection for the Track Service class.
+     * @param authManager       Spring Security component used to authenticate and
+     *                          authorize the user
+     * @param attendeeService   a constructor injection for the Attendee Service class.
+     * @param userService       a constructor injection for the User Service class.
+     * @param eventService      a constructor injection for the Event Service class.
+     * @param trackService      a constructor injection for the Track Service class.
+     * @param invitationService a constructor injection for the Invitation Service class.
      */
     @Autowired
     public AttendeeController(AuthManager authManager,
                               AttendeeService attendeeService,
-                              UserService userService, EventService eventService, TrackService trackService) {
+                              UserService userService,
+                              EventService eventService,
+                              TrackService trackService,
+                              InvitationService invitationService) {
         this.authManager = authManager;
         this.attendeeService = attendeeService;
         this.userService = userService;
         this.eventService = eventService;
         this.trackService = trackService;
+        this.invitationService = invitationService;
     }
 
     @Override
@@ -104,13 +111,13 @@ public class AttendeeController implements AttendeeApi {
                     .header("message",  "Invalid attendee identifier was provided.")
                     .build();
         }
-        if (!attendeeService.existsById(attendeeId)) {
+        if (!attendeeService.exists(attendeeId)) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .header("message",  "No Attendee instance corresponding to the given identifier can be found.")
                     .build();
         }
-        attendeeService.deleteById(attendeeId);
+        attendeeService.deleteAttendance(attendeeId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .header("message",  "successful operation")
@@ -127,7 +134,7 @@ public class AttendeeController implements AttendeeApi {
                     .header("message",  "Invalid attendee identifier was provided.")
                     .build();
         }
-        var retrievedAttendee = attendeeService.getById(attendeeId);
+        var retrievedAttendee = attendeeService.getAttendance(attendeeId);
 
         if (retrievedAttendee == null) {
             return ResponseEntity
@@ -160,7 +167,7 @@ public class AttendeeController implements AttendeeApi {
                     .header("message",  "Invalid attendee object was provided.")
                     .build();
         }
-        if (attendeeService.existsById(attendee.getId())) { // confirm that the Attendance exists
+        if (attendeeService.exists(attendee.getId())) { // confirm that the Attendance exists
             // Otherwise it is a bad request.
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -170,7 +177,7 @@ public class AttendeeController implements AttendeeApi {
 
         // Modify the Role title if necessary
         Attendee modifiedAttendee = attendeeService
-                .modifyTitle(null, attendee.getId(), RoleTitle.valueOf(attendee.getRole().name()))
+                .modifyTitle(attendee.getId(), RoleTitle.valueOf(attendee.getRole().name()))
                 .toModel();
 
 

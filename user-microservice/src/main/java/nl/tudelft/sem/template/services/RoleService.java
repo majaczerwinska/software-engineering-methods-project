@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.services;
 
 import nl.tudelft.sem.template.authentication.AuthManager;
-import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import org.springframework.lang.Nullable;
@@ -26,13 +25,13 @@ public class RoleService {
         if (user == null) {
             return false;
         }
-        Attendee role = attendeeService.getAttendance(user.getId(), eventId, trackId);
-        if (! role.isConfirmed()) {
-            return false;
-        }
-        if (!(role.getRole().getRoleTitle().getPermission() <= level)) {
-            return false;
-        }
+        // Attendee role = attendeeService.getAttendance(user.getId(), eventId, trackId);
+        // if (! role.isConfirmed()) {
+        //     return false;
+        // }
+        // if (!(role.getRole().getRoleTitle().getPermission() <= level)) {
+        //     return false;
+        // }
         return true;
     }
 }

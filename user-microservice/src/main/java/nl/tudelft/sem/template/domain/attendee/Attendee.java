@@ -45,7 +45,7 @@ public class Attendee extends HasEvents {
     private Role role;
 
     // Indicates whether the conferred role was accepted.
-    @Column(name = "confirmed", nullable = false)
+    @Column(name = "confirmation", nullable = false)
     @Convert(converter = ConfirmationAttributeConverter.class)
     private Confirmation confirmation;
 
