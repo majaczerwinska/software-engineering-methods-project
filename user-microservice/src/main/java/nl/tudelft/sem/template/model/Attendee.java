@@ -19,7 +19,7 @@ import javax.annotation.Generated;
  * Attendee
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-15T19:57:33.699016466+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-16T15:18:15.746950500+01:00[Europe/Amsterdam]")
 public class Attendee {
 
   private Long id;
