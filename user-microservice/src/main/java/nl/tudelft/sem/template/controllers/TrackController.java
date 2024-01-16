@@ -62,14 +62,15 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    public ResponseEntity<Track> addTrack(Track track) {
+    public ResponseEntity<Track> addTrack(@RequestBody Track track) {
         try {
             if (!roleService.hasPermission(authManager, track.getEventId(), track.getId(), 0)) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }
-            trackService.createTrack(track.getTitle(), track.getDescription(), track.getSubmitDeadline(),
-                    track.getReviewDeadline(), track.getPaperType(), track.getEventId());
-            return ResponseEntity.ok(track);
+            Track createdTrack = trackService.createTrack(track.getTitle(), track.getDescription(),
+                    track.getSubmitDeadline(), track.getReviewDeadline(), track.getPaperType(), track.getEventId())
+                    .toModelTrack();
+            return ResponseEntity.ok(createdTrack);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
         }
@@ -156,7 +157,8 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    public ResponseEntity<List<Track>> getTrack(String title, Integer eventId, PaperType paperType) {
+    public ResponseEntity<List<Track>> getTrack(@RequestBody String title, @RequestBody Integer eventId,
+                                                @RequestBody  PaperType paperType) {
         try {
             if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
