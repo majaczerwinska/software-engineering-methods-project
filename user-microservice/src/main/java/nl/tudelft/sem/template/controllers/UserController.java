@@ -47,10 +47,10 @@ public class UserController implements UserApi {
     @Override
     @Transactional
     public ResponseEntity<User> getAccountByID(@PathVariable("userID") Long userId) {
-        if (userId < 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        //TODO: unauthorized access
         if (!userService.userExistsById(userId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -70,7 +70,10 @@ public class UserController implements UserApi {
         if (!email.contains("@")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        //TODO: unauthorized access
+        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         if (!userService.userExistsByEmail(new Email(email))) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

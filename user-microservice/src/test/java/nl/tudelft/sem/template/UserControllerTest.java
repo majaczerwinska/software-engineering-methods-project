@@ -1,6 +1,8 @@
 package nl.tudelft.sem.template;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -61,14 +63,7 @@ public class UserControllerTest {
         Link link = new Link("link");
         Communication communication = new Communication("communication");
         appUser = new AppUser(id, email, name, name, affiliation, link, communication);
-    }
-
-    /**
-     * Test for getting an invalid id.
-     */
-    @Test
-    public void getUserByIdInvalidId() {
-        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(), userController.getAccountByID(-1L));
+        when(authManager.getEmail()).thenReturn("test@test.net");
     }
 
     /**
@@ -76,7 +71,8 @@ public class UserControllerTest {
      */
     @Test
     public void getUserByIdUnauthorized() {
-        //TODO: !!!
+        when(userService.getUserByEmail(new Email("test@test.net"))).thenReturn(null);
+        assertEquals(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(), userController.getAccountByID(2115L));
     }
 
     /**
@@ -84,6 +80,8 @@ public class UserControllerTest {
      */
     @Test
     public void getUserByIdUserNonexistent() {
+        when(userService.getUserByEmail(new Email("test@test.net"))).thenReturn(appUser);
+        when(userService.userExistsById(anyLong())).thenReturn(false);
         assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(), userController.getAccountByID(0L));
     }
 
@@ -92,6 +90,7 @@ public class UserControllerTest {
      */
     @Test
     public void getUserByIdUserExists() {
+        when(userService.getUserByEmail(new Email("test@test.net"))).thenReturn(appUser);
         when(userService.userExistsById(eq(1L))).thenReturn(true);
         when(userService.getUserById(eq(1L))).thenReturn(appUser);
         assertEquals(appUser.toModelUser(), userController.getAccountByID(1L).getBody());
@@ -99,12 +98,12 @@ public class UserControllerTest {
 
     @Test
     public void getAccountByEmailUserExists() {
-        when(userService.userExistsByEmail(eq(appUser.getEmail()))).thenReturn(true);
-        when(userService.getUserByEmail(eq(appUser.getEmail()))).thenReturn(appUser);
+        when(userService.getUserByEmail(new Email("test@test.net"))).thenReturn(appUser);
+        when(userService.userExistsByEmail(any())).thenReturn(true);
         assertEquals(appUser.toModelUser(),
                 userController.getAccountByEmail(appUser.getEmail().toString()).getBody());
-        verify(userService, times(1)).userExistsByEmail(eq(appUser.getEmail()));
-        verify(userService, times(1)).getUserByEmail(eq(appUser.getEmail()));
+        verify(userService, times(1)).userExistsByEmail(any());
+        verify(userService, times(2)).getUserByEmail(any());
     }
 
     @Test
@@ -114,9 +113,21 @@ public class UserControllerTest {
     }
 
     @Test
+    public void getAccountByEmailUnauthorized() {
+        when(userService.getUserByEmail(new Email("test@test.net"))).thenReturn(null);
+        assertEquals(HttpStatus.UNAUTHORIZED, userController.getAccountByEmail("test@test.nl").getStatusCode());
+        verify(userService, times(1)).getUserByEmail(any());
+
+    }
+
+    @Test
     public void getAccountByEmailNonExistent() {
+        when(userService.getUserByEmail(new Email("test@test.net"))).thenReturn(appUser);
+        when(userService.userExistsByEmail(any())).thenReturn(false);
         assertEquals(ResponseEntity.status(HttpStatus.NOT_FOUND).build(),
                 userController.getAccountByEmail(appUser.getEmail().toString()));
+        verify(userService, times(1)).userExistsByEmail(any());
+        verify(userService, times(1)).getUserByEmail(any());
     }
 
     @Test
