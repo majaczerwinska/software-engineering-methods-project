@@ -86,9 +86,9 @@ public class AttendeeController implements AttendeeApi {
                     .header("message",  "Invalid attendee object was provided.")
                     .build();
         }
-        if (eventService.getEventById(attendee.getEventId()) == null      // Confirm that the event exists
-               || (attendee.getTrackId() != null                                // If the identifier is supplied
-               && !trackService.trackExistById(attendee.getTrackId()))) {        // confirm that the track exists
+        if (eventService.getEventById(attendee.getEventId()) == null     // Confirm that the event exists
+               || (attendee.getTrackId() != null                         // If the identifier is supplied
+               && !trackService.exists(attendee.getTrackId()))) {        // confirm that the track exists
             // Otherwise it is a bad request.
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

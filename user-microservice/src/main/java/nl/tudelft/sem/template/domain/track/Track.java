@@ -59,7 +59,7 @@ public class Track extends HasEvents {
     @Convert(converter = LocalDateConverter.class)
     private LocalDate reviewDeadline;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Event event;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "track", cascade = CascadeType.ALL, orphanRemoval = true)

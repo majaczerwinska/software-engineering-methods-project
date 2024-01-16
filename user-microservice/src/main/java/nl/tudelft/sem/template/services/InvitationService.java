@@ -71,7 +71,10 @@ public class InvitationService {
         // Retrieve the attendance objects
         AppUser user = userRepository.findById(userId).orElseThrow(NoSuchElementException::new);
         Event event = eventRepository.findById(eventId).orElseThrow(NoSuchElementException::new);
-        Track track = trackRepository.findById(trackId).orElseThrow(NoSuchElementException::new);
+        Track track = null;
+        if (trackId != null) {
+            track = trackRepository.findById(trackId).orElseThrow(NoSuchElementException::new);
+        }
         Confirmation confirmation = (confirmed == null) ? null : new Confirmation(confirmed);
 
         return attendeeRepository.findByUserAndEventAndTrackAndConfirmation(user, event, track, confirmation)

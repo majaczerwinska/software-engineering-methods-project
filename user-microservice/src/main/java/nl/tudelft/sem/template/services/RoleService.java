@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.services;
 
+import java.util.NoSuchElementException;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.user.AppUser;
@@ -9,15 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
+
 @Service("RoleService")
+@SuppressWarnings("PMD.DataflowAnomalyAnalysis")
 public class RoleService {
     private final transient UserRepository userRepository;
-    private final transient AttendeeRepository attendeeRepository;
+    private final transient InvitationService invitationService;
 
     @Autowired
-    public RoleService(UserRepository userRepository, AttendeeRepository attendeeRepository) {
+    public RoleService(UserRepository userRepository, InvitationService invitationService) {
         this.userRepository = userRepository;
-        this.attendeeRepository = attendeeRepository;
+        this.invitationService = invitationService;
     }
 
     /**
@@ -35,14 +38,12 @@ public class RoleService {
         if (user == null) {
             return false;
         }
-        Attendee role = attendeeRepository.findByUserIdAndEventIdAndTrackIdAndConfirmation(user.getId(), eventId, trackId,
-            new Confirmation(true)).orElse(null);
-        if (role == null) {
+        Attendee role;
+        try {
+            role = invitationService.getAttendee(user.getId(), eventId, trackId, true);
+        } catch (Exception e) {
             return false;
         }
-        if (!(role.getRole().getRoleTitle().getPermission() <= level)) {
-            return false;
-        }
-        return true;
+        return role.getRole().getRoleTitle().getPermission() <= level;
     }
 }
