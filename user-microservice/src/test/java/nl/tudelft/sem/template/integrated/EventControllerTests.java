@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import nl.tudelft.sem.template.Application;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.controllers.EventController;
@@ -24,6 +25,7 @@ import nl.tudelft.sem.template.domain.user.UserRepository;
 import nl.tudelft.sem.template.model.Event;
 import nl.tudelft.sem.template.services.AttendeeService;
 import nl.tudelft.sem.template.services.EventService;
+import nl.tudelft.sem.template.services.InvitationService;
 import nl.tudelft.sem.template.services.RoleService;
 import nl.tudelft.sem.template.services.UserService;
 import org.junit.jupiter.api.BeforeAll;
@@ -75,7 +77,10 @@ public class EventControllerTests {
     @InjectMocks
     private transient EventController eventController;
 
-    static Event event;
+    @Autowired
+    private transient InvitationService invitationService;
+
+    static nl.tudelft.sem.template.domain.event.Event event;
     static AppUser appUser;
 
     static nl.tudelft.sem.template.domain.event.Event domainEvent;
@@ -84,12 +89,11 @@ public class EventControllerTests {
     private static void setupStatic() {
         LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
-        event = new nl.tudelft.sem.template.domain.event.Event(
-                startDate, endDate, new IsCancelled(false), new EventName("name"), new EventDescription("desc"))
-                .toModelEvent();
+        event = new nl.tudelft.sem.template.domain.event.Event(startDate, endDate,
+            new IsCancelled(false), new EventName("name"), new EventDescription("desc"));
         domainEvent = new nl.tudelft.sem.template.domain.event.Event(
                 startDate, endDate, new IsCancelled(false), new EventName("name"), new EventDescription("desc"));
-        appUser = new AppUser(new Email("test@test.net"), new Name("name"));
+        appUser = new AppUser(new Email("test@test.net"), new Name("name"), new Name("name"));
     }
 
     @BeforeEach
@@ -100,7 +104,7 @@ public class EventControllerTests {
     @Test
     public void createEventNoUserTest() {
         when(userService.getUserByEmail(any(Email.class))).thenReturn(null);
-        ResponseEntity<Event> response = eventController.addEvent(event);
+        ResponseEntity<Event> response = eventController.addEvent(event.toModelEvent());
         assertEquals(response.getStatusCode(), HttpStatus.UNAUTHORIZED);
     }
 
@@ -108,21 +112,49 @@ public class EventControllerTests {
     public void createEventValidTest() {
         when(userService.getUserByEmail(new Email("test@test.net"))).thenReturn(appUser);
         when(eventService.createEvent(any(LocalDate.class), any(LocalDate.class),
-                any(Boolean.class), any(String.class), any(String.class))).thenReturn(domainEvent);
+                any(Boolean.class), any(String.class), any(String.class), any(String.class))).thenReturn(domainEvent);
         userRepository.save(appUser);
-        ResponseEntity<Event> response = eventController.addEvent(event);
+        ResponseEntity<Event> response = eventController.addEvent(event.toModelEvent());
         assertEquals(response.getStatusCode(), HttpStatus.OK);
         Event responseEvent = response.getBody();
         assertEquals(event.getStartDate(), responseEvent.getStartDate());
         assertEquals(event.getEndDate(), responseEvent.getEndDate());
-        assertEquals(event.getIsCancelled(), responseEvent.getIsCancelled());
-        assertEquals(event.getName(), responseEvent.getName());
-        assertEquals(event.getDescription(), responseEvent.getDescription());
+        assertEquals(event.getIsCancelled().getCancelStatus(), responseEvent.getIsCancelled());
+        assertEquals(event.getName().toString(), responseEvent.getName());
+        assertEquals(event.getDescription().toString(), responseEvent.getDescription());
+    }
+
+    @Test
+    public void createEventInvalidTest() {
+        userRepository.save(appUser);
+        event.setStartDate(null);
+        ResponseEntity<Event> response = eventController.addEvent(event.toModelEvent());
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void findEventTest() {
+        userRepository.save(appUser);
+        Event responseEvent = eventController.addEvent(event.toModelEvent()).getBody();
+        ResponseEntity<List<Event>> response = eventController.findEvent(null, null, null, null, null, null);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+    }
+
+    @Test
+    public void updateEventUnauthorizedTest() {
+        userRepository.save(appUser);
+        userRepository.save(new AppUser(new Email("test@test.test.test.test"), new Name("NAM12423E"),
+                new Name("nam1241e")));
+
+        Event responseEvent = eventController.addEvent(event.toModelEvent()).getBody();
+        when(authManager.getEmail()).thenReturn("test@test.test.test.test");
+        ResponseEntity<Event> response = eventController.updateEvent(event.toModelEvent());
+        assertEquals(response.getStatusCode(), HttpStatus.UNAUTHORIZED);
     }
 
     @Test
     public void getInvalidEventById() {
-        when(userService.getUserByEmail(new Email("test@test.net"))).thenReturn(appUser);
+        userRepository.save(appUser);
         when(eventService.eventExistsById(2115L)).thenReturn(false);
         ResponseEntity<Event> response = eventController.getEventById(2115L);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -136,8 +168,8 @@ public class EventControllerTests {
         userRepository.save(appUser);
 
         nl.tudelft.sem.template.domain.event.Event domainEvent = new nl.tudelft.sem.template.domain.event.Event(
-                event.getStartDate(), event.getEndDate(), new IsCancelled(event.getIsCancelled()),
-                new EventName(event.getName()), new EventDescription(event.getDescription()));
+                event.getStartDate(), event.getEndDate(), event.getIsCancelled(),
+                event.getName(), event.getDescription());
         eventRepository.save(domainEvent);
 
         when(eventService.getEventById(anyLong())).thenReturn(domainEvent);
@@ -149,8 +181,8 @@ public class EventControllerTests {
     @Test
     public void getEventByIdUnauthorizedTest() {
         nl.tudelft.sem.template.domain.event.Event domainEvent = new nl.tudelft.sem.template.domain.event.Event(
-                event.getStartDate(), event.getEndDate(), new IsCancelled(event.getIsCancelled()),
-                new EventName(event.getName()), new EventDescription(event.getDescription()));
+                event.getStartDate(), event.getEndDate(), event.getIsCancelled(),
+                event.getName(), event.getDescription());
         eventRepository.save(domainEvent);
         ResponseEntity<Event> response = eventController.getEventById(domainEvent.getId());
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -158,7 +190,7 @@ public class EventControllerTests {
 
     @Test
     void deleteEventUnauthorizedTest() {
-        when(roleService.hasPermission(any(UserService.class), any(AuthManager.class), any(AttendeeService.class),
+        when(roleService.hasPermission(any(AuthManager.class),
                 anyLong(), any(), anyInt())).thenReturn(false);
         ResponseEntity<Void> response = eventController.deleteEvent(1L);
 
@@ -167,8 +199,8 @@ public class EventControllerTests {
 
     @Test
     void deleteValidEventTest() {
-        when(roleService.hasPermission(any(UserService.class), any(AuthManager.class),
-                any(AttendeeService.class), anyLong(), any(), anyInt())).thenReturn(true);
+        when(roleService.hasPermission(any(AuthManager.class),
+                anyLong(), any(), anyInt())).thenReturn(true);
         when(eventService.deleteEvent(anyLong())).thenReturn(true);
 
         ResponseEntity<Void> response = eventController.deleteEvent(1L);
@@ -180,8 +212,8 @@ public class EventControllerTests {
     @Test
     void deleteInvalidEventTest() {
         Long eventId = 1L;
-        when(roleService.hasPermission(any(UserService.class), any(AuthManager.class),
-                any(AttendeeService.class), anyLong(), any(), anyInt())).thenReturn(true);
+        when(roleService.hasPermission(any(AuthManager.class),
+                anyLong(), any(), anyInt())).thenReturn(true);
         when(eventService.deleteEvent(eventId)).thenReturn(false);
 
         ResponseEntity<Void> response = eventController.deleteEvent(eventId);

@@ -11,6 +11,9 @@ public class EventNameAttributeConverter implements AttributeConverter<EventName
 
     @Override
     public String convertToDatabaseColumn(EventName attribute) {
+        if (attribute == null) {
+            return null;
+        }
         return attribute.toString();
     }
 

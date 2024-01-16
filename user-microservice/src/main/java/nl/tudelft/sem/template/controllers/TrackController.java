@@ -11,12 +11,12 @@ import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.model.PaperType;
 import nl.tudelft.sem.template.model.Track;
 import nl.tudelft.sem.template.services.AttendeeService;
+import nl.tudelft.sem.template.services.RoleService;
 import nl.tudelft.sem.template.services.TrackService;
 import nl.tudelft.sem.template.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +33,7 @@ public class TrackController implements TrackApi {
     private final transient AttendeeService attendeeService;
     private final transient TrackService trackService;
     private final transient UserService userService;
+    private final transient RoleService roleService;
 
     /**
      * Constructs a new instance of Track Controller.
@@ -41,14 +42,16 @@ public class TrackController implements TrackApi {
      * @param attendeeService The service for managing attendee-related operations.
      * @param trackService    The service for managing track-related operations.
      * @param userService     The service for managing user-related operations.
+     * @param roleService     The service for managing role-related operations.
      */
     @Autowired
-    public TrackController(AuthManager authManager, AttendeeService attendeeService,
-            TrackService trackService, UserService userService) {
+    public TrackController(AuthManager authManager, AttendeeService attendeeService, RoleService roleService,
+                           TrackService trackService, UserService userService) {
         this.authManager = authManager;
         this.attendeeService = attendeeService;
         this.trackService = trackService;
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     /**
@@ -59,10 +62,11 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "#track.getEventId(), #track.getId(), 0)") // 401
     public ResponseEntity<Track> addTrack(Track track) {
         try {
+            if (!roleService.hasPermission(authManager, track.getEventId(), track.getId(), 0)) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
             trackService.createTrack(track.getTitle(), track.getDescription(), track.getSubmitDeadline(),
                     track.getReviewDeadline(), track.getPaperType(), track.getEventId());
             return ResponseEntity.ok(track);
@@ -79,10 +83,11 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "#track.getEventId(), #track.getId(), 1)") // 401
     public ResponseEntity<Void> updateTrack(@Valid @RequestBody(required = false) Track track) {
         try {
+            if (!roleService.hasPermission(authManager, track.getEventId(), track.getId(), 1)) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
             trackService.updateTrack(track.getId(), track.getTitle(), track.getDescription(), track.getSubmitDeadline(),
                     track.getReviewDeadline(), track.getPaperType(), track.getEventId());
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
@@ -101,11 +106,15 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    @PreAuthorize("@RoleService.hasPermission(userService, authManager, attendeeService, "
-            + "(#trackId != null ? trackService.getTrackById(trackId).getParentEventId() : null), "
-            + "#trackId, 1)")
     public ResponseEntity<Void> deleteTrack(@PathVariable("trackID") Integer trackId) {
         try {
+            if (trackId == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
+            }
+            if (!roleService.hasPermission(authManager,
+                    trackService.getTrackById(trackId.longValue()).getEvent().getId(), trackId.longValue(), 0)) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
             trackService.deleteTrackById(trackId.longValue());
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
         } catch (IllegalArgumentException e) {

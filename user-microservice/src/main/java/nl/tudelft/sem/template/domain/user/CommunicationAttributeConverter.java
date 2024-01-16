@@ -3,6 +3,7 @@ package nl.tudelft.sem.template.domain.user;
 import java.util.Objects;
 import javax.persistence.AttributeConverter;
 
+
 /**
  * JPA Converter for the Communication value object.
  */

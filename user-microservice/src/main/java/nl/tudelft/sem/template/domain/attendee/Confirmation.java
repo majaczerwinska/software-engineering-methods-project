@@ -1,5 +1,6 @@
 package nl.tudelft.sem.template.domain.attendee;
 
+import java.util.Objects;
 import lombok.Getter;
 
 /**
@@ -14,4 +15,20 @@ public class Confirmation {
         this.confirmed = confirmed;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Confirmation confirmation = (Confirmation) o;
+        return Objects.equals(confirmed, confirmation.confirmed);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(confirmed);
+    }
 }

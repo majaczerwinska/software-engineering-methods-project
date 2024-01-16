@@ -14,7 +14,12 @@ import nl.tudelft.sem.template.domain.event.EventDescription;
 import nl.tudelft.sem.template.domain.event.EventName;
 import nl.tudelft.sem.template.domain.event.EventRepository;
 import nl.tudelft.sem.template.domain.event.IsCancelled;
+import nl.tudelft.sem.template.domain.user.AppUser;
+import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.domain.user.Name;
+import nl.tudelft.sem.template.domain.user.UserRepository;
 import nl.tudelft.sem.template.services.EventService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +43,9 @@ public class EventServiceTests {
     @Autowired
     private transient EventService service;
 
+    @Autowired
+    private transient UserRepository userRepository;
+
     private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -45,6 +53,7 @@ public class EventServiceTests {
     private EventName name;
     private EventDescription description;
     private Event savedEvent;
+    static AppUser user;
 
     /**
      * Creates a new event and saves it to the repository.
@@ -61,18 +70,22 @@ public class EventServiceTests {
         eventRepository.save(savedEvent);
     }
 
+    /**
+     * Initialize globals.
+     */
+    @BeforeAll
+    public static void beforeAllSetup() {
+        user = new AppUser(new Email("test@test.test"), new Name("name"), new Name("name"), null, null, null);
+    }
+
     @Test
     public void createEventTest() {
-
-        // Given
+        user = userRepository.save(user);
         LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
 
-        // Create Event for the first time
-        // When
-        Event returnedEvent = service.createEvent(startDate, endDate, false, "name", "desc");
+        Event returnedEvent = service.createEvent(startDate, endDate, false, "name", "desc", "test@test.test");
 
-        // Then
         assertTrue(eventRepository.existsById(returnedEvent.getId()));
     }
 
@@ -125,4 +138,23 @@ public class EventServiceTests {
         assertFalse(deleted);
     }
 
+    @Test
+    public void updateEventTest() {
+        user = userRepository.save(user);
+        LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+        LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+
+        LocalDate startDateNew = LocalDate.parse("2024-01-19T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+        LocalDate endDateNew = LocalDate.parse("2024-01-11T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
+
+        Event createdEvent = service.createEvent(startDate, endDate, false, "name", "desc", "test@test.test");
+
+        Event updatedEvent = service.updateEvent(createdEvent.getId(), startDateNew, endDateNew, true, "NAME", "DESC");
+        assertEquals(updatedEvent.getId(), createdEvent.getId());
+        assertEquals(updatedEvent.getStartDate(), startDateNew);
+        assertEquals(updatedEvent.getEndDate(), endDateNew);
+        assertEquals(updatedEvent.getIsCancelled(), new IsCancelled(true));
+        assertEquals(updatedEvent.getName(), new EventName("NAME"));
+        assertEquals(updatedEvent.getDescription(), new EventDescription("DESC"));
+    }
 }

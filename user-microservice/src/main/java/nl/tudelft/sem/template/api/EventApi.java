@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-14T23:25:19.487652300+01:00[Europe/Berlin]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-16T19:56:51.163164826+01:00[Europe/Amsterdam]")
 @Validated
 @Tag(name = "Event Management", description = "end-points for features that help users create and manage events when permitted by their assigned role.")
 public interface EventApi {
@@ -136,7 +136,6 @@ public interface EventApi {
      * @param endAfter Date after which event ends (optional)
      * @param cancelled Whether the event is cancelled (optional, default to false)
      * @param name Event&#39;s name. (optional)
-     * @param userID User who participated in the event. (optional)
      * @return successful operation (status code 200)
      *         or Invalid query values. (status code 400)
      *         or Unauthorized access. (status code 401)
@@ -168,8 +167,7 @@ public interface EventApi {
         @Parameter(name = "end_before", description = "Date before which event ends", in = ParameterIn.QUERY) @Valid @RequestParam(value = "end_before", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endBefore,
         @Parameter(name = "end_after", description = "Date after which event ends", in = ParameterIn.QUERY) @Valid @RequestParam(value = "end_after", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endAfter,
         @Parameter(name = "cancelled", description = "Whether the event is cancelled", in = ParameterIn.QUERY) @Valid @RequestParam(value = "cancelled", required = false, defaultValue = "false") Boolean cancelled,
-        @Parameter(name = "name", description = "Event's name.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "name", required = false) String name,
-        @Parameter(name = "userID", description = "User who participated in the event.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "userID", required = false) Integer userID
+        @Parameter(name = "name", description = "Event's name.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "name", required = false) String name
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
