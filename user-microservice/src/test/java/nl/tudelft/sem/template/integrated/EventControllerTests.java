@@ -72,7 +72,7 @@ public class EventControllerTests {
         LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         event = new nl.tudelft.sem.template.domain.event.Event(
                 startDate, endDate, new IsCancelled(false), new EventName("name"), new EventDescription("desc"));
-        appUser = new AppUser(new Email("test@test.net"), new Name("name"));
+        appUser = new AppUser(new Email("test@test.net"), new Name("name"), new Name("name"), null, null, null);
     }
 
     @BeforeEach
@@ -138,9 +138,11 @@ public class EventControllerTests {
     @Test
     public void updateEventUnauthorizedTest() {
         userRepository.save(appUser);
-        userRepository.save(new AppUser(new Email("test@test.test.test"), new Name("NAME")));
+        userRepository.save(new AppUser(new Email("test@test.test.test.test"), new Name("NAM12423E"),
+                new Name("nam1241e")));
+
         Event responseEvent = eventController.addEvent(event.toModelEvent()).getBody();
-        when(authManager.getEmail()).thenReturn("test@test.test.test");
+        when(authManager.getEmail()).thenReturn("test@test.test.test.test");
         ResponseEntity<Event> response = eventController.updateEvent(event.toModelEvent());
         assertEquals(response.getStatusCode(), HttpStatus.UNAUTHORIZED);
     }

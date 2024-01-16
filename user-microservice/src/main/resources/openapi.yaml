@@ -238,6 +238,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         '204':
           description: User successfully deleted.
@@ -261,6 +262,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         '200':
           description: successful operation

@@ -49,7 +49,7 @@ public class EventServiceTests {
      */
     @BeforeAll
     public static void setup() {
-        user = new AppUser(new Email("test@test.test"), new Name("name"), null, null, null);
+        user = new AppUser(new Email("test@test.test"), new Name("name"), new Name("name"), null, null, null);
     }
 
     @Test

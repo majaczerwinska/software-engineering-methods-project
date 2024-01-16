@@ -81,7 +81,8 @@ public class AttendeeServiceTests {
     public void setup() {
         LocalDate date0 = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         LocalDate date1 = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
-        user = new AppUser(new Email("test@test.test"), new Name("name"), null, null, null);
+        user = new AppUser(new Email("test@test.test"), new Name("name"), new Name("name"), null, null, null);
+        user = new AppUser(new Email("test@test.test"), new Name("name"), new Name("name"), null, null, null);
         user2 = new AppUser(new Email("test2@test.test"), new Name("name3"), null, null, null);
         event = new Event(date0, date1, new IsCancelled(false), new EventName("name"), new EventDescription("desc"));
         track = new Track(new Title("title"), new Description("desc"), new PaperRequirement(PaperType.FULL_PAPER),

@@ -19,10 +19,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
+import nl.tudelft.sem.template.model.User;
+
 
 /**
  * A DDD entity representing an application user in our domain.
  */
+
 
 @Entity
 @Table(name = "users")
@@ -35,19 +38,22 @@ public class AppUser extends HasEvents {
      * Identifier for the application user.
      */
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @Column(name = "email", nullable = false, unique = true)
     @Convert(converter = EmailAttributeConverter.class)
     @NonNull
     private Email email;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "firstName", nullable = false)
     @Convert(converter = NameAttributeConverter.class)
-    @NonNull
-    private Name name;
+    private Name firstName;
+
+    @Column(name = "lastName", nullable = false)
+    @Convert(converter = NameAttributeConverter.class)
+    private Name lastName;
 
     @Column(name = "affiliation", nullable = true)
     @Convert(converter = UserAffiliationAttributeConverter.class)
@@ -69,14 +75,74 @@ public class AppUser extends HasEvents {
     }
 
     /**
-     * Create new application user.
+     * 3-argument constructor.
      *
-     * @param email The Email for the new user
+     * @param email email
+     * @param firstName firstName
+     * @param lastName lastName
      */
-    public AppUser(Email email,
-            Name name, UserAffiliation affiliation, Link link, Communication communication) {
+    public AppUser(Email email, Name firstName, Name lastName) {
         this.email = email;
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param email - email
+     * @param firstName - first name
+     * @param lastName - last name
+     * @param affiliation - affiliation
+     * @param link - link
+     * @param communication - communication
+     */
+    public AppUser(Email email, Name firstName, Name lastName,
+                   UserAffiliation affiliation, Link link, Communication communication) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.affiliation = affiliation;
+        this.link = link;
+        this.communication = communication;
+    }
+
+    /**
+     * Constructor for converting model User into AppUser.
+     *
+     * @param user model User to convert into AppUser
+     */
+    public AppUser(User user) {
+        if (user == null || !user.getEmail().contains("@")) {
+            throw new IllegalArgumentException("Invalid user data");
+        }
+        this.id = user.getId();
+        this.email = new Email(user.getEmail());
+        this.firstName = new Name(user.getFirstName());
+        this.lastName = new Name(user.getLastName());
+        this.affiliation = new UserAffiliation(user.getAffiliation());
+        this.link = new Link(user.getPersonalWebsite());
+        this.communication = new Communication(user.getPreferredCommunication());
+    }
+
+    /**
+     * Constructor for testing.
+     *
+     * @param id - id
+     * @param email - email
+     * @param firstName - first name
+     * @param lastName - last name
+     * @param affiliation - affiliation
+     * @param link - link
+     * @param communication - communication
+     */
+    public AppUser(long id, Email email, Name firstName, Name lastName,
+                   UserAffiliation affiliation, Link link, Communication communication) {
+        this.id = id;
+        this.email = email;
+
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.affiliation = affiliation;
         this.link = link;
         this.communication = communication;
@@ -99,7 +165,24 @@ public class AppUser extends HasEvents {
 
     @Override
     public int hashCode() {
-        return Objects.hash(email);
+        return Objects.hash(id) + Objects.hash(email) + Objects.hash(firstName);
+    }
+
+    /**
+     * Converts the AppUser into a User.
+     *
+     * @return - the model user
+     */
+    public User toModelUser() {
+        User user = new User();
+        user.setId(this.id);
+        user.setFirstName(this.firstName.toString());
+        user.setLastName(this.lastName.toString());
+        user.setPreferredCommunication(this.communication.toString());
+        user.setPersonalWebsite(this.link.toString());
+        user.setAffiliation(this.affiliation.toString());
+        user.setEmail(this.email.toString());
+        return user;
     }
 
     /**
