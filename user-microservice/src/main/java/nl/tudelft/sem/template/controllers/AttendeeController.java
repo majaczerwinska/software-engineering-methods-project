@@ -1,9 +1,13 @@
 package nl.tudelft.sem.template.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.api.AttendeeApi;
 import nl.tudelft.sem.template.authentication.AuthManager;
+import nl.tudelft.sem.template.domain.user.AppUser;
+import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.enums.RoleTitle;
 import nl.tudelft.sem.template.model.Attendee;
 import nl.tudelft.sem.template.model.Role;
@@ -23,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
  * The controller for Attendance-related API calls.
  */
 @RestController
-@SuppressWarnings({"PMD.AvoidDuplicateLiterals"})
+@SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.AvoidDuplicateLiterals"})
 public class AttendeeController implements AttendeeApi {
 
     private final transient AuthManager authManager;
@@ -63,7 +67,16 @@ public class AttendeeController implements AttendeeApi {
     @Override
     @Transactional
     public ResponseEntity<Attendee> createAttendee(Attendee attendee) {
-        if (attendee == null                             // Confirm that the Attendee object was parsed correctly
+        // Authenticate the requester
+        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+        if (user == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .header("message",  "Unauthorized access.")
+                    .build();
+        }
+
+        if (attendee == null                              // Confirm that the Attendee object was parsed correctly
                  || attendee.getUserId() == null          // Confirm correct parsing of user identifier
                  || attendee.getEventId() == null         // Confirm correct parsing of event identifier
                  || attendee.getRole() == null) {         // Confirm correct parsing of the attendance role
@@ -85,14 +98,21 @@ public class AttendeeController implements AttendeeApi {
         }
 
         // Create a new Attendee instance
-        Attendee createdAttendance = attendeeService
-                  .createAttendance(
-                         attendee.getUserId(),
-                         attendee.getEventId(),
-                         attendee.getTrackId(),
-                         RoleTitle.valueOf(attendee.getRole().name()),
-                         true)
-                  .toModel();
+        Attendee createdAttendance;
+        try {
+            createdAttendance = invitationService
+                    .enroll(
+                            attendee.getUserId(),
+                            attendee.getEventId(),
+                            attendee.getTrackId(),
+                            RoleTitle.valueOf(attendee.getRole().name()))
+                    .toModel();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .header("message",  "Attendance already exists.")
+                    .build();
+        }
 
         return ResponseEntity
                   .status(HttpStatus.OK)
@@ -101,7 +121,17 @@ public class AttendeeController implements AttendeeApi {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<Void> deleteAttendee(Long attendeeId) {
+
+        // Authenticate the requester
+        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+        if (user == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .header("message",  "Unauthorized access.")
+                    .build();
+        }
 
         // Confirm that the correct identifier is supplied
         if (attendeeId == null) {
@@ -125,7 +155,18 @@ public class AttendeeController implements AttendeeApi {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<Attendee> getAttendeeByID(Long attendeeId) {
+
+        // Authenticate the requester
+        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+        if (user == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .header("message",  "Unauthorized access.")
+                    .build();
+        }
+
         // Confirm that the correct identifier is supplied
         if (attendeeId == null) {
             // Otherwise it is a bad request.
@@ -150,12 +191,69 @@ public class AttendeeController implements AttendeeApi {
     }
 
     @Override
-    public ResponseEntity<List<Attendee>> getInvitesByEventID(Long eventId, List<Role> roles, Long trackId) {
-        return AttendeeApi.super.getInvitesByEventID(eventId, roles, trackId);
+    @Transactional
+    public ResponseEntity<List<Attendee>> getFilteredAttendees(Long eventId,
+                                                               List<Role> roles,
+                                                               Long trackId) {
+        // Authenticate the requester
+        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+        if (user == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .header("message",  "Unauthorized access.")
+                    .build();
+        }
+
+        // Confirm that the correct identifiers are supplied
+        if (eventId == null && roles == null && trackId == null) {
+            // Otherwise it is a bad request.
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .header("message",  "Invalid attendee identifier was provided.")
+                    .build();
+        }
+        List<Attendee> modelledAttendees = new ArrayList<Attendee>();
+        try {
+            var retrievedAttendees = attendeeService.getFilteredAttendance(null,
+                    eventId,
+                    trackId,
+                    true);
+
+            if (roles != null && !roles.isEmpty()) {
+                retrievedAttendees.removeIf((x) -> !roles
+                        .contains(Role.valueOf(x.getRole().getRoleTitle().name())));
+                if (retrievedAttendees.isEmpty()) {
+                    throw new NoSuchElementException();
+                }
+            }
+
+            for (var attendee : retrievedAttendees) {
+                modelledAttendees.add(attendee.toModel());
+            }
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .header("message",  "No Attendee instance corresponding to the given identifier can be found.")
+                    .build();
+        }
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header("message",  "successful operation")
+                .body(modelledAttendees);
     }
 
     @Override
+    @Transactional
     public ResponseEntity<Attendee> updateAttendee(Attendee attendee) {
+        // Authenticate the requester
+        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+        if (user == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .header("message",  "Unauthorized access.")
+                    .build();
+        }
+
         if (attendee == null                             // Confirm that the Attendee object was parsed correctly
                 || attendee.getId() == null              // Confirm correct parsing of attendance identifier
                 || attendee.getUserId() == null          // Confirm correct parsing of user identifier

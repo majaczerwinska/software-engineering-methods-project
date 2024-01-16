@@ -250,9 +250,9 @@ public class InvitationService {
      * @param eventId   the event identifier
      */
     @Transactional
-    public void enroll(Long enroleeId, Long eventId, Long trackId, RoleTitle role) {
+    public Attendee enroll(Long enroleeId, Long eventId, Long trackId, RoleTitle role) {
 
-        attendeeService.createAttendance(enroleeId, eventId, trackId, role, true);
+        return attendeeService.createAttendance(enroleeId, eventId, trackId, role, true);
         // TODO self-enroll in an event as an attendee.
     }
 

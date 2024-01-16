@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-15T04:21:17.858259800+01:00[Europe/Berlin]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-16T09:55:13.003989600+01:00[Europe/Berlin]")
 @Validated
 @Tag(name = "Event Management", description = "end-points for features that help users create and manage events when permitted by their assigned role.")
 public interface AttendeeApi {
@@ -48,8 +48,9 @@ public interface AttendeeApi {
      *
      * @param attendee Attendee to be created. (optional)
      * @return Operation executed successfully (status code 200)
+     *         or Invalid attendee object was provided; or, provided identifiers lead to nonexistent objects. (status code 400)
      *         or Unauthorized access. (status code 401)
-     *         or Attendee already exists. (status code 409)
+     *         or Attendance already exists. (status code 409)
      */
     @Operation(
         operationId = "createAttendee",
@@ -60,8 +61,9 @@ public interface AttendeeApi {
             @ApiResponse(responseCode = "200", description = "Operation executed successfully", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = Attendee.class))
             }),
+            @ApiResponse(responseCode = "400", description = "Invalid attendee object was provided; or, provided identifiers lead to nonexistent objects."),
             @ApiResponse(responseCode = "401", description = "Unauthorized access."),
-            @ApiResponse(responseCode = "409", description = "Attendee already exists.")
+            @ApiResponse(responseCode = "409", description = "Attendance already exists.")
         },
         security = {
             @SecurityRequirement(name = "api_key")
@@ -91,10 +93,10 @@ public interface AttendeeApi {
 
 
     /**
-     * DELETE /attendee/{attendeeID} : Remove an attendee from a particular event or track.
+     * DELETE /attendee/{attendeeId} : Remove an attendee from a particular event or track.
      * This operation can only be performed by someone with an equal or higher role in the given event or track than the attendee&#39;s role.
      *
-     * @param attendeeID  (required)
+     * @param attendeeId  (required)
      * @return Successful operation (status code 200)
      *         or Invalid attendeeID was provided. (status code 400)
      *         or Unauthorized access. (status code 401)
@@ -117,10 +119,10 @@ public interface AttendeeApi {
     )
     @RequestMapping(
         method = RequestMethod.DELETE,
-        value = "/attendee/{attendeeID}"
+        value = "/attendee/{attendeeId}"
     )
     default ResponseEntity<Void> deleteAttendee(
-        @Parameter(name = "attendeeID", description = "", required = true, in = ParameterIn.PATH) @PathVariable("attendeeID") Long attendeeID
+        @Parameter(name = "attendeeId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("attendeeId") Long attendeeId
     ) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
@@ -128,9 +130,9 @@ public interface AttendeeApi {
 
 
     /**
-     * GET /attendee/{attendeeID} : Get an attendee by ID.
+     * GET /attendee/{attendeeId} : Get an attendee by ID.
      *
-     * @param attendeeID  (required)
+     * @param attendeeId  (required)
      * @return successful operation (status code 200)
      *         or Invalid attendee ID was provided. (status code 400)
      *         or Unauthorized access. (status code 401)
@@ -154,11 +156,11 @@ public interface AttendeeApi {
     )
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/attendee/{attendeeID}",
+        value = "/attendee/{attendeeId}",
         produces = { "application/json" }
     )
     default ResponseEntity<Attendee> getAttendeeByID(
-        @Parameter(name = "attendeeID", description = "", required = true, in = ParameterIn.PATH) @PathVariable("attendeeID") Long attendeeID
+        @Parameter(name = "attendeeId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("attendeeId") Long attendeeId
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
@@ -177,15 +179,16 @@ public interface AttendeeApi {
     /**
      * GET /attendee : Returns all attendees, optionally filtered by an event, roles, or track.
      *
-     * @param eventID Event identifier filter. (optional)
+     * @param eventId Event identifier filter. (optional)
      * @param roles Role filters (optional)
-     * @param trackID Track identifier filter (optional)
+     * @param trackId Track identifier filter (optional)
      * @return successful operation (status code 200)
      *         or Invalid filters were provided. (status code 400)
      *         or Unauthorized access. (status code 401)
+     *         or No such Attendee instance can be found. (status code 404)
      */
     @Operation(
-        operationId = "getInvitesByEventID",
+        operationId = "getFilteredAttendees",
         summary = "Returns all attendees, optionally filtered by an event, roles, or track.",
         tags = { "Event Management", "Track Management" },
         responses = {
@@ -193,7 +196,8 @@ public interface AttendeeApi {
                 @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Attendee.class)))
             }),
             @ApiResponse(responseCode = "400", description = "Invalid filters were provided."),
-            @ApiResponse(responseCode = "401", description = "Unauthorized access.")
+            @ApiResponse(responseCode = "401", description = "Unauthorized access."),
+            @ApiResponse(responseCode = "404", description = "No such Attendee instance can be found.")
         },
         security = {
             @SecurityRequirement(name = "api_key")
@@ -204,10 +208,10 @@ public interface AttendeeApi {
         value = "/attendee",
         produces = { "application/json" }
     )
-    default ResponseEntity<List<Attendee>> getInvitesByEventID(
-        @Parameter(name = "eventID", description = "Event identifier filter.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "eventID", required = false) Long eventID,
+    default ResponseEntity<List<Attendee>> getFilteredAttendees(
+        @Parameter(name = "eventId", description = "Event identifier filter.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "eventId", required = false) Long eventId,
         @Parameter(name = "roles", description = "Role filters", in = ParameterIn.QUERY) @Valid @RequestParam(value = "roles", required = false) List<Role> roles,
-        @Parameter(name = "trackID", description = "Track identifier filter", in = ParameterIn.QUERY) @Valid @RequestParam(value = "trackID", required = false) Long trackID
+        @Parameter(name = "trackId", description = "Track identifier filter", in = ParameterIn.QUERY) @Valid @RequestParam(value = "trackId", required = false) Long trackId
     ) {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {

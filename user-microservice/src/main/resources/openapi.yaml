@@ -37,21 +37,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Attendee'
+        '400':
+          description: Invalid attendee object was provided; or, provided identifiers lead to nonexistent objects.
         '401':
           description: Unauthorized access.
         '409':
-          description: Attendee already exists.
+          description: Attendance already exists.
       security:
         - api_key: [ ]
-
     get:
       tags:
         - Event Management
         - Track Management
       summary: Returns all attendees, optionally filtered by an event, roles, or track.
-      operationId: getInvitesByEventID
+      operationId: getFilteredAttendees
       parameters:
-        - name: eventID
+        - name: eventId
           required: false
           in: query
           description: Event identifier filter.
@@ -66,7 +67,7 @@ paths:
             type: array
             items:
               $ref: '#/components/schemas/Role'
-        - name: trackID
+        - name: trackId
           required: false
           in: query
           description: Track identifier filter
@@ -86,6 +87,8 @@ paths:
           description: Invalid filters were provided.
         '401':
           description: Unauthorized access.
+        '404':
+          description: No such Attendee instance can be found.
       security:
         - api_key: []
     put:
@@ -116,14 +119,14 @@ paths:
           description: No attendee with the provided ID exists.
       security:
         - api_key: [ ]
-  /attendee/{attendeeID}:
+  /attendee/{attendeeId}:
     get:
       tags:
         - Event Management
       summary: Get an attendee by ID.
       operationId: getAttendeeByID
       parameters:
-        - name: attendeeID
+        - name: attendeeId
           required: true
           in: path
           schema:
@@ -152,7 +155,7 @@ paths:
       description: This operation can only be performed by someone with an equal or higher role in the given event or track than the attendee's role.
       operationId: deleteAttendee
       parameters:
-        - name: attendeeID
+        - name: attendeeId
           required: true
           in: path
           schema:
