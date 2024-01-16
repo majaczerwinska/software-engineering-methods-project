@@ -86,10 +86,9 @@ public class AttendeeController implements AttendeeApi {
                     .header("message",  "Invalid attendee object was provided.")
                     .build();
         }
-        if (userService.getUserById(attendee.getId()) == null                   // Confirm that the user exists
-               || eventService.getEventById(attendee.getEventId()) == null      // Confirm that the event exists
+        if (eventService.getEventById(attendee.getEventId()) == null      // Confirm that the event exists
                || (attendee.getTrackId() != null                                // If the identifier is supplied
-               && trackService.trackExistById(attendee.getTrackId()))) {        // confirm that the track exists
+               && !trackService.trackExistById(attendee.getTrackId()))) {        // confirm that the track exists
             // Otherwise it is a bad request.
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -107,7 +106,7 @@ public class AttendeeController implements AttendeeApi {
                             attendee.getTrackId(),
                             RoleTitle.valueOf(attendee.getRole().name()))
                     .toModel();
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .header("message",  "Attendance already exists.")
@@ -256,8 +255,6 @@ public class AttendeeController implements AttendeeApi {
 
         if (attendee == null                             // Confirm that the Attendee object was parsed correctly
                 || attendee.getId() == null              // Confirm correct parsing of attendance identifier
-                || attendee.getUserId() == null          // Confirm correct parsing of user identifier
-                || attendee.getEventId() == null         // Confirm correct parsing of event identifier
                 || attendee.getRole() == null) {         // Confirm correct parsing of the attendance role
             // Otherwise it is a bad request.
             return ResponseEntity
@@ -265,7 +262,7 @@ public class AttendeeController implements AttendeeApi {
                     .header("message",  "Invalid attendee object was provided.")
                     .build();
         }
-        if (attendeeService.exists(attendee.getId())) { // confirm that the Attendance exists
+        if (!attendeeService.exists(attendee.getId())) { // confirm that the Attendance exists
             // Otherwise it is a bad request.
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
