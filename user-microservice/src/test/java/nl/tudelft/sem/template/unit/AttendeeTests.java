@@ -1,8 +1,10 @@
 package nl.tudelft.sem.template.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Objects;
@@ -17,6 +19,7 @@ import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.enums.RoleTitle;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
 
 public class AttendeeTests {
 
@@ -34,8 +37,11 @@ public class AttendeeTests {
     @BeforeAll
     public static void setup() {
         user = new AppUser();
-        track = new Track();
-        event = new Event();
+        track = new Track(2L);
+        event = new Event(3L);
+
+        user.setId(1L);
+
 
         nullAttendee = new Attendee(
                 0L,
@@ -114,6 +120,8 @@ public class AttendeeTests {
         String str = conv.convertToDatabaseColumn(cnf);
         assertEquals(str, "true");
         assertTrue(conv.convertToEntityAttribute(str).isConfirmed());
+        assertFalse(conv.convertToEntityAttribute("false").isConfirmed());
+        assertNull(conv.convertToDatabaseColumn(null));
     }
 
     @Test
@@ -123,6 +131,25 @@ public class AttendeeTests {
         Role role = conv.convertToEntityAttribute(RoleTitle.SUB_REVIEWER.name());
         assertEquals(role.getRoleTitle(), RoleTitle.SUB_REVIEWER);
         assertEquals(conv.convertToDatabaseColumn(role), "SUB_REVIEWER");
+    }
+
+    @Test
+    void toModelTest() {
+        var model = setterAttendee.toModel();
+        assertNotNull(model);
+        assertTrue(model instanceof nl.tudelft.sem.template.model.Attendee);
+        assertEquals(model.getId(), setterAttendee.getId());
+        assertEquals(model.getUserId(), setterAttendee.getUser().getId());
+        assertEquals(model.getEventId(), setterAttendee.getEvent().getId());
+        assertEquals(model.getTrackId(), setterAttendee.getTrack().getId());
+        assertEquals(model.getRole().name(), setterAttendee.getRole().getRoleTitle().name());
+        var attendeeTemp = new Attendee(
+                1L,
+                new Role(RoleTitle.ATTENDEE),
+                new Confirmation(false),
+                event, null, user);
+
+        assertNull(attendeeTemp.toModel().getTrackId());
     }
 
 }

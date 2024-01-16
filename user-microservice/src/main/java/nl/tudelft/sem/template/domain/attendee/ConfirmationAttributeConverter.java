@@ -8,6 +8,9 @@ import javax.persistence.AttributeConverter;
 public class ConfirmationAttributeConverter implements AttributeConverter<Confirmation, String> {
     @Override
     public String convertToDatabaseColumn(Confirmation attribute) {
+        if (attribute == null) {
+            return null;
+        }
         return (attribute.isConfirmed()) ? "true" : "false";
     }
 

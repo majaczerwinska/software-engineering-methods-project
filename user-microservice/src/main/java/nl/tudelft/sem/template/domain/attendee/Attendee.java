@@ -49,13 +49,13 @@ public class Attendee extends HasEvents {
     @Convert(converter = ConfirmationAttributeConverter.class)
     private Confirmation confirmation;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Event event;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     private Track track;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private AppUser user;
 
     public Attendee(Long id) {

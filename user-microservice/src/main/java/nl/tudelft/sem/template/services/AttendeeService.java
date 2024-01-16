@@ -221,7 +221,9 @@ public class AttendeeService {
     @Transactional
     public Attendee modifyTitle(Long id, RoleTitle role)
             throws NoSuchElementException {
-
+        if (id == null) {
+            throw new NoSuchElementException("No such attendance is found; cannot be modified.");
+        }
         Optional<Attendee> retrievedAttendance = attendeeRepository.findById(id);
 
         // Exception handling for when the repository can find the instance
@@ -264,8 +266,9 @@ public class AttendeeService {
                     null, true);
 
             // Remove irrelevant attendances.
-            executorAttendees.removeIf((x) -> x.getTrack() != null
-                    && !Objects.equals(x.getTrack().getId(), subject.getTrack().getId()));
+            executorAttendees.removeIf((x) -> (subject.getTrack() == null && x.getTrack() != null)
+                    || (x.getTrack() != null
+                    && !Objects.equals(x.getTrack().getId(), subject.getTrack().getId())));
 
             if (executorAttendees.isEmpty()) {
                 return false;
