@@ -45,7 +45,7 @@ public class EventService {
      * Creates a new event.
      */
     @Transactional
-    public Event createEvent(LocalDate startDate, LocalDate endDate, boolean isCancelled, String name,
+    public Event createEvent(LocalDate startDate, LocalDate endDate, Boolean isCancelled, String name,
         String description, String email) {
 
         Event event = new Event(startDate, endDate, new IsCancelled(isCancelled), new EventName(name),
@@ -85,7 +85,33 @@ public class EventService {
      * @return the corresponding event.
      */
     @Transactional
-    public Event getEventById(long id) {
+    public Event getEventById(Long id) {
         return eventRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * Checks whether an event with the given id exists.
+     *
+     * @param id event id
+     * @return true iff an event exists, false otherwise
+     */
+    @Transactional
+    public boolean eventExistsById(Long id) {
+        return eventRepository.existsById(id);
+    }
+
+    /**
+     * Deletes the event with the given id.
+     *
+     * @param id event id
+     * @return true if event was deleted successfully, false otherwise
+     */
+    @Transactional
+    public boolean deleteEvent(Long id) {
+        if (eventRepository.existsById(id)) {
+            eventRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
