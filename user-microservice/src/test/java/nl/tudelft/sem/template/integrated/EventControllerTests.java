@@ -23,6 +23,7 @@ import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserRepository;
 import nl.tudelft.sem.template.enums.RoleTitle;
 import nl.tudelft.sem.template.model.Event;
+import nl.tudelft.sem.template.services.InvitationService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,6 +60,8 @@ public class EventControllerTests {
     @Autowired
     @InjectMocks
     private transient EventController eventController;
+    @Autowired
+    private transient InvitationService invitationService;
 
     static nl.tudelft.sem.template.domain.event.Event event;
     static AppUser appUser;
@@ -95,8 +98,10 @@ public class EventControllerTests {
         assertEquals(event.getName().toString(), responseEvent.getName());
         assertEquals(event.getDescription().toString(), responseEvent.getDescription());
 
-        Attendee attendee = attendeeRepository.findByUserIdAndEventIdAndTrackIdAndConfirmation(appUser.getId(),
-                responseEvent.getId(), null, new Confirmation(true)).get();
+        Attendee attendee = invitationService.getAttendee(appUser.getId(),
+                responseEvent.getId(),
+                null,
+                true);
         assertEquals(attendee.getRole().getRoleTitle(), RoleTitle.GENERAL_CHAIR);
     }
 

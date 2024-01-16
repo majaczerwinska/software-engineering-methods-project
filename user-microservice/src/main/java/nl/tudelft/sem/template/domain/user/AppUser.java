@@ -160,7 +160,7 @@ public class AppUser extends HasEvents {
             return false;
         }
         AppUser appUser = (AppUser) o;
-        return id == (appUser.id);
+        return Objects.equals(id, appUser.id);
     }
 
     @Override

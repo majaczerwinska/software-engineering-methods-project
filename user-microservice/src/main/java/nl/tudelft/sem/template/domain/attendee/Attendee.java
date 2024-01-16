@@ -45,17 +45,17 @@ public class Attendee extends HasEvents {
     private Role role;
 
     // Indicates whether the conferred role was accepted.
-    @Column(name = "confirmed", nullable = false)
+    @Column(name = "confirmation", nullable = false)
     @Convert(converter = ConfirmationAttributeConverter.class)
     private Confirmation confirmation;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Event event;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     private Track track;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private AppUser user;
 
     public Attendee(Long id) {
@@ -121,5 +121,24 @@ public class Attendee extends HasEvents {
      */
     public void recordLog(Object object) {
         this.recordThat(object);
+    }
+
+
+    /**
+     * A converter from the Domain representation to the API Model representation.
+     *
+     * @return An API model Attendee instance.
+     */
+    public nl.tudelft.sem.template.model.Attendee toModel() {
+        nl.tudelft.sem.template.model.Attendee model = new nl.tudelft.sem.template.model.Attendee();
+        model.setId(this.id);
+        model.setUserId(this.getUser().getId());
+        model.setEventId(this.getEvent().getId());
+        if (this.track != null) {
+            model.setTrackId(this.track.getId());
+        }
+        model.setRole(nl.tudelft.sem.template.model.Role.valueOf(this.role.getRoleTitle().name()));
+
+        return model;
     }
 }

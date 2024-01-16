@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets Role
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-16T15:18:15.746950500+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-16T16:50:14.084304700+01:00[Europe/Berlin]")
 public enum Role {
   
   GENERAL_CHAIR("general_chair"),

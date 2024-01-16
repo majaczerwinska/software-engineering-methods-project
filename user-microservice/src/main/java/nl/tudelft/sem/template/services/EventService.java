@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.services;
 
 import java.time.LocalDate;
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.attendee.AttendeeRepository;
@@ -12,7 +11,6 @@ import nl.tudelft.sem.template.domain.event.EventDescription;
 import nl.tudelft.sem.template.domain.event.EventName;
 import nl.tudelft.sem.template.domain.event.EventRepository;
 import nl.tudelft.sem.template.domain.event.IsCancelled;
-import nl.tudelft.sem.template.domain.track.Track;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.UserRepository;
@@ -77,5 +75,17 @@ public class EventService {
         event.setEventDescription(new EventDescription(description));
         Event returnedEvent = eventRepository.save(event);
         return returnedEvent;
+    }
+
+
+    /**
+     * Retrieves an event.
+     *
+     * @param id the event identifier
+     * @return the corresponding event.
+     */
+    @Transactional
+    public Event getEventById(long id) {
+        return eventRepository.findById(id).orElse(null);
     }
 }
