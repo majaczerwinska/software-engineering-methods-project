@@ -19,6 +19,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
+import nl.tudelft.sem.template.enums.LogType;
+import nl.tudelft.sem.template.logs.LogFactory;
+import nl.tudelft.sem.template.logs.event.EventLogFactory;
+import nl.tudelft.sem.template.logs.user.UserLog;
+import nl.tudelft.sem.template.logs.user.UserLogFactory;
 import nl.tudelft.sem.template.model.User;
 
 
@@ -166,18 +171,22 @@ public class AppUser extends HasEvents {
 
     public void setAffiliation(UserAffiliation affiliation) {
         this.affiliation = affiliation;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerUserAffiliationChange(this);
     }
 
     public void setLink(Link link) {
         this.link = link;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerUserLinkChange(this);
     }
 
     public void setCommunication(Communication communication) {
         this.communication = communication;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerUserCommunicationChange(this);
     }
 
     public void setAttendance(List<Attendee> attendance) {
         this.attendance = attendance;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerUserAttendanceChange(this);
     }
 
     /**
