@@ -148,6 +148,38 @@ public class AppUser extends HasEvents {
         this.communication = communication;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setEmail(Email email) {
+        this.email = email;
+    }
+
+    public void setFirstName(Name firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(Name lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setAffiliation(UserAffiliation affiliation) {
+        this.affiliation = affiliation;
+    }
+
+    public void setLink(Link link) {
+        this.link = link;
+    }
+
+    public void setCommunication(Communication communication) {
+        this.communication = communication;
+    }
+
+    public void setAttendance(List<Attendee> attendance) {
+        this.attendance = attendance;
+    }
+
     /**
      * Equality is only based on the identifier.
      */
