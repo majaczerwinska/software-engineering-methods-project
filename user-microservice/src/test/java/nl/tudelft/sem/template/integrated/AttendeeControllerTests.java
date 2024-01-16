@@ -90,7 +90,7 @@ public class AttendeeControllerTests {
 
         event = new nl.tudelft.sem.template.domain.event.Event(
                 startDate, endDate, new IsCancelled(false), new EventName("name"), new EventDescription("desc"));
-        user = new AppUser(new Email("test@test.net"), new Name("name"));
+        user = new AppUser(new Email("test@test.net"), new Name("name"), new Name("name"));
         track = new Track(new Title("title"), new Description("desc"), new PaperRequirement(PaperType.FULL_PAPER),
                 date0, date1, event);
 
