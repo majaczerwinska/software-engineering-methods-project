@@ -63,7 +63,7 @@ public class RoleServiceTests {
     @BeforeEach
     public void setup() {
         userEmail = new Email("test@test.net");
-        user = new AppUser(userEmail, new Name("name"));
+        user = new AppUser(userEmail, new Name("name"), new Name("name"));
         eventId = 33L;
         trackId = 520L;
         role = new Attendee(new Role(RoleTitle.PC_CHAIR), new Confirmation(true),

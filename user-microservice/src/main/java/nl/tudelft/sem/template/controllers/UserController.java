@@ -1,94 +1,133 @@
 package nl.tudelft.sem.template.controllers;
 
+import java.util.NoSuchElementException;
+import javax.persistence.EntityExistsException;
+import javax.transaction.Transactional;
+import javax.validation.Valid;
+import nl.tudelft.sem.template.api.UserApi;
+import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.user.AppUser;
+import nl.tudelft.sem.template.domain.user.Email;
+import nl.tudelft.sem.template.model.User;
 import nl.tudelft.sem.template.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-
 /**
  * This controller is responsible for methods related to the User entity.
- *
  */
 @RestController
-public class UserController {
-
+public class UserController implements UserApi {
     private final transient UserService userService;
+    private final transient AuthManager authManager;
 
     /**
      * Instantiates a new User controller.
      *
      * @param userService used to manage user services
+     * @param authManager Used for authentication-related checks.
      */
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthManager authManager) {
         this.userService = userService;
+        this.authManager = authManager;
+    }
+
+    /**
+     * Checks whether a user with the given id exists, retrieves it if yes.
+     *
+     * @param userId - id of the to be found user
+     * @return - bad request if invalid id, unauthorized access if expired token,
+     *           not found if user not found, appUser if user found
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<User> getAccountByID(@PathVariable("userID") Long userId) {
+        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (!userService.userExistsById(userId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(userService.getUserById(userId).toModelUser());
+    }
+
+    /**
+     * Checks whether a user with the given email address exists, retrieves it if yes.
+     *
+     * @param email - email of the to be found user
+     * @return - bad request if invalid email, unauthorized access if expired token,
+     *           not found if user not found, appUser if user found
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<User> getAccountByEmail(@PathVariable("email") String email) {
+        if (!email.contains("@")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        AppUser user = userService.getUserByEmail(new Email(authManager.getEmail()));
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (!userService.userExistsByEmail(new Email(email))) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(userService.getUserByEmail(new Email(email)).toModelUser());
     }
 
     /**
      * Create a new user account.
      *
-     * @param appUser - the RequestBody to create a new User account with
+     * @param user - the RequestBody to create a new User account with
      * @return ResponseEntity of new User account
      */
-    @PostMapping("/user")
-    public ResponseEntity<AppUser> createUser(@RequestBody AppUser appUser) {
-        // Check if the appUser is null or has missing required fields
-        if (appUser == null || appUser.getEmail() == null) {
-            return ResponseEntity.badRequest().build();
+    @Override
+    @Transactional
+    public ResponseEntity<User> createAccount(@RequestBody User user) {
+        try {
+            if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
+            if (user == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
+            }
+            userService.createUser(new AppUser(user));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build(); // 400
+        } catch (EntityExistsException e) {
+            return ResponseEntity.status(409).build(); // 409, user already exists
         }
+        return ResponseEntity.ok(user); //200
 
-        // Check if the user already exists
-        if (userService.userExistsByEmail(appUser.getEmail())) {
-            return ResponseEntity.status(409).build(); // HTTP 409 User already exists
-        }
-
-        // TODO: check if the request is authorized, i don't know how to do this
-
-        AppUser createdUser = userService.createUser(appUser);
-        return ResponseEntity.ok(createdUser);
     }
 
     /**
      * This method updates an existing User Account.
      *
      * @param updatedUser - user account to be updated
-     *
      * @return responseEntity of method
      */
-    @PutMapping("/user")
-    public ResponseEntity<AppUser> updateUser(@RequestBody AppUser updatedUser) {
+    @Override
+    @Transactional
+    public ResponseEntity<Void> updateAccount(@RequestBody User updatedUser) {
         // Check if the updatedUser is null or has missing required fields
-        if (updatedUser == null || updatedUser.getId() <= 0) {
-            return ResponseEntity.badRequest().build();
+        try {
+            if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
+            userService.updateUser(new AppUser(updatedUser));
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404
         }
-
-        // Check if the user exists
-        AppUser existingUser = userService.getUserById(updatedUser.getId());
-        if (existingUser == null) {
-            return ResponseEntity.status(404).build(); // HTTP 404 User not found
-        }
-
-        // TODO: Check if the request is authorized.
-
-        // Update the user properties
-        existingUser.setName(updatedUser.getName());
-        existingUser.setAffiliation(updatedUser.getAffiliation());
-        existingUser.setCommunication(updatedUser.getCommunication());
-        existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setLink(updatedUser.getLink());
-
-        // Save the updated user to the database
-        AppUser updatedUserResult = userService.updateUser(existingUser);
-
-        return ResponseEntity.ok(updatedUserResult);
-
     }
 
     /**
@@ -97,34 +136,28 @@ public class UserController {
      * @param userId - UserID of the user account that needs to be deleted
      * @return response entity of the executed method
      */
-    @DeleteMapping("/user/{userID}")
-    public ResponseEntity<AppUser> deleteUser(@PathVariable("userID") int userId) {
-        if (userId <= 0) {
-            return ResponseEntity.badRequest().build();
+    @Override
+    @Transactional
+    public ResponseEntity<Void> deleteAccount(@PathVariable("userID") Long userId) {
+        try {
+            Email email = new Email(authManager.getEmail());
+            if (!userService.userExistsByEmail(email)) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
+            AppUser user = userService.getUserByEmail(email);
+            if (user.getId() != userId) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
+            }
+            userService.deleteUser(userId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404
         }
 
-        // Check if the user exists
-        AppUser existingUser = userService.getUserById(userId);
-        if (existingUser == null) {
-            return ResponseEntity.status(404).build(); // HTTP 404 User not found
-        }
-
-        // TODO: Check if the request is authorized.
-
-        // Delete the user from the repository
-        userService.deleteUserById(userId);
-
-        return ResponseEntity.noContent().build(); // HTTP 204 No Content
     }
 
-    //
-    //    @GetMapping("/user/{userID}")
-    //    public ResponseEntity<AppUser> getUserById(@PathVariable("userID") int userID){
-    //    }
-    //
-    //    @GetMapping("user/byEmail/{email}")
-    //    public ResponseEntity<AppUser> getUserByEmail(@PathVariable("email") String email){
-    //
-    //    }
-
 }
+
+
