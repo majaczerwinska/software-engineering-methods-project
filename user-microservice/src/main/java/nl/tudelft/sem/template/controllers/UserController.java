@@ -3,7 +3,6 @@ package nl.tudelft.sem.template.controllers;
 import java.util.NoSuchElementException;
 import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
-import javax.validation.Valid;
 import nl.tudelft.sem.template.api.UserApi;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.domain.user.AppUser;
@@ -13,7 +12,6 @@ import nl.tudelft.sem.template.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -91,12 +89,6 @@ public class UserController implements UserApi {
     @Transactional
     public ResponseEntity<User> createAccount(@RequestBody User user) {
         try {
-            if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
-            }
-            if (user == null) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
-            }
             userService.createUser(new AppUser(user));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build(); // 400
@@ -159,5 +151,3 @@ public class UserController implements UserApi {
     }
 
 }
-
-
