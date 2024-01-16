@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -36,7 +38,8 @@ public class AppUser extends HasEvents {
      * Identifier for the application user.
      */
     @Id
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -71,9 +74,17 @@ public class AppUser extends HasEvents {
         this.id = id;
     }
 
-    public AppUser(Email email, Name firstName) {
+    /**
+     * 3-argument constructor.
+     *
+     * @param email email
+     * @param firstName firstName
+     * @param lastName lastName
+     */
+    public AppUser(Email email, Name firstName, Name lastName) {
         this.email = email;
         this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     /**
@@ -102,7 +113,7 @@ public class AppUser extends HasEvents {
      * @param user model User to convert into AppUser
      */
     public AppUser(User user) {
-        if (user == null || user.getId() < 0 || !user.getEmail().contains("@")) {
+        if (user == null || !user.getEmail().contains("@")) {
             throw new IllegalArgumentException("Invalid user data");
         }
         this.id = user.getId();

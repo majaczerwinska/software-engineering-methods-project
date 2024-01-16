@@ -121,9 +121,6 @@ public class UserController implements UserApi {
             if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }
-            if (updatedUser == null) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
-            }
             userService.updateUser(new AppUser(updatedUser));
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
         } catch (IllegalArgumentException e) {

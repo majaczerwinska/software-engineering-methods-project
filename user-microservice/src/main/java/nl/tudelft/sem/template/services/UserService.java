@@ -34,10 +34,7 @@ public class UserService {
             throw new EntityExistsException("User already exists");
         }
 
-        // Save the user to the database
-        AppUser createdUser = userRepository.save(appUser);
-
-        return createdUser;
+        return userRepository.save(appUser);
     }
 
     /**
@@ -47,14 +44,14 @@ public class UserService {
      * @return - user with this id if exists, else null
      */
     public AppUser getUserById(long userId) {
-        if (userRepository.findById(String.valueOf(userId)).isPresent()) {
-            return userRepository.findById(String.valueOf(userId)).get();
+        if (userRepository.findById(userId).isPresent()) {
+            return userRepository.findById(userId).get();
         }
         return null;
     }
 
     public boolean userExistsById(long userId) {
-        return userRepository.existsById(String.valueOf(userId));
+        return userRepository.existsById(userId);
     }
 
     /**
@@ -109,7 +106,7 @@ public class UserService {
         if (getUserById(userId) == null) {
             throw new NoSuchElementException("User not found");
         }
-        userRepository.deleteById(String.valueOf(userId));
+        userRepository.deleteById(userId);
     }
 
     /**
@@ -124,7 +121,7 @@ public class UserService {
         }
         // If the id of the updatedUser does not correspond to an existing user,
         // throw an IllegalArgumentException.
-        AppUser existingUser = userRepository.findById(String.valueOf(updatedUser.getId()))
+        AppUser existingUser = userRepository.findById(updatedUser.getId())
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
         // Update the user properties

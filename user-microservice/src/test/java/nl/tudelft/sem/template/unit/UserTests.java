@@ -113,7 +113,7 @@ public class UserTests {
 
     @Test
     public void twoArgConstructorTest() {
-        AppUser user5 = new AppUser(new Email("email@gmail.com"), new Name("Pete"));
+        AppUser user5 = new AppUser(new Email("email@gmail.com"), new Name("Pete"), new Name("Peterson"));
         assertNotNull(user5);
         assertEquals("email@gmail.com", user5.getEmail().toString());
         assertEquals("Pete", user5.getFirstName().toString());
@@ -136,8 +136,6 @@ public class UserTests {
 
         User nullUser = null;
         assertThrows(IllegalArgumentException.class, () -> new AppUser(nullUser));
-        userModel.setId(-1L);
-        assertThrows(IllegalArgumentException.class, () -> new AppUser(userModel));
         userModel.setId(1L);
         userModel.setEmail("noEmail");
         assertThrows(IllegalArgumentException.class, () -> new AppUser(userModel));

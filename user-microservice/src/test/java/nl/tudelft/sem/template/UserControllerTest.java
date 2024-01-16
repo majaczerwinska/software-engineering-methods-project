@@ -207,20 +207,6 @@ public class UserControllerTest {
     }
 
     @Test
-    public void updateAccountInvalidUser() {
-        appUser.setId(-1L);
-        userRepository.save(appUser);
-        User modelUser = appUser.toModelUser();
-
-        Email email = appUser.getEmail();
-        when(authManager.getEmail()).thenReturn(email.toString());
-        when(userService.userExistsByEmail(eq(email))).thenReturn(true);
-
-        assertEquals(ResponseEntity.status(HttpStatus.BAD_REQUEST).build(),
-                userController.updateAccount(modelUser));
-    }
-
-    @Test
     public void updateAccountUserNonExistent() {
         Email email = appUser.getEmail();
         when(authManager.getEmail()).thenReturn(email.toString());

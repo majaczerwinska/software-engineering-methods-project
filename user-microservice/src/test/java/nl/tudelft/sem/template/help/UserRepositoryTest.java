@@ -93,7 +93,7 @@ public class UserRepositoryTest implements UserRepository {
     }
 
     @Override
-    public List<AppUser> findAllById(Iterable<String> strings) {
+    public List<AppUser> findAllById(Iterable<Long> longs) {
         return null;
     }
 
@@ -108,10 +108,10 @@ public class UserRepositoryTest implements UserRepository {
     }
 
     @Override
-    public void deleteById(String s) {
+    public void deleteById(Long s) {
         AppUser appUser = null;
         for (AppUser user : users) {
-            if (String.valueOf(user.getId()).equals(s)) {
+            if (user.getId() == s) {
                 appUser = user;
             }
         }
@@ -147,31 +147,20 @@ public class UserRepositoryTest implements UserRepository {
     }
 
     @Override
-    public Optional<AppUser> findById(Long id) {
+    public Optional<AppUser> findById(Long s) {
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId() == id) {
+            if (users.get(i).getId() == s) {
                 AppUser user = users.get(i);
                 return Optional.ofNullable(user);
             }
         }
-        return Optional.ofNullable(null);
+        return Optional.empty();
     }
 
     @Override
-    public Optional<AppUser> findById(String s) {
+    public boolean existsById(Long s) {
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId() == Long.parseLong(s)) {
-                AppUser user = users.get(i);
-                return Optional.ofNullable(user);
-            }
-        }
-        return Optional.ofNullable(null);
-    }
-
-    @Override
-    public boolean existsById(String s) {
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId() == Integer.parseInt(s)) {
+            if (users.get(i).getId() == s) {
                 return true;
             }
         }
@@ -199,7 +188,7 @@ public class UserRepositoryTest implements UserRepository {
     }
 
     @Override
-    public AppUser getOne(String s) {
+    public AppUser getOne(Long s) {
         return null;
     }
 

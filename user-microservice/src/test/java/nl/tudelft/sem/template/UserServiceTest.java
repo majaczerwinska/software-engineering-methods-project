@@ -62,9 +62,13 @@ public class UserServiceTest {
     @Test
     public void createValidUser() {
         AppUser user = userService.createUser(appUser);
-
         userRepository.save(appUser);
-        assertEquals(userRepository.findById(String.valueOf(1L)).get(), user);
+        if (userRepository.findById(1L).isPresent()) {
+            assertEquals(userRepository.findById(1L).get(), user);
+        } else {
+            assertEquals(0, 1);
+        }
+
     }
 
     @Test
@@ -92,7 +96,12 @@ public class UserServiceTest {
     @Test
     public void getValidUser() {
         userRepository.save(appUser);
-        assertEquals(userRepository.findById(String.valueOf(1L)).get(), userService.getUserById(1L));
+        if (userRepository.findById(1L).isPresent()) {
+            assertEquals(userRepository.findById(1L).get(), userService.getUserById(1L));
+        } else {
+            assertEquals(0, 1);
+        }
+
     }
 
     @Test
