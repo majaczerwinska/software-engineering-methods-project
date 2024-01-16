@@ -64,8 +64,7 @@ public class TrackController implements TrackApi {
     @Transactional
     public ResponseEntity<Track> addTrack(Track track) {
         try {
-            if (!roleService.hasPermission(userService, authManager, attendeeService,
-                    track.getEventId(), track.getId(), 0)) {
+            if (!roleService.hasPermission(authManager, track.getEventId(), track.getId(), 0)) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }
             trackService.createTrack(track.getTitle(), track.getDescription(), track.getSubmitDeadline(),
@@ -86,8 +85,7 @@ public class TrackController implements TrackApi {
     @Transactional
     public ResponseEntity<Void> updateTrack(@Valid @RequestBody(required = false) Track track) {
         try {
-            if (!roleService.hasPermission(userService, authManager, attendeeService,
-                    track.getEventId(), track.getId(), 1)) {
+            if (!roleService.hasPermission(authManager, track.getEventId(), track.getId(), 1)) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }
             trackService.updateTrack(track.getId(), track.getTitle(), track.getDescription(), track.getSubmitDeadline(),
@@ -113,7 +111,7 @@ public class TrackController implements TrackApi {
             if (trackId == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
             }
-            if (!roleService.hasPermission(userService, authManager, attendeeService,
+            if (!roleService.hasPermission(authManager,
                     trackService.getTrackById(trackId.longValue()).getEvent().getId(), trackId.longValue(), 0)) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }

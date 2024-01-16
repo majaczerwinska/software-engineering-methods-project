@@ -84,9 +84,7 @@ public class TrackControllerTests {
     public void addTrackWithoutPermission() {
         // Mock
         when(roleService.hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(0)
@@ -100,9 +98,7 @@ public class TrackControllerTests {
 
         // Verify
         verify(roleService, times(1)).hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(0));
@@ -112,9 +108,7 @@ public class TrackControllerTests {
     public void addTrackInvalidTrack() {
         // Mock
         when(roleService.hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(0)
@@ -133,9 +127,7 @@ public class TrackControllerTests {
 
         // Verify
         verify(roleService, times(1)).hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(0));
@@ -148,9 +140,7 @@ public class TrackControllerTests {
     public void addTrackSuccess() {
         // Mock
         when(roleService.hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(0)
@@ -169,9 +159,7 @@ public class TrackControllerTests {
 
         // Verify
         verify(roleService, times(1)).hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(0));
@@ -184,9 +172,7 @@ public class TrackControllerTests {
     public void updateTrackWithoutPermission() {
         // Mock
         when(roleService.hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(1)
@@ -200,9 +186,7 @@ public class TrackControllerTests {
 
         // Verify
         verify(roleService, times(1)).hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(1));
@@ -212,9 +196,7 @@ public class TrackControllerTests {
     public void updateTrackInvalidTrack() {
         // Mock
         when(roleService.hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(1)
@@ -232,9 +214,7 @@ public class TrackControllerTests {
 
         // Verify
         verify(roleService, times(1)).hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(1));
@@ -247,9 +227,7 @@ public class TrackControllerTests {
     public void updateTrackNonExistTrack() {
         // Mock
         when(roleService.hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(1)
@@ -267,9 +245,7 @@ public class TrackControllerTests {
 
         // Verify
         verify(roleService, times(1)).hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(1));
@@ -282,9 +258,7 @@ public class TrackControllerTests {
     public void updateTrackSuccess() {
         // Mock
         when(roleService.hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(1)
@@ -302,9 +276,7 @@ public class TrackControllerTests {
 
         // Verify
         verify(roleService, times(1)).hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(modelTrack.getEventId()),
                 eq(modelTrack.getId()),
                 eq(1));
@@ -317,9 +289,7 @@ public class TrackControllerTests {
     public void deleteTrackWithoutPermission() {
         // Mock
         when(roleService.hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0)
@@ -335,9 +305,7 @@ public class TrackControllerTests {
 
         // Verify
         verify(roleService, times(1)).hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0));
@@ -351,9 +319,7 @@ public class TrackControllerTests {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         // Verify
         verify(roleService, times(0)).hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0));
@@ -363,9 +329,7 @@ public class TrackControllerTests {
     public void deleteTrackInvalidTrackId() {
         // Mock
         when(roleService.hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0)
@@ -381,9 +345,7 @@ public class TrackControllerTests {
 
         // Verify
         verify(roleService, times(1)).hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0));
@@ -395,9 +357,7 @@ public class TrackControllerTests {
     public void deleteTrackNonExistTrack() {
         // Mock
         when(roleService.hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0)
@@ -413,9 +373,7 @@ public class TrackControllerTests {
 
         // Verify
         verify(roleService, times(1)).hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0));
@@ -427,9 +385,7 @@ public class TrackControllerTests {
     public void deleteTrackSuccess() {
         // Mock
         when(roleService.hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0)
@@ -445,9 +401,7 @@ public class TrackControllerTests {
 
         // Verify
         verify(roleService, times(1)).hasPermission(
-                any(UserService.class),
                 any(AuthManager.class),
-                any(AttendeeService.class),
                 eq(domainTrack.getEvent().getId()),
                 eq(33L),
                 eq(0));

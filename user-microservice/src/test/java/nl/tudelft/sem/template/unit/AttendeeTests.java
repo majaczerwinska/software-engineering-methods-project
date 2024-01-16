@@ -125,4 +125,23 @@ public class AttendeeTests {
         assertEquals(conv.convertToDatabaseColumn(role), "SUB_REVIEWER");
     }
 
+    @Test
+    void confirmationEqualsTests() {
+        Confirmation confirmationTrue = new Confirmation(true);
+        Confirmation confirmationTrueCopy = new Confirmation(true);
+        Confirmation confirmationFalse = new Confirmation(false);
+
+        assertEquals(confirmationTrue, confirmationTrue);
+        assertEquals(confirmationTrue, confirmationTrueCopy);
+        assertNotEquals(confirmationTrue, confirmationFalse);
+        assertNotEquals(confirmationTrue, null);
+        assertNotEquals(confirmationTrue, true);
+    }
+
+    @Test
+    void confirmationHashCodeTest() {
+        Confirmation confirmation = new Confirmation(true);
+        assertEquals(confirmation.hashCode(), Objects.hash(true));
+    }
+
 }

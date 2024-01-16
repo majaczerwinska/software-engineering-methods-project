@@ -9,7 +9,7 @@ import nl.tudelft.sem.template.logs.Log;
  */
 public abstract class EventLog implements Log<Event> {
 
-    private transient Event subject;
+    transient Event subject;
 
     @Override
     public final LogType getLogType() {

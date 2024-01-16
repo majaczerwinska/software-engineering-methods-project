@@ -5,14 +5,17 @@ import javax.persistence.AttributeConverter;
 /**
  * JPA Converter for the IsCancelled value object.
  */
-public class IsCancelledAttributeConverter implements AttributeConverter<IsCancelled, String> {
+public class IsCancelledAttributeConverter implements AttributeConverter<IsCancelled, Boolean> {
     @Override
-    public String convertToDatabaseColumn(IsCancelled attribute) {
-        return (attribute.getCancelStatus()) ? "true" : "false";
+    public Boolean convertToDatabaseColumn(IsCancelled attribute) {
+        if (attribute == null) {
+            return null;
+        }
+        return attribute.getCancelStatus();
     }
 
     @Override
-    public IsCancelled convertToEntityAttribute(String dbData) {
-        return (dbData.charAt(0) == 't') ? new IsCancelled(true) : new IsCancelled(false);
+    public IsCancelled convertToEntityAttribute(Boolean dbData) {
+        return new IsCancelled(dbData);
     }
 }
