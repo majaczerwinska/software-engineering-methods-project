@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.NoSuchElementException;
+import javax.persistence.EntityExistsException;
 import nl.tudelft.sem.template.authentication.AuthManager;
 import nl.tudelft.sem.template.controllers.UserController;
 import nl.tudelft.sem.template.domain.user.AppUser;
@@ -31,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 
 
 @ExtendWith(SpringExtension.class)
@@ -186,7 +188,7 @@ public class UserControllerTest {
     public void createAccountUserAlreadyExists() {
         when(authManager.getEmail()).thenReturn(appUser.getEmail().toString());
         when(userService.userExistsByEmail(eq(appUser.getEmail()))).thenReturn(true);
-        when(userService.createUser(eq(appUser))).thenThrow(new IllegalArgumentException("User already exists"));
+        when(userService.createUser(eq(appUser))).thenThrow(new EntityExistsException("User already exists"));
         assertEquals(ResponseEntity.status(409).build(),
                 userController.createAccount(appUser.toModelUser()));
     }

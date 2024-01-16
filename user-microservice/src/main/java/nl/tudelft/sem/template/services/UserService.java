@@ -2,11 +2,13 @@ package nl.tudelft.sem.template.services;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import javax.persistence.EntityExistsException;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserRepository;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class UserService {
@@ -29,7 +31,7 @@ public class UserService {
         }
 
         if (userRepository.existsByEmail(appUser.getEmail())) {
-            throw new IllegalArgumentException("User already exists");
+            throw new EntityExistsException("User already exists");
         }
 
         // Save the user to the database
@@ -117,7 +119,7 @@ public class UserService {
      * @return the updated user account that was saved.
      */
     public AppUser updateUser(AppUser updatedUser) {
-        if (updatedUser == null || updatedUser.getId() < 0 || updatedUser.getEmail() == null) {
+        if (updatedUser == null) {
             throw new IllegalArgumentException("Invalid user data");
         }
         // If the id of the updatedUser does not correspond to an existing user,

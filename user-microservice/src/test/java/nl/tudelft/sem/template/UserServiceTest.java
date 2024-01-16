@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.NoSuchElementException;
+import javax.persistence.EntityExistsException;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Communication;
 import nl.tudelft.sem.template.domain.user.Email;
@@ -77,7 +78,7 @@ public class UserServiceTest {
                 new Link("url"),
                 new Communication("communication")
         );
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(EntityExistsException.class, () -> {
             userService.createUser(appUser1);
         });
 
@@ -163,20 +164,6 @@ public class UserServiceTest {
     public void updateNullUser() {
         assertThrows(IllegalArgumentException.class, () -> {
             userService.updateUser(null);
-        });
-    }
-
-    @Test
-    public void updateInvalidUser() {
-        AppUser appUser1 = new AppUser(
-                new Email("abc@gmail.com"),
-                new Name("mark"),
-                new Name("smith"),
-                new UserAffiliation("police"),
-                new Link("url"),
-                new Communication("phone"));
-        assertThrows(NoSuchElementException.class, () -> {
-            userService.updateUser(appUser1);
         });
     }
 

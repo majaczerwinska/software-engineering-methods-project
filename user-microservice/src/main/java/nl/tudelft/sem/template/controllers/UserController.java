@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.controllers;
 
 import java.util.NoSuchElementException;
+import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import nl.tudelft.sem.template.api.UserApi;
@@ -88,7 +89,7 @@ public class UserController implements UserApi {
      */
     @Override
     @Transactional
-    public ResponseEntity<User> createAccount(@Valid @RequestBody User user) {
+    public ResponseEntity<User> createAccount(@RequestBody User user) {
         try {
             if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
@@ -97,14 +98,13 @@ public class UserController implements UserApi {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
             }
             userService.createUser(new AppUser(user));
-            return ResponseEntity.ok(user); // 200
         } catch (IllegalArgumentException e) {
-            if (e.getMessage().equals("Invalid user data")) {
-                return ResponseEntity.badRequest().build(); // 400
-            } else {
-                return ResponseEntity.status(409).build(); // 409, user already exists
-            }
+            return ResponseEntity.badRequest().build(); // 400
+        } catch (EntityExistsException e) {
+            return ResponseEntity.status(409).build(); // 409, user already exists
         }
+        return ResponseEntity.ok(user); //200
+
     }
 
     /**
@@ -115,7 +115,7 @@ public class UserController implements UserApi {
      */
     @Override
     @Transactional
-    public ResponseEntity<Void> updateAccount(@Valid @RequestBody User updatedUser) {
+    public ResponseEntity<Void> updateAccount(@RequestBody User updatedUser) {
         // Check if the updatedUser is null or has missing required fields
         try {
             if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
