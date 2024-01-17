@@ -242,7 +242,7 @@ public class UserTests {
         assertTrue(domainEvent instanceof UserAffiliationChangedEventLog);
         UserAffiliationChangedEventLog eventLog = (UserAffiliationChangedEventLog) domainEvent;
         assertTrue(eventLog.getLogSummary().startsWith(
-                "The affiliation of the AppUser 1 has been successfully updated to \"New Affiliation\"."));
+                "The affiliation of the User 1 has been successfully updated to \"New Affiliation\"."));
         assertEquals(eventLog.getLogType(), LogType.USER);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
         assertEquals(eventLog.getSubject(), user1);
@@ -258,7 +258,7 @@ public class UserTests {
         assertTrue(domainEvent instanceof UserLinkChangedEventLog);
         UserLinkChangedEventLog eventLog = (UserLinkChangedEventLog) domainEvent;
         assertTrue(eventLog.getLogSummary().startsWith(
-                "The personal website (link) of the AppUser 1 has been successfully updated to \"http://newlink.com\"."));
+                "The personal website (link) of the User 1 has been successfully updated to \"http://newlink.com\"."));
         assertEquals(eventLog.getLogType(), LogType.USER);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
         assertEquals(eventLog.getSubject(), user1);
@@ -274,7 +274,7 @@ public class UserTests {
         assertTrue(domainEvent instanceof UserCommunicationChangedEventLog);
         UserCommunicationChangedEventLog eventLog = (UserCommunicationChangedEventLog) domainEvent;
         assertTrue(eventLog.getLogSummary().startsWith(
-                "The communication of the AppUser 1 has been successfully updated to \"newemail@example.com\"."));
+                "The communication of the User 1 has been successfully updated to \"newemail@example.com\"."));
         assertEquals(eventLog.getLogType(), LogType.USER);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
         assertEquals(eventLog.getSubject(), user1);
@@ -295,7 +295,7 @@ public class UserTests {
         assertTrue(domainEvent instanceof UserAttendanceChangedEventLog);
         UserAttendanceChangedEventLog eventLog = (UserAttendanceChangedEventLog) domainEvent;
         assertTrue(eventLog.getLogSummary().startsWith(
-                "The list of attendees of the AppUser 1 has been successfully updated"));
+                "The list of attendees of the User 1 has been successfully updated"));
         assertEquals(eventLog.getLogType(), LogType.USER);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
         assertEquals(eventLog.getSubject(), user1);

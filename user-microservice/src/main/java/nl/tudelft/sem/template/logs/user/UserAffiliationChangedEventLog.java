@@ -27,7 +27,7 @@ public class UserAffiliationChangedEventLog extends UserLog {
     @Override
     public String getLogSummary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("The affiliation of the AppUser ");
+        sb.append("The affiliation of the User ");
         sb.append(this.subject.getId());
         sb.append(" has been successfully updated to \"");
         sb.append(userAffiliation);

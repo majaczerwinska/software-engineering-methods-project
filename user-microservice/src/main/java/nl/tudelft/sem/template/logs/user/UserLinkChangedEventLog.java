@@ -26,7 +26,7 @@ public class UserLinkChangedEventLog extends UserLog {
     @Override
     public String getLogSummary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("The personal website (link) of the AppUser ");
+        sb.append("The personal website (link) of the User ");
         sb.append(this.subject.getId());
         sb.append(" has been successfully updated to \"");
         sb.append(link);

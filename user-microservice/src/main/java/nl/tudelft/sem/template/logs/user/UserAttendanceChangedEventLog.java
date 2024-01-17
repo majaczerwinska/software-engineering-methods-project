@@ -29,7 +29,7 @@ public class UserAttendanceChangedEventLog extends UserLog {
     @Override
     public String getLogSummary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("The list of attendees of the AppUser ");
+        sb.append("The list of attendees of the User ");
         sb.append(this.subject.getId());
         sb.append(" has been successfully updated to \"");
         sb.append(attendance);

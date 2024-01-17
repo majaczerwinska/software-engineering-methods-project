@@ -28,7 +28,7 @@ public class UserCommunicationChangedEventLog extends UserLog {
     @Override
     public String getLogSummary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("The communication of the AppUser ");
+        sb.append("The communication of the User ");
         sb.append(this.subject.getId());
         sb.append(" has been successfully updated to \"");
         sb.append(communication);
