@@ -99,9 +99,12 @@ public class TrackServiceTests {
     @Test
     public void createTrackSuccessTest() {
         when(eventRepository.findById(22L)).thenReturn(Optional.of(new Event(2023L)));
-
-        Track track = trackService.createTrack(title.toString(), null, null, null,
-                PaperType.FULL_PAPER, 22L);
+        when(trackRepository.save(eq(fullTrack))).thenReturn(fullTrack);
+        when(eventRepository.findById(fullTrack.getEvent().getId()))
+                .thenReturn(Optional.ofNullable(fullTrack.getEvent()));
+        Track track = trackService.createTrack(fullTrack.getTitle().toString(),
+                null, null, null,
+                PaperType.FULL_PAPER, fullTrack.getEvent().getId());
         assertEquals(fullTrack, track);
     }
 

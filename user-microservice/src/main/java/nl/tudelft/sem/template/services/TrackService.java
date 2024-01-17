@@ -61,8 +61,7 @@ public class TrackService {
         }
         Track track = new Track(new Title(title), new Description(description), new PaperRequirement(paperType),
                 submitDeadline, reviewDeadline, event.get());
-        trackRepository.save(track);
-        return track;
+        return trackRepository.save(track);
     }
 
     /**
@@ -109,8 +108,7 @@ public class TrackService {
         }
         Track track = new Track(id, new Title(title), new Description(description), new PaperRequirement(paperType),
                 submitDeadline, reviewDeadline, event.get());
-        trackRepository.save(track);
-        return track;
+        return trackRepository.save(track);
     }
 
     /**
