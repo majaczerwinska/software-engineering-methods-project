@@ -189,4 +189,16 @@ public class TrackService {
         return track.get();
     }
 
+    /**
+     * Determines whether the Track corresponding to the identifier
+     * exists.
+     *
+     * @param id the Track identifier.
+     * @return True if it exists.
+     */
+    @Transactional
+    public boolean exists(Long id) {
+        return trackRepository.existsById(id);
+    }
+
 }

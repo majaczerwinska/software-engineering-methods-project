@@ -177,18 +177,22 @@ public class AppUser extends HasEvents {
 
     public void setAffiliation(UserAffiliation affiliation) {
         this.affiliation = affiliation;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerUserAffiliationChange(this);
     }
 
     public void setLink(Link link) {
         this.link = link;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerUserLinkChange(this);
     }
 
     public void setCommunication(Communication communication) {
         this.communication = communication;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerUserCommunicationChange(this);
     }
 
     public void setAttendance(List<Attendee> attendance) {
         this.attendance = attendance;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerUserAttendanceChange(this);
     }
 
     /**
@@ -203,7 +207,7 @@ public class AppUser extends HasEvents {
             return false;
         }
         AppUser appUser = (AppUser) o;
-        return id == (appUser.id);
+        return Objects.equals(id, appUser.id);
     }
 
     @Override

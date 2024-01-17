@@ -52,6 +52,7 @@ public class EventController implements EventApi {
     }
 
     @Override
+    @Transactional
     @SuppressWarnings("PMD")
     public ResponseEntity<Event> addEvent(
             Event event) {
@@ -68,10 +69,40 @@ public class EventController implements EventApi {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        if (createdEvent == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         return ResponseEntity.ok(createdEvent.toModelEvent());
     }
 
     @Override
+    @Transactional
+    public ResponseEntity<Void> deleteEvent(Long eventId) {
+        if (!roleService.hasPermission(authManager, eventId, null, 0)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        if (!eventService.deleteEvent(eventId)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Event> getEventById(Long eventId) {
+        if (!userRepository.existsByEmail(new Email(authManager.getEmail()))) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        if (!eventService.eventExistsById(eventId)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Event event = eventService.getEventById(eventId).toModelEvent();
+        return ResponseEntity.ok(event);
+    }
+
+    @Override
+    @Transactional
     public ResponseEntity<List<Event>> findEvent(
             LocalDate startBefore,
             LocalDate startAfter,

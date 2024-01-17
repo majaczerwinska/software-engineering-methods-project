@@ -1,7 +1,6 @@
 package nl.tudelft.sem.template.services;
 
 import java.time.LocalDate;
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.attendee.AttendeeRepository;
@@ -12,7 +11,6 @@ import nl.tudelft.sem.template.domain.event.EventDescription;
 import nl.tudelft.sem.template.domain.event.EventName;
 import nl.tudelft.sem.template.domain.event.EventRepository;
 import nl.tudelft.sem.template.domain.event.IsCancelled;
-import nl.tudelft.sem.template.domain.track.Track;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.UserRepository;
@@ -47,7 +45,7 @@ public class EventService {
      * Creates a new event.
      */
     @Transactional
-    public Event createEvent(LocalDate startDate, LocalDate endDate, boolean isCancelled, String name,
+    public Event createEvent(LocalDate startDate, LocalDate endDate, Boolean isCancelled, String name,
         String description, String email) {
 
         Event event = new Event(startDate, endDate, new IsCancelled(isCancelled), new EventName(name),
@@ -77,5 +75,43 @@ public class EventService {
         event.setEventDescription(new EventDescription(description));
         Event returnedEvent = eventRepository.save(event);
         return returnedEvent;
+    }
+
+
+    /**
+     * Retrieves an event.
+     *
+     * @param id the event identifier
+     * @return the corresponding event.
+     */
+    @Transactional
+    public Event getEventById(Long id) {
+        return eventRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * Checks whether an event with the given id exists.
+     *
+     * @param id event id
+     * @return true iff an event exists, false otherwise
+     */
+    @Transactional
+    public boolean eventExistsById(Long id) {
+        return eventRepository.existsById(id);
+    }
+
+    /**
+     * Deletes the event with the given id.
+     *
+     * @param id event id
+     * @return true if event was deleted successfully, false otherwise
+     */
+    @Transactional
+    public boolean deleteEvent(Long id) {
+        if (eventRepository.existsById(id)) {
+            eventRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
