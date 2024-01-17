@@ -23,10 +23,7 @@ import nl.tudelft.sem.template.domain.user.UserAffiliation;
 import nl.tudelft.sem.template.domain.user.UserAffiliationAttributeConverter;
 import nl.tudelft.sem.template.enums.LogKind;
 import nl.tudelft.sem.template.enums.LogType;
-import nl.tudelft.sem.template.logs.user.UserAffiliationChangedEventLog;
-import nl.tudelft.sem.template.logs.user.UserAttendanceChangedEventLog;
-import nl.tudelft.sem.template.logs.user.UserCommunicationChangedEventLog;
-import nl.tudelft.sem.template.logs.user.UserLinkChangedEventLog;
+import nl.tudelft.sem.template.logs.user.*;
 import nl.tudelft.sem.template.model.User;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -359,6 +356,120 @@ public class UserTests {
         assertEquals(user1.getEmail().toString(), userModel.getEmail());
     }
 
+    @Test
+    void whenUserCreated_thenCreatedUserLogGenerated() {
+        assertFalse(user1.getDomainEvents().isEmpty());
+        Object event = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
+        assertTrue(event instanceof CreatedUserLog);
+        CreatedUserLog createdUserLog = (CreatedUserLog) event;
+        assertTrue(createdUserLog.getLogSummary().startsWith(
+                "User 1 has been successfully created!\n"));
+        assertEquals(createdUserLog.getLogType(), LogType.USER);
+        assertEquals(createdUserLog.getLogKind(), LogKind.CREATION);
+        assertEquals(createdUserLog.getSubject(), user1);
+    }
 
-
+//    @Test
+//    void whenUserAttendanceChanged_thenUserAttendanceChangedEventLogGenerated() {
+//        user1.setAttendance(new ArrayList<>());
+//
+//        assertFalse(user1.getDomainEvents().isEmpty());
+//        Object event = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
+//        assertTrue(event instanceof UserAttendanceChangedEventLog);
+//        UserAttendanceChangedEventLog changeUserLog = (UserAttendanceChangedEventLog) event;
+//        assertTrue(changeUserLog.getLogSummary().startsWith(
+//                "User 1 has been successfully created!\n"));
+//        assertEquals(createdUserLog.getLogType(), LogType.USER);
+//        assertEquals(createdUserLog.getLogKind(), LogKind.CREATION);
+//        assertEquals(createdUserLog.getSubject(), user1);
+//    }
+//
+//    @Test
+//    void whenUserCommunicationChanged_thenUserCommunicationChangedEventLogGenerated() {
+//        // Simulate the action that results in user communication change
+//        appUser.changeCommunication(/* parameters if needed */);
+//
+//        assertFalse(appUser.getDomainEvents().isEmpty());
+//        Object domainEvent = appUser.getDomainEvents().get(appUser.getDomainEvents().size() - 1);
+//        assertTrue(domainEvent instanceof UserCommunicationChangedEventLog);
+//        // Add assertions for UserCommunicationChangedEventLog properties
+//    }
+//
+//    @Test
+//    void whenUserLinkChanged_thenUserLinkChangedEventLogGenerated() {
+//        // Simulate the action that results in user link change
+//        appUser.changeLink(/* parameters if needed */);
+//
+//        assertFalse(appUser.getDomainEvents().isEmpty());
+//        Object domainEvent = appUser.getDomainEvents().get(appUser.getDomainEvents().size() - 1);
+//        assertTrue(domainEvent instanceof UserLinkChangedEventLog);
+//        // Add assertions for UserLinkChangedEventLog properties
+//    }
+//
+//    @Test
+//    void whenUserDeleted_thenUserDeletedEventLogGenerated() {
+//        // Simulate the action that results in user deletion
+//        appUser.delete();
+//
+//        assertFalse(appUser.getDomainEvents().isEmpty());
+//        Object domainEvent = appUser.getDomainEvents().get(appUser.getDomainEvents().size() - 1);
+//        assertTrue(domainEvent instanceof UserDeletedEventLog);
+//        // Add assertions for UserDeletedEventLog properties
+//    }
+//
+//    @Test
+//    void whenEmailChanged_thenEmailChangedUserLogGenerated() {
+//        // Simulate the action that results in email change
+//        appUser.changeEmail("newemail@example.com");
+//
+//        assertFalse(appUser.getDomainEvents().isEmpty());
+//        Object domainEvent = appUser.getDomainEvents().get(appUser.getDomainEvents().size() - 1);
+//        assertTrue(domainEvent instanceof EmailChangedUserLog);
+//        // Add assertions for EmailChangedUserLog properties
+//    }
+//
+//    @Test
+//    void whenFirstNameChanged_thenFirstNameChangedUserLogGenerated() {
+//        // Simulate the action that results in first name change
+//        appUser.changeFirstName("NewFirstName");
+//
+//        assertFalse(appUser.getDomainEvents().isEmpty());
+//        Object domainEvent = appUser.getDomainEvents().get(appUser.getDomainEvents().size() - 1);
+//        assertTrue(domainEvent instanceof FirstNameChangedUserLog);
+//        // Add assertions for FirstNameChangedUserLog properties
+//    }
+//
+//    @Test
+//    void whenLastNameChanged_thenLastNameChangedUserLogGenerated() {
+//        // Simulate the action that results in last name change
+//        appUser.changeLastName("NewLastName");
+//
+//        assertFalse(appUser.getDomainEvents().isEmpty());
+//        Object domainEvent = appUser.getDomainEvents().get(appUser.getDomainEvents().size() - 1);
+//        assertTrue(domainEvent instanceof LastNameChangedUserLog);
+//        // Add assertions for LastNameChangedUserLog properties
+//    }
+//
+//    // ... additional tests for other user actions
+//}
+//
+//    @Test
+//    void whenUserAffiliationChanged_thenUserAffiliationChangedEventLogGenerated() {
+//        // Perform action that results in user affiliation change log
+//        // Example: appUser.setAffiliation(newAffiliation);
+//
+////        assertFalse(user1.getDomainEvents().isEmpty());
+////        Object domainEvent = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
+////        assertTrue(domainEvent instanceof UserAffiliationChangedEventLog);
+////        UserAffiliationChangedEventLog log = (UserAffiliationChangedEventLog) domainEvent;
+////        // Add assertions for log properties
+//    }
+//
+//    // Similar tests for each type of user log following the same pattern:
+//    // 1. Perform the action that results in the log being created.
+//    // 2. Get the last domain event.
+//    // 3. Assert that it is of the expected log type.
+//    // 4. Add assertions for the specific log properties.
+//
+//    // Continue with other user operations that result in logs...
 }
