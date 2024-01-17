@@ -21,7 +21,7 @@ import javax.annotation.Generated;
  * Track
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-16T15:18:15.746950500+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-17T17:34:09.667295400+01:00[Europe/Berlin]")
 public class Track {
 
   private Long id;
