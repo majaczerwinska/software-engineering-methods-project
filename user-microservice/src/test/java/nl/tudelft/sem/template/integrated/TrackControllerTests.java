@@ -22,7 +22,6 @@ import nl.tudelft.sem.template.domain.track.Title;
 import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.model.PaperType;
 import nl.tudelft.sem.template.model.Track;
-import nl.tudelft.sem.template.services.AttendeeService;
 import nl.tudelft.sem.template.services.RoleService;
 import nl.tudelft.sem.template.services.TrackService;
 import nl.tudelft.sem.template.services.UserService;
@@ -51,9 +50,6 @@ public class TrackControllerTests {
 
     @Mock
     private AuthManager authManager;
-
-    @Mock
-    private AttendeeService attendeeService;
 
     @Mock
     private RoleService roleService;

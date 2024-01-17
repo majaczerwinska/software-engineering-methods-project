@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TrackController implements TrackApi {
     private final transient AuthManager authManager;
-    private final transient AttendeeService attendeeService;
     private final transient TrackService trackService;
     private final transient UserService userService;
     private final transient RoleService roleService;
@@ -39,16 +37,14 @@ public class TrackController implements TrackApi {
      * Constructs a new instance of Track Controller.
      *
      * @param authManager     Used for authentication-related checks.
-     * @param attendeeService The service for managing attendee-related operations.
      * @param trackService    The service for managing track-related operations.
      * @param userService     The service for managing user-related operations.
      * @param roleService     The service for managing role-related operations.
      */
     @Autowired
-    public TrackController(AuthManager authManager, AttendeeService attendeeService, RoleService roleService,
-                           TrackService trackService, UserService userService) {
+    public TrackController(AuthManager authManager, RoleService roleService, TrackService trackService,
+                           UserService userService) {
         this.authManager = authManager;
-        this.attendeeService = attendeeService;
         this.trackService = trackService;
         this.userService = userService;
         this.roleService = roleService;
@@ -62,7 +58,7 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    public ResponseEntity<Track> addTrack(@RequestBody Track track) {
+    public ResponseEntity<Track> addTrack(Track track) {
         try {
             if (!roleService.hasPermission(authManager, track.getEventId(), track.getId(), 0)) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
@@ -84,7 +80,7 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    public ResponseEntity<Void> updateTrack(@Valid @RequestBody(required = false) Track track) {
+    public ResponseEntity<Void> updateTrack(@Valid Track track) {
         try {
             if (!roleService.hasPermission(authManager, track.getEventId(), track.getId(), 1)) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
@@ -157,8 +153,7 @@ public class TrackController implements TrackApi {
      */
     @Override
     @Transactional
-    public ResponseEntity<List<Track>> getTrack(@RequestBody String title, @RequestBody Integer eventId,
-                                                @RequestBody  PaperType paperType) {
+    public ResponseEntity<List<Track>> getTrack(String title, Integer eventId, PaperType paperType) {
         try {
             if (!userService.userExistsByEmail(new Email(authManager.getEmail()))) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
