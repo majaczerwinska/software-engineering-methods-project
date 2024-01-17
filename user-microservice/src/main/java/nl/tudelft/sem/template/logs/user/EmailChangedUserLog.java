@@ -19,6 +19,7 @@ public class EmailChangedUserLog extends UserLog {
     public EmailChangedUserLog(AppUser subject) {
         this.subject = subject;
         this.email = subject.getEmail();
+        subject.recordLog(this);
     }
 
     @Override

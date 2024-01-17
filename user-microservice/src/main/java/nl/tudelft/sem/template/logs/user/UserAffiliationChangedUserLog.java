@@ -1,32 +1,37 @@
 package nl.tudelft.sem.template.logs.user;
 
 import nl.tudelft.sem.template.domain.user.AppUser;
+import nl.tudelft.sem.template.domain.user.UserAffiliation;
 import nl.tudelft.sem.template.enums.LogKind;
 
-public class UserDeletedEventLog extends UserLog {
+public class UserAffiliationChangedUserLog extends UserLog {
+
+    final transient UserAffiliation userAffiliation;
 
     /**
      * Creates a new UserLog.
      *
      * @param subject the subject of the log.
      */
-    public UserDeletedEventLog(AppUser subject) {
+    public UserAffiliationChangedUserLog(AppUser subject) {
         this.subject = subject;
+        this.userAffiliation = subject.getAffiliation();
         subject.recordLog(this);
     }
 
     @Override
     public LogKind getLogKind() {
-        return LogKind.REMOVAL;
+        return LogKind.MODIFICATION;
     }
 
     @Override
     public String getLogSummary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("User with id: ");
+        sb.append("The affiliation of the User ");
         sb.append(this.subject.getId());
-        sb.append(" has been successfully removed.\n");
-        sb.append(".\n");
+        sb.append(" has been successfully updated to \"");
+        sb.append(userAffiliation);
+        sb.append("\".\n");
         sb.append(logDate.toString());
         return sb.toString();
     }

@@ -18,6 +18,7 @@ public class FirstNameChangedUserLog extends UserLog {
     public FirstNameChangedUserLog(AppUser subject) {
         this.subject = subject;
         this.firstName = subject.getFirstName();
+        subject.recordLog(this);
     }
 
     @Override

@@ -18,6 +18,7 @@ public class LastNameChangedUserLog extends UserLog {
     public LastNameChangedUserLog(AppUser subject) {
         this.subject = subject;
         this.lastName = subject.getLastName();
+        subject.recordLog(this);
     }
 
     @Override

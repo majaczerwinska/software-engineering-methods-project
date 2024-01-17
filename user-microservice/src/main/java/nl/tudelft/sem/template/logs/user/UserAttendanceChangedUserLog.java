@@ -1,21 +1,23 @@
 package nl.tudelft.sem.template.logs.user;
 
+import java.util.List;
+import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.user.AppUser;
-import nl.tudelft.sem.template.domain.user.UserAffiliation;
 import nl.tudelft.sem.template.enums.LogKind;
 
-public class UserAffiliationChangedEventLog extends UserLog {
 
-    final transient UserAffiliation userAffiliation;
+public class UserAttendanceChangedUserLog extends UserLog {
+
+    final transient List<Attendee> attendance;
 
     /**
      * Creates a new UserLog.
      *
      * @param subject the subject of the log.
      */
-    public UserAffiliationChangedEventLog(AppUser subject) {
+    public UserAttendanceChangedUserLog(AppUser subject) {
         this.subject = subject;
-        this.userAffiliation = subject.getAffiliation();
+        this.attendance = subject.getAttendance();
         subject.recordLog(this);
     }
 
@@ -27,10 +29,10 @@ public class UserAffiliationChangedEventLog extends UserLog {
     @Override
     public String getLogSummary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("The affiliation of the AppUser ");
+        sb.append("The list of attendances of the User ");
         sb.append(this.subject.getId());
         sb.append(" has been successfully updated to \"");
-        sb.append(userAffiliation);
+        sb.append(attendance);
         sb.append("\".\n");
         sb.append(logDate.toString());
         return sb.toString();
