@@ -5,7 +5,6 @@
  */
 package nl.tudelft.sem.template.api;
 
-import nl.tudelft.sem.template.model.Attendee;
 import nl.tudelft.sem.template.model.Invitation;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-16T23:46:23.503465900+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-18T01:43:52.707317800+01:00[Europe/Amsterdam]")
 @Validated
 @Tag(name = "User-Invitation Interaction", description = "end-points that facilitate a user's interaction with invitations to events.")
 public interface InvitationsApi {

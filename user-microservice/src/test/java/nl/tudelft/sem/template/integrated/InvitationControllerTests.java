@@ -86,8 +86,8 @@ public class InvitationControllerTests {
 	public void setup() {
 		LocalDate startDate = LocalDate.parse("2024-01-09T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
 		LocalDate endDate = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
-		user = new AppUser(new Email("test@test.net"), new Name("name"));
-		exec = new AppUser(new Email("best@test.net"), new Name("name2"));
+		user = new AppUser(new Email("test@test.net"), new Name("name"), new Name("name2"));
+		exec = new AppUser(new Email("best@test.net"), new Name("name2"), new Name("name2"));
 		event = new Event(startDate, endDate, new IsCancelled(false), new EventName("name"),
 			new EventDescription("desc"));
 		track = new Track(new Title("title"), new Description("desc"), new PaperRequirement(PaperType.FULL_PAPER),

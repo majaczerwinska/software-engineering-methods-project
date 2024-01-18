@@ -99,7 +99,7 @@ public class InvitationController implements InvitationsApi {
 			|| userService.getUserById(invitation.getUserId()) == null       // Confirm that the user exists
 			|| eventService.getEventById(invitation.getEventId()) == null    // Confirm that the event exists
 			|| (invitation.getTrackId() != null                              // If the identifier is supplied
-			&& !trackService.trackExistById(invitation.getTrackId()))) { 	 // Confirm that the track exists
+			&& !trackService.exists(invitation.getTrackId()))) { 	 // Confirm that the track exists
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
 		}
 
@@ -169,7 +169,7 @@ public class InvitationController implements InvitationsApi {
 	public ResponseEntity<List<Invitation>> getInvitations(Long userId, Long trackId, Long eventId) {
 		if ((userId != null && userService.getUserById(userId) == null)
 				|| (eventId != null && eventService.getEventById(eventId) == null)
-				|| (trackId != null && !trackService.trackExistById(trackId))) {
+				|| (trackId != null && !trackService.exists(trackId))) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
 		}
 
