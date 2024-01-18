@@ -54,6 +54,7 @@ public class UserService {
         return userRepository.existsById(userId);
     }
 
+
     /**
      * Retrieves a list of users with the specified name.
      *
@@ -64,7 +65,6 @@ public class UserService {
     public List<AppUser> getUserByName(String firstName, String lastName) {
         return userRepository.findByFirstNameAndLastName(new Name(firstName), new Name(lastName));
     }
-
 
     /**
      * Retrieves the user with the specified email.

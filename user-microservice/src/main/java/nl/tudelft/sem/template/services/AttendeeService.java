@@ -16,7 +16,10 @@ import nl.tudelft.sem.template.domain.track.Track;
 import nl.tudelft.sem.template.domain.track.TrackRepository;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.UserRepository;
+import nl.tudelft.sem.template.enums.LogType;
 import nl.tudelft.sem.template.enums.RoleTitle;
+import nl.tudelft.sem.template.logs.LogFactory;
+import nl.tudelft.sem.template.logs.attendee.AttendeeLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +34,7 @@ public class AttendeeService {
     private final transient UserRepository userRepository;
     private final transient EventRepository eventRepository;
     private final transient TrackRepository trackRepository;
+    private final transient AttendeeLogFactory attendeeLogFactory;
 
     /**
      * A constructor dependency injection for the various JPA Repositories.
@@ -47,6 +51,7 @@ public class AttendeeService {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.trackRepository = trackRepository;
+        attendeeLogFactory = (AttendeeLogFactory) LogFactory.loadFactory(LogType.ATTENDEE);
     }
 
     /**
@@ -84,8 +89,11 @@ public class AttendeeService {
         Attendee attendee = new Attendee(
                 new Role(role), new Confirmation(confirmed), event, track, user);
 
+
         // Commits the new attendance to the repository
-        return attendeeRepository.save(attendee);
+        attendee = attendeeRepository.save(attendee);
+        attendeeLogFactory.registerCreation(attendee);
+        return  attendee;
 
     }
 
@@ -115,6 +123,7 @@ public class AttendeeService {
 
         // Deletes the Attendee instance associated with the given key
         attendeeRepository.delete(attendee);
+        attendeeLogFactory.registerRemoval(attendee);
     }
 
     /**
@@ -236,7 +245,9 @@ public class AttendeeService {
         attendee.setRole(new Role(role));
 
         // Commit the changes
+        attendeeLogFactory.registerConfirmationChange(attendee);
         return attendeeRepository.save(attendee);
+
     }
 
     /**
@@ -259,6 +270,9 @@ public class AttendeeService {
                 .findById(subjectId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid subject."));
 
+        if (subject.getUser().getId() == executorId) {
+            return true;
+        }
 
         List<Attendee> executorAttendees;
         try {

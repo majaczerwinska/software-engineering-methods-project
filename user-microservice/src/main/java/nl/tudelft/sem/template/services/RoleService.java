@@ -15,12 +15,12 @@ import org.springframework.stereotype.Service;
 @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
 public class RoleService {
     private final transient UserRepository userRepository;
-    private final transient InvitationService invitationService;
+    private final transient AttendeeService attendeeService;
 
     @Autowired
-    public RoleService(UserRepository userRepository, InvitationService invitationService) {
+    public RoleService(UserRepository userRepository, AttendeeService attendeeService) {
         this.userRepository = userRepository;
-        this.invitationService = invitationService;
+        this.attendeeService = attendeeService;
     }
 
     /**
@@ -40,7 +40,7 @@ public class RoleService {
         }
         Attendee role;
         try {
-            role = invitationService.getAttendee(user.getId(), eventId, trackId, true);
+            role = attendeeService.getFilteredAttendance(user.getId(), eventId, trackId, true).get(0);
         } catch (Exception e) {
             return false;
         }
