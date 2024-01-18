@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.attendee.Confirmation;
@@ -16,7 +17,15 @@ import nl.tudelft.sem.template.domain.attendee.RoleAttributeConverter;
 import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.domain.track.Track;
 import nl.tudelft.sem.template.domain.user.AppUser;
+import nl.tudelft.sem.template.enums.LogKind;
+import nl.tudelft.sem.template.enums.LogType;
 import nl.tudelft.sem.template.enums.RoleTitle;
+import nl.tudelft.sem.template.logs.LogFactory;
+import nl.tudelft.sem.template.logs.attendee.AttendeeLogFactory;
+import nl.tudelft.sem.template.logs.attendee.ConfirmationChangeAttendeeLog;
+import nl.tudelft.sem.template.logs.attendee.CreatedAttendeeLog;
+import nl.tudelft.sem.template.logs.attendee.RemovedAttendeeLog;
+import nl.tudelft.sem.template.logs.attendee.RoleChangedAttendeeLog;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -144,12 +153,62 @@ public class AttendeeTests {
         assertEquals(model.getTrackId(), setterAttendee.getTrack().getId());
         assertEquals(model.getRole().name(), setterAttendee.getRole().getRoleTitle().name());
         var attendeeTemp = new Attendee(
-                1L,
-                new Role(RoleTitle.ATTENDEE),
-                new Confirmation(false),
-                event, null, user);
+            1L,
+            new Role(RoleTitle.ATTENDEE),
+            new Confirmation(false),
+            event, null, user);
 
         assertNull(attendeeTemp.toModel().getTrackId());
+    }
+
+    @Test
+    void createdAttendeeLog() {
+        // Setup
+        Attendee loggableAttendee = new Attendee(1L,
+            new Role(RoleTitle.ATTENDEE),
+            new Confirmation(true),
+            event, track, user);
+        AttendeeLogFactory attendeeLogFactory = (AttendeeLogFactory) LogFactory.loadFactory(LogType.ATTENDEE);
+
+        // Log creation
+
+        final var createdLog = attendeeLogFactory.registerCreation(loggableAttendee);
+        final var roleLog =  attendeeLogFactory.registerRoleChange(loggableAttendee);
+        final var confLog = attendeeLogFactory.registerConfirmationChange(loggableAttendee);
+        final var delLog = attendeeLogFactory.registerRemoval(loggableAttendee);
+
+
+        // Log type verification
+        assertTrue(createdLog instanceof CreatedAttendeeLog);
+        assertTrue(roleLog instanceof RoleChangedAttendeeLog);
+        assertTrue(confLog instanceof ConfirmationChangeAttendeeLog);
+        assertTrue(delLog instanceof RemovedAttendeeLog);
+
+        // Log type verification
+        assertEquals(createdLog.getLogType(), LogType.ATTENDEE);
+        assertEquals(roleLog.getLogType(), LogType.ATTENDEE);
+        assertEquals(confLog.getLogType(), LogType.ATTENDEE);
+        assertEquals(delLog.getLogType(), LogType.ATTENDEE);
+
+        // Log kind verification
+        assertEquals(createdLog.getLogKind(), LogKind.CREATION);
+        assertEquals(roleLog.getLogKind(), LogKind.MODIFICATION);
+        assertEquals(confLog.getLogKind(), LogKind.MODIFICATION);
+        assertEquals(delLog.getLogKind(), LogKind.REMOVAL);
+
+        // Subject verification
+        assertEquals(createdLog.getSubject(), loggableAttendee);
+        assertEquals(roleLog.getSubject(), loggableAttendee);
+        assertEquals(confLog.getSubject(), loggableAttendee);
+        assertEquals(delLog.getSubject(), loggableAttendee);
+
+        // Summary verification
+        assertTrue(createdLog.getLogSummary().contains("created"));
+        assertTrue(roleLog.getLogSummary().contains("updated"));
+        assertTrue(confLog.getLogSummary().contains("updated"));
+        assertTrue(delLog.getLogSummary().contains("removed"));
+
+
     }
 
 }

@@ -9,7 +9,7 @@ import nl.tudelft.sem.template.logs.Log;
  */
 public abstract class AttendeeLog implements Log<Attendee> {
 
-    private transient Attendee subject;
+    transient Attendee subject;
 
     @Override
     public final LogType getLogType() {

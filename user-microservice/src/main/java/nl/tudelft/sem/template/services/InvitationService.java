@@ -12,7 +12,10 @@ import nl.tudelft.sem.template.domain.track.Track;
 import nl.tudelft.sem.template.domain.track.TrackRepository;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.UserRepository;
+import nl.tudelft.sem.template.enums.LogType;
 import nl.tudelft.sem.template.enums.RoleTitle;
+import nl.tudelft.sem.template.logs.LogFactory;
+import nl.tudelft.sem.template.logs.attendee.AttendeeLogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,7 @@ public class InvitationService {
     private final transient EventRepository eventRepository;
     private final transient TrackRepository trackRepository;
     private final transient AttendeeService attendeeService;
+    private final transient AttendeeLogFactory attendeeLogFactory;
 
     /**
      * A constructor dependency injection for the various JPA Repositories.
@@ -49,6 +53,7 @@ public class InvitationService {
         this.eventRepository = eventRepository;
         this.trackRepository = trackRepository;
         this.attendeeService = attendeeService;
+        attendeeLogFactory = (AttendeeLogFactory) LogFactory.loadFactory(LogType.ATTENDEE);
     }
 
     /**
@@ -88,6 +93,7 @@ public class InvitationService {
 
         Attendee retrievedSubject = attendeeService.getAttendance(subjectId);
         retrievedSubject.setConfirmation(true);
+        attendeeLogFactory.registerConfirmationChange(retrievedSubject);
         return attendeeRepository.save(retrievedSubject);
     }
 
