@@ -23,10 +23,14 @@ import nl.tudelft.sem.template.domain.user.UserAffiliation;
 import nl.tudelft.sem.template.domain.user.UserAffiliationAttributeConverter;
 import nl.tudelft.sem.template.enums.LogKind;
 import nl.tudelft.sem.template.enums.LogType;
-import nl.tudelft.sem.template.logs.user.UserAffiliationChangedEventLog;
-import nl.tudelft.sem.template.logs.user.UserAttendanceChangedEventLog;
-import nl.tudelft.sem.template.logs.user.UserCommunicationChangedEventLog;
-import nl.tudelft.sem.template.logs.user.UserLinkChangedEventLog;
+import nl.tudelft.sem.template.logs.user.CreatedUserLog;
+import nl.tudelft.sem.template.logs.user.EmailChangedUserLog;
+import nl.tudelft.sem.template.logs.user.FirstNameChangedUserLog;
+import nl.tudelft.sem.template.logs.user.LastNameChangedUserLog;
+import nl.tudelft.sem.template.logs.user.UserAffiliationChangedUserLog;
+import nl.tudelft.sem.template.logs.user.UserAttendanceChangedUserLog;
+import nl.tudelft.sem.template.logs.user.UserCommunicationChangedUserLog;
+import nl.tudelft.sem.template.logs.user.UserLinkChangedUserLog;
 import nl.tudelft.sem.template.model.User;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -239,8 +243,8 @@ public class UserTests {
 
         assertFalse(user1.getDomainEvents().isEmpty());
         Object domainEvent = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
-        assertTrue(domainEvent instanceof UserAffiliationChangedEventLog);
-        UserAffiliationChangedEventLog eventLog = (UserAffiliationChangedEventLog) domainEvent;
+        assertTrue(domainEvent instanceof UserAffiliationChangedUserLog);
+        UserAffiliationChangedUserLog eventLog = (UserAffiliationChangedUserLog) domainEvent;
         assertTrue(eventLog.getLogSummary().startsWith(
                 "The affiliation of the User 1 has been successfully updated to \"New Affiliation\"."));
         assertEquals(eventLog.getLogType(), LogType.USER);
@@ -255,8 +259,8 @@ public class UserTests {
 
         assertFalse(user1.getDomainEvents().isEmpty());
         Object domainEvent = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
-        assertTrue(domainEvent instanceof UserLinkChangedEventLog);
-        UserLinkChangedEventLog eventLog = (UserLinkChangedEventLog) domainEvent;
+        assertTrue(domainEvent instanceof UserLinkChangedUserLog);
+        UserLinkChangedUserLog eventLog = (UserLinkChangedUserLog) domainEvent;
         assertTrue(eventLog.getLogSummary().startsWith(
                 "The personal website (link) of the User 1 has been successfully updated to \"http://newlink.com\"."));
         assertEquals(eventLog.getLogType(), LogType.USER);
@@ -271,8 +275,8 @@ public class UserTests {
 
         assertFalse(user1.getDomainEvents().isEmpty());
         Object domainEvent = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
-        assertTrue(domainEvent instanceof UserCommunicationChangedEventLog);
-        UserCommunicationChangedEventLog eventLog = (UserCommunicationChangedEventLog) domainEvent;
+        assertTrue(domainEvent instanceof UserCommunicationChangedUserLog);
+        UserCommunicationChangedUserLog eventLog = (UserCommunicationChangedUserLog) domainEvent;
         assertTrue(eventLog.getLogSummary().startsWith(
                 "The communication of the User 1 has been successfully updated to \"newemail@example.com\"."));
         assertEquals(eventLog.getLogType(), LogType.USER);
@@ -292,10 +296,10 @@ public class UserTests {
 
         assertFalse(user1.getDomainEvents().isEmpty());
         Object domainEvent = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
-        assertTrue(domainEvent instanceof UserAttendanceChangedEventLog);
-        UserAttendanceChangedEventLog eventLog = (UserAttendanceChangedEventLog) domainEvent;
+        assertTrue(domainEvent instanceof UserAttendanceChangedUserLog);
+        UserAttendanceChangedUserLog eventLog = (UserAttendanceChangedUserLog) domainEvent;
         assertTrue(eventLog.getLogSummary().startsWith(
-                "The list of attendees of the User 1 has been successfully updated"));
+                "The list of attendances of the User 1 has been successfully updated"));
         assertEquals(eventLog.getLogType(), LogType.USER);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
         assertEquals(eventLog.getSubject(), user1);
@@ -359,6 +363,62 @@ public class UserTests {
         assertEquals(user1.getEmail().toString(), userModel.getEmail());
     }
 
+    @Test
+    void whenUserCreated_thenCreatedUserLogGenerated() {
+        AppUser appUser = new AppUser(1L);
+        assertFalse(appUser.getDomainEvents().isEmpty());
+        Object event = appUser.getDomainEvents().get(appUser.getDomainEvents().size() - 1);
+        assertTrue(event instanceof CreatedUserLog);
+        CreatedUserLog createdUserLog = (CreatedUserLog) event;
+        assertTrue(createdUserLog.getLogSummary().startsWith(
+                "User 1 has been successfully created!\n"));
+        assertEquals(createdUserLog.getLogType(), LogType.USER);
+        assertEquals(createdUserLog.getLogKind(), LogKind.CREATION);
+        assertEquals(createdUserLog.getSubject(), appUser);
+    }
 
+    @Test
+    void whenEmailChanged_thenEmailChangedUserLogGenerated() {
+        user1.setEmail(new Email("newemail@example.com"));
 
+        assertFalse(user1.getDomainEvents().isEmpty());
+        Object event = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
+        assertTrue(event instanceof EmailChangedUserLog);
+        EmailChangedUserLog changeUserLog = (EmailChangedUserLog) event;
+        assertTrue(changeUserLog.getLogSummary().startsWith(
+                "The email address of User 1 has been successfully updated to \""));
+        assertEquals(changeUserLog.getLogType(), LogType.USER);
+        assertEquals(changeUserLog.getLogKind(), LogKind.MODIFICATION);
+        assertEquals(changeUserLog.getSubject(), user1);
+    }
+
+    @Test
+    void whenFirstNameChanged_thenFirstNameChangedUserLogGenerated() {
+        user1.setFirstName(new Name("NewFirstName"));
+
+        assertFalse(user1.getDomainEvents().isEmpty());
+        Object event = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
+        assertTrue(event instanceof FirstNameChangedUserLog);
+        FirstNameChangedUserLog changeUserLog = (FirstNameChangedUserLog) event;
+        assertTrue(changeUserLog.getLogSummary().startsWith(
+                "The first name of User 1 has been successfully updated to \""));
+        assertEquals(changeUserLog.getLogType(), LogType.USER);
+        assertEquals(changeUserLog.getLogKind(), LogKind.MODIFICATION);
+        assertEquals(changeUserLog.getSubject(), user1);
+    }
+
+    @Test
+    void whenLastNameChanged_thenLastNameChangedUserLogGenerated() {
+        user1.setLastName(new Name("NewLastName"));
+
+        assertFalse(user1.getDomainEvents().isEmpty());
+        Object event = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
+        assertTrue(event instanceof LastNameChangedUserLog);
+        LastNameChangedUserLog changeUserLog = (LastNameChangedUserLog) event;
+        assertTrue(changeUserLog.getLogSummary().startsWith(
+                "The last name of User 1 has been successfully updated to \""));
+        assertEquals(changeUserLog.getLogType(), LogType.USER);
+        assertEquals(changeUserLog.getLogKind(), LogKind.MODIFICATION);
+        assertEquals(changeUserLog.getSubject(), user1);
+    }
 }

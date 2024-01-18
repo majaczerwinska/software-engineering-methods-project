@@ -9,6 +9,10 @@ import nl.tudelft.sem.template.logs.LogFactory;
  */
 public class UserLogFactory extends LogFactory {
 
+    public UserLog registerCreation(AppUser subject) {
+        return new CreatedUserLog(subject);
+    }
+
     /**
      * Creates a Log representing the edition of a user's affiliation.
      *
@@ -16,7 +20,7 @@ public class UserLogFactory extends LogFactory {
      * @return a Log representing the modification of the user.
      */
     public UserLog registerUserAffiliationChange(AppUser subject) {
-        return new UserAffiliationChangedEventLog(subject);
+        return new UserAffiliationChangedUserLog(subject);
     }
 
     /**
@@ -26,7 +30,7 @@ public class UserLogFactory extends LogFactory {
      * @return a Log representing the modification of the user.
      */
     public UserLog registerUserAttendanceChange(AppUser subject) {
-        return new UserAttendanceChangedEventLog(subject);
+        return new UserAttendanceChangedUserLog(subject);
     }
 
     /**
@@ -36,7 +40,7 @@ public class UserLogFactory extends LogFactory {
      * @return a Log representing the modification of the user.
      */
     public UserLog registerUserCommunicationChange(AppUser subject) {
-        return new UserCommunicationChangedEventLog(subject);
+        return new UserCommunicationChangedUserLog(subject);
     }
 
     /**
@@ -46,19 +50,18 @@ public class UserLogFactory extends LogFactory {
      * @return a Log representing the modification of the user.
      */
     public UserLog registerUserLinkChange(AppUser subject) {
-        return new UserLinkChangedEventLog(subject);
+        return new UserLinkChangedUserLog(subject);
     }
 
-    /**
-     * Creates a Log representing the deletion of a user.
-     *
-     * @param subject user that was deleted.
-     * @return a Log representing the deletion of the user.
-     */
-    public UserLog registerUserDeletion(AppUser subject) {
-        return new UserDeletedEventLog(subject);
+    public UserLog registerEmailChange(AppUser subject) {
+        return new EmailChangedUserLog(subject);
     }
 
+    public UserLog registerFirstNameChange(AppUser subject) {
+        return new FirstNameChangedUserLog(subject);
+    }
 
-
+    public UserLog registerLastNameChange(AppUser subject) {
+        return new LastNameChangedUserLog(subject);
+    }
 }

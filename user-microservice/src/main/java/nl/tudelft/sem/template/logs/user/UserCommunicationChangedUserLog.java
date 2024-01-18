@@ -1,32 +1,36 @@
 package nl.tudelft.sem.template.logs.user;
 
 import nl.tudelft.sem.template.domain.user.AppUser;
+import nl.tudelft.sem.template.domain.user.Communication;
 import nl.tudelft.sem.template.enums.LogKind;
 
-public class UserDeletedEventLog extends UserLog {
+public class UserCommunicationChangedUserLog extends UserLog {
+    final transient Communication communication;
 
     /**
      * Creates a new UserLog.
      *
      * @param subject the subject of the log.
      */
-    public UserDeletedEventLog(AppUser subject) {
+    public UserCommunicationChangedUserLog(AppUser subject) {
         this.subject = subject;
+        this.communication = subject.getCommunication();
         subject.recordLog(this);
     }
 
     @Override
     public LogKind getLogKind() {
-        return LogKind.REMOVAL;
+        return LogKind.MODIFICATION;
     }
 
     @Override
     public String getLogSummary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("User with id: ");
+        sb.append("The communication of the User ");
         sb.append(this.subject.getId());
-        sb.append(" has been successfully removed.\n");
-        sb.append(".\n");
+        sb.append(" has been successfully updated to \"");
+        sb.append(communication);
+        sb.append("\".\n");
         sb.append(logDate.toString());
         return sb.toString();
     }

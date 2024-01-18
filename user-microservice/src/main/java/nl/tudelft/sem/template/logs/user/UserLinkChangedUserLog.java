@@ -1,22 +1,20 @@
 package nl.tudelft.sem.template.logs.user;
 
 import nl.tudelft.sem.template.domain.user.AppUser;
-import nl.tudelft.sem.template.domain.user.Communication;
-import nl.tudelft.sem.template.domain.user.UserAffiliation;
+import nl.tudelft.sem.template.domain.user.Link;
 import nl.tudelft.sem.template.enums.LogKind;
-import org.h2.command.Command;
 
-public class UserCommunicationChangedEventLog extends UserLog {
-    final transient Communication communication;
+public class UserLinkChangedUserLog extends UserLog {
+    final transient Link link;
 
     /**
      * Creates a new UserLog.
      *
      * @param subject the subject of the log.
      */
-    public UserCommunicationChangedEventLog(AppUser subject) {
+    public UserLinkChangedUserLog(AppUser subject) {
         this.subject = subject;
-        this.communication = subject.getCommunication();
+        this.link = subject.getLink();
         subject.recordLog(this);
     }
 
@@ -28,10 +26,10 @@ public class UserCommunicationChangedEventLog extends UserLog {
     @Override
     public String getLogSummary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("The communication of the User ");
+        sb.append("The personal website (link) of the User ");
         sb.append(this.subject.getId());
         sb.append(" has been successfully updated to \"");
-        sb.append(communication);
+        sb.append(link);
         sb.append("\".\n");
         sb.append(logDate.toString());
         return sb.toString();

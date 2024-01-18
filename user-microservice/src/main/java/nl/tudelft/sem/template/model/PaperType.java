@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets PaperType
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-17T18:23:39.362067900+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-17T21:30:36.242036500+01:00[Europe/Berlin]")
 public enum PaperType {
   
   FULL_PAPER("full-paper"),

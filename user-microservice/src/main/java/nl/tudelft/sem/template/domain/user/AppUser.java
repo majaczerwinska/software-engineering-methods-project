@@ -21,8 +21,6 @@ import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.enums.LogType;
 import nl.tudelft.sem.template.logs.LogFactory;
-import nl.tudelft.sem.template.logs.event.EventLogFactory;
-import nl.tudelft.sem.template.logs.user.UserLog;
 import nl.tudelft.sem.template.logs.user.UserLogFactory;
 import nl.tudelft.sem.template.model.User;
 
@@ -77,6 +75,7 @@ public class AppUser extends HasEvents {
 
     public AppUser(Long id) {
         this.id = id;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerCreation(this);
     }
 
     /**
@@ -90,6 +89,7 @@ public class AppUser extends HasEvents {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerCreation(this);
     }
 
     /**
@@ -110,6 +110,7 @@ public class AppUser extends HasEvents {
         this.affiliation = affiliation;
         this.link = link;
         this.communication = communication;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerCreation(this);
     }
 
     /**
@@ -128,6 +129,7 @@ public class AppUser extends HasEvents {
         this.affiliation = new UserAffiliation(user.getAffiliation());
         this.link = new Link(user.getPersonalWebsite());
         this.communication = new Communication(user.getPreferredCommunication());
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerCreation(this);
     }
 
     /**
@@ -151,6 +153,7 @@ public class AppUser extends HasEvents {
         this.affiliation = affiliation;
         this.link = link;
         this.communication = communication;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerCreation(this);
     }
 
     public void setId(long id) {
@@ -159,14 +162,17 @@ public class AppUser extends HasEvents {
 
     public void setEmail(Email email) {
         this.email = email;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerEmailChange(this);
     }
 
     public void setFirstName(Name firstName) {
         this.firstName = firstName;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerFirstNameChange(this);
     }
 
     public void setLastName(Name lastName) {
         this.lastName = lastName;
+        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerLastNameChange(this);
     }
 
     public void setAffiliation(UserAffiliation affiliation) {
