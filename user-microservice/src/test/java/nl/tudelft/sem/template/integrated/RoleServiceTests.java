@@ -6,6 +6,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import nl.tudelft.sem.template.Application;
 import nl.tudelft.sem.template.authentication.AuthManager;
@@ -20,6 +22,7 @@ import nl.tudelft.sem.template.domain.user.Email;
 import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.UserRepository;
 import nl.tudelft.sem.template.enums.RoleTitle;
+import nl.tudelft.sem.template.services.AttendeeService;
 import nl.tudelft.sem.template.services.InvitationService;
 import nl.tudelft.sem.template.services.RoleService;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +48,7 @@ public class RoleServiceTests {
     private static Long eventId;
     private static Long trackId;
     private static Attendee role;
+    private static List<Attendee> roles;
     private static Email userEmail;
 
     @MockBean
@@ -54,7 +58,7 @@ public class RoleServiceTests {
     @MockBean
     private AttendeeRepository attendeeRepository;
     @MockBean
-    private transient InvitationService invitationService;
+    private transient AttendeeService attendeeService;
     @InjectMocks
     @Autowired
     private transient RoleService roleService;
@@ -70,38 +74,40 @@ public class RoleServiceTests {
         trackId = 520L;
         role = new Attendee(new Role(RoleTitle.PC_CHAIR), new Confirmation(true),
                 new Event(), new Track(), user);
+        roles = new ArrayList<>();
+        roles.add(role);
         when(authManager.getEmail()).thenReturn(userEmail.toString());
     }
 
     @Test
     public void hasRightPermissionTest() {
         when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(user));
-        when(invitationService.getAttendee(user.getId(), eventId, trackId, true)).thenReturn(role);
+        when(attendeeService.getFilteredAttendance(user.getId(), eventId, trackId, true)).thenReturn(roles);
 
         assertTrue(roleService.hasPermission(authManager, eventId, trackId, 1));
         verify(authManager, times(1)).getEmail();
         verify(userRepository, times(1)).findByEmail(userEmail);
-        verify(invitationService, times(1)).getAttendee(user.getId(), eventId, trackId, true);
+        verify(attendeeService, times(1)).getFilteredAttendance(user.getId(), eventId, trackId, true);
     }
 
     @Test
     public void hasBetterPermissionTest() {
         when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(user));
-        when(invitationService.getAttendee(user.getId(), eventId, trackId, true)).thenReturn(role);
+        when(attendeeService.getFilteredAttendance(user.getId(), eventId, trackId, true)).thenReturn(roles);
         assertTrue(roleService.hasPermission(authManager, eventId, trackId, 4));
         verify(authManager, times(1)).getEmail();
         verify(userRepository, times(1)).findByEmail(userEmail);
-        verify(invitationService, times(1)).getAttendee(user.getId(), eventId, trackId, true);
+        verify(attendeeService, times(1)).getFilteredAttendance(user.getId(), eventId, trackId, true);
     }
 
     @Test
     public void hasNoPermissionTest() {
         when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(user));
-        when(invitationService.getAttendee(user.getId(), eventId, trackId, true)).thenReturn(role);
+        when(attendeeService.getFilteredAttendance(user.getId(), eventId, trackId, true)).thenReturn(roles);
         assertFalse(roleService.hasPermission(authManager, eventId, trackId, 0));
         verify(authManager, times(1)).getEmail();
         verify(userRepository, times(1)).findByEmail(userEmail);
-        verify(invitationService, times(1)).getAttendee(user.getId(), eventId, trackId, true);
+        verify(attendeeService, times(1)).getFilteredAttendance(user.getId(), eventId, trackId, true);
     }
 
     @Test
@@ -115,11 +121,11 @@ public class RoleServiceTests {
     @Test
     public void notConfirmedTest() {
         when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(user));
-        when(invitationService.getAttendee(user.getId(), eventId, trackId, true)).thenReturn(role);
+        when(attendeeService.getFilteredAttendance(user.getId(), eventId, trackId, true)).thenReturn(roles);
         role.setConfirmation(false);
         assertFalse(roleService.hasPermission(authManager, eventId, trackId, 0));
         verify(authManager, times(1)).getEmail();
         verify(userRepository, times(1)).findByEmail(userEmail);
-        verify(invitationService, times(1)).getAttendee(user.getId(), eventId, trackId, true);
+        verify(attendeeService, times(1)).getFilteredAttendance(user.getId(), eventId, trackId, true);
     }
 }
