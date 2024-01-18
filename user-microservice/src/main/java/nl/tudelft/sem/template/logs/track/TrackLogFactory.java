@@ -14,8 +14,9 @@ public class TrackLogFactory extends LogFactory {
      * @param subject the newly created track.
      * @return a Log representing the creation of the track.
      */
-    public TrackLog registerCreation(Track subject) {
-        return new CreatedTrackLog(subject);
+    @Override
+    public TrackLog registerCreation(Object subject) {
+        return new CreatedTrackLog((Track) subject);
     }
 
     /**

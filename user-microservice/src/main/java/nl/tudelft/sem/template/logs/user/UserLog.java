@@ -7,7 +7,7 @@ import nl.tudelft.sem.template.logs.Log;
 /**
  * The specific ```Log``` abstract class for the ```AppUser``` type.
  */
-public abstract class UserLog implements Log<AppUser> {
+public abstract class UserLog implements Log {
 
     transient AppUser subject;
 
@@ -19,15 +19,5 @@ public abstract class UserLog implements Log<AppUser> {
     @Override
     public final LogType getLogType() {
         return LogType.USER;
-    }
-
-    /**
-     * Returns the AppUser subject of the log.
-     *
-     * @return the AppUser subject.
-     */
-    @Override
-    public final AppUser getSubject() {
-        return this.subject;
     }
 }

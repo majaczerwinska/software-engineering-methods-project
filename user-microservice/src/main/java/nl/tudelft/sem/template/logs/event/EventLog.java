@@ -7,17 +7,12 @@ import nl.tudelft.sem.template.logs.Log;
 /**
  * The specific ```Log``` abstract class for the ```Event``` type.
  */
-public abstract class EventLog implements Log<Event> {
+public abstract class EventLog implements Log {
 
     transient Event subject;
 
     @Override
     public final LogType getLogType() {
         return LogType.EVENT;
-    }
-
-    @Override
-    public final Event getSubject() {
-        return this.subject;
     }
 }

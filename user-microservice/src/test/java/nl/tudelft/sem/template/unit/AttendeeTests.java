@@ -196,12 +196,6 @@ public class AttendeeTests {
         assertEquals(confLog.getLogKind(), LogKind.MODIFICATION);
         assertEquals(delLog.getLogKind(), LogKind.REMOVAL);
 
-        // Subject verification
-        assertEquals(createdLog.getSubject(), loggableAttendee);
-        assertEquals(roleLog.getSubject(), loggableAttendee);
-        assertEquals(confLog.getSubject(), loggableAttendee);
-        assertEquals(delLog.getSubject(), loggableAttendee);
-
         // Summary verification
         assertTrue(createdLog.getLogSummary().contains("created"));
         assertTrue(roleLog.getLogSummary().contains("updated"));

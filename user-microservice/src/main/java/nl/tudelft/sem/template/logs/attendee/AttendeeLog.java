@@ -7,17 +7,12 @@ import nl.tudelft.sem.template.logs.Log;
 /**
  * The specific ```Log``` abstract class for the ```Attendee``` type.
  */
-public abstract class AttendeeLog implements Log<Attendee> {
+public abstract class AttendeeLog implements Log {
 
     transient Attendee subject;
 
     @Override
     public final LogType getLogType() {
         return LogType.ATTENDEE;
-    }
-
-    @Override
-    public final Attendee getSubject() {
-        return this.subject;
     }
 }

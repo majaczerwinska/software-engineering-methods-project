@@ -14,8 +14,9 @@ public class AttendeeLogFactory extends LogFactory {
      * @param subject the newly created attendance.
      * @return a Log representing the creation of the attendance.
      */
-    public AttendeeLog registerCreation(Attendee subject) {
-        return new CreatedAttendeeLog(subject);
+    @Override
+    public AttendeeLog registerCreation(Object subject) {
+        return new CreatedAttendeeLog((Attendee) subject);
     }
 
     /**

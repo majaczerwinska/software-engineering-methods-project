@@ -13,8 +13,9 @@ public class EventLogFactory extends LogFactory {
      * @param subject the newly created event.
      * @return a Log representing the creation of the event.
      */
-    public EventLog registerCreation(Event subject) {
-        return new CreatedEventLog(subject);
+    @Override
+    public EventLog registerCreation(Object subject) {
+        return new CreatedEventLog((Event) subject);
     }
 
     /**

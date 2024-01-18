@@ -152,7 +152,6 @@ public class EventTests {
         assertTrue(eventLog.getLogSummary().startsWith("Event 123 has been successfully created!\n"));
         assertEquals(eventLog.getLogType(), LogType.EVENT);
         assertEquals(eventLog.getLogKind(), LogKind.CREATION);
-        assertEquals(eventLog.getSubject(), eventEquals0);
     }
 
     @Test
@@ -166,7 +165,6 @@ public class EventTests {
                 "The start date for Event 123 has been successfully updated to \"2024-01-29\"."));
         assertEquals(eventLog.getLogType(), LogType.EVENT);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
-        assertEquals(eventLog.getSubject(), eventEquals0);
     }
 
     @Test
@@ -180,7 +178,6 @@ public class EventTests {
                 "The end date for Event 123 has been successfully updated to \"2024-01-29\"."));
         assertEquals(eventLog.getLogType(), LogType.EVENT);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
-        assertEquals(eventLog.getSubject(), eventEquals0);
     }
 
     @Test
@@ -194,7 +191,6 @@ public class EventTests {
                 "The cancelled attribute for Event 123 has been successfully updated to \"true\"."));
         assertEquals(eventLog.getLogType(), LogType.EVENT);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
-        assertEquals(eventLog.getSubject(), eventEquals0);
     }
 
     @Test
@@ -208,7 +204,6 @@ public class EventTests {
                 "The name for Event 123 has been successfully updated to \"NAME\"."));
         assertEquals(eventLog.getLogType(), LogType.EVENT);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
-        assertEquals(eventLog.getSubject(), eventEquals0);
     }
 
     @Test
@@ -222,6 +217,5 @@ public class EventTests {
                 "The description for Event 123 has been successfully updated to \"DESCRIPTION\"."));
         assertEquals(eventLog.getLogType(), LogType.EVENT);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
-        assertEquals(eventLog.getSubject(), eventEquals0);
     }
 }

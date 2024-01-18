@@ -9,8 +9,9 @@ import nl.tudelft.sem.template.logs.LogFactory;
  */
 public class UserLogFactory extends LogFactory {
 
-    public UserLog registerCreation(AppUser subject) {
-        return new CreatedUserLog(subject);
+    @Override
+    public UserLog registerCreation(Object subject) {
+        return new CreatedUserLog((AppUser) subject);
     }
 
     /**

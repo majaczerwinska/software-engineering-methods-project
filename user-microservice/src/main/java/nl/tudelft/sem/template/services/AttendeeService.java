@@ -92,7 +92,6 @@ public class AttendeeService {
 
         // Commits the new attendance to the repository
         attendee = attendeeRepository.save(attendee);
-        attendeeLogFactory.registerCreation(attendee);
         return  attendee;
 
     }
@@ -245,7 +244,6 @@ public class AttendeeService {
         attendee.setRole(new Role(role));
 
         // Commit the changes
-        attendeeLogFactory.registerConfirmationChange(attendee);
         return attendeeRepository.save(attendee);
 
     }

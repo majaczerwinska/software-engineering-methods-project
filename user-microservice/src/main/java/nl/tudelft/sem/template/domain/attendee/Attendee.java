@@ -21,6 +21,10 @@ import nl.tudelft.sem.template.domain.HasEvents;
 import nl.tudelft.sem.template.domain.event.Event;
 import nl.tudelft.sem.template.domain.track.Track;
 import nl.tudelft.sem.template.domain.user.AppUser;
+import nl.tudelft.sem.template.enums.LogType;
+import nl.tudelft.sem.template.logs.LogFactory;
+import nl.tudelft.sem.template.logs.attendee.AttendeeLog;
+import nl.tudelft.sem.template.logs.attendee.AttendeeLogFactory;
 
 /**
  * An DDD entity that represents an attendee/role in the domain.
@@ -71,6 +75,7 @@ public class Attendee extends HasEvents {
         this.event = event;
         this.track = track;
         this.user = user;
+        LogFactory.loadFactory(LogType.ATTENDEE).registerCreation(this);
     }
 
     /**
@@ -91,6 +96,7 @@ public class Attendee extends HasEvents {
      */
     public void setConfirmation(Boolean confirm) {
         this.confirmation = new Confirmation(confirm);
+        ((AttendeeLogFactory) LogFactory.loadFactory(LogType.ATTENDEE)).registerConfirmationChange(this);
     }
 
     /**
