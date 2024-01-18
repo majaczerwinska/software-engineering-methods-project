@@ -270,11 +270,24 @@ public class AttendeeController implements AttendeeApi {
                     .build();
         }
 
-        // Modify the Role title if necessary
-        Attendee modifiedAttendee = attendeeService
-                .modifyTitle(attendee.getId(), RoleTitle.valueOf(attendee.getRole().name()))
-                .toModel();
+        Attendee modifiedAttendee = null;
 
+        try {
+            // Modify the Role title if possible
+            modifiedAttendee = attendeeService
+                    .modifyTitle(user.getId(), attendee.getId(), RoleTitle.valueOf(attendee.getRole().name()))
+                    .toModel();
+        } catch (IllegalCallerException e) {
+            ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .header("message",  "No sufficient attendance permission.")
+                    .build();
+        } catch (IllegalArgumentException e1) {
+            ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .header("message",  "No sufficient number of general chairs to proceed with this operation.")
+                    .build();
+        }
 
         return ResponseEntity
                 .status(HttpStatus.OK)
