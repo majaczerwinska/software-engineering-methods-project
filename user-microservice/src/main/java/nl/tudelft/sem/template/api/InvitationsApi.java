@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-16T19:56:51.163164826+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-16T23:46:23.503465900+01:00[Europe/Amsterdam]")
 @Validated
 @Tag(name = "User-Invitation Interaction", description = "end-points that facilitate a user's interaction with invitations to events.")
 public interface InvitationsApi {
@@ -59,7 +59,7 @@ public interface InvitationsApi {
         tags = { "User-Invitation Interaction" },
         responses = {
             @ApiResponse(responseCode = "200", description = "successful operation.", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Attendee.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = Invitation.class))
             }),
             @ApiResponse(responseCode = "400", description = "Invalid invitationID was provided."),
             @ApiResponse(responseCode = "401", description = "Unauthorized access."),
@@ -71,7 +71,7 @@ public interface InvitationsApi {
         value = "/invitations/accept/{invitationID}",
         produces = { "application/json" }
     )
-    default ResponseEntity<Attendee> acceptInvitation(
+    default ResponseEntity<Invitation> acceptInvitation(
         @Parameter(name = "invitationID", description = "ID of the invitation to be accepted.", required = true, in = ParameterIn.PATH) @PathVariable("invitationID") Integer invitationID
     ) {
         getRequest().ifPresent(request -> {
@@ -175,7 +175,6 @@ public interface InvitationsApi {
      * @param invitationID ID of the invitation to be retrieved. (required)
      * @return successful operation. (status code 200)
      *         or Invalid invitationID was provided. (status code 400)
-     *         or Unauthorized Access. (status code 401)
      *         or No invitation with the provided ID exists. (status code 404)
      */
     @Operation(
@@ -183,19 +182,30 @@ public interface InvitationsApi {
         summary = "Get an invitation by ID.",
         tags = { "User-Invitation Interaction" },
         responses = {
-            @ApiResponse(responseCode = "200", description = "successful operation."),
+            @ApiResponse(responseCode = "200", description = "successful operation.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = Invitation.class))
+            }),
             @ApiResponse(responseCode = "400", description = "Invalid invitationID was provided."),
-            @ApiResponse(responseCode = "401", description = "Unauthorized Access."),
             @ApiResponse(responseCode = "404", description = "No invitation with the provided ID exists.")
         }
     )
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/invitations/{invitationID}"
+        value = "/invitations/{invitationID}",
+        produces = { "application/json" }
     )
-    default ResponseEntity<Void> getInvitation(
+    default ResponseEntity<Invitation> getInvitation(
         @Parameter(name = "invitationID", description = "ID of the invitation to be retrieved.", required = true, in = ParameterIn.PATH) @PathVariable("invitationID") Integer invitationID
     ) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"event_id\" : 10, \"user_id\" : 10, \"track_id\" : 10, \"id\" : 10 }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }
@@ -209,7 +219,6 @@ public interface InvitationsApi {
      * @param eventID The ID of the event. (optional)
      * @return Successful operation. (status code 200)
      *         or Invalid parameters were specified. (status code 400)
-     *         or Unauthorized Access. (status code 401)
      */
     @Operation(
         operationId = "getInvitations",
@@ -219,8 +228,7 @@ public interface InvitationsApi {
             @ApiResponse(responseCode = "200", description = "Successful operation.", content = {
                 @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Invitation.class)))
             }),
-            @ApiResponse(responseCode = "400", description = "Invalid parameters were specified."),
-            @ApiResponse(responseCode = "401", description = "Unauthorized Access.")
+            @ApiResponse(responseCode = "400", description = "Invalid parameters were specified.")
         }
     )
     @RequestMapping(

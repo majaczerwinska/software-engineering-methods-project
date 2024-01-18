@@ -141,4 +141,22 @@ public class Attendee extends HasEvents {
 
         return model;
     }
+
+    /**
+     * A converter from the Domain representation to the API Model representation.
+     *
+     * @return An API model Invitation instance.
+     */
+    public nl.tudelft.sem.template.model.Invitation toInvitationModel() {
+        nl.tudelft.sem.template.model.Invitation model = new nl.tudelft.sem.template.model.Invitation();
+        model.setId(this.id);
+        model.setUserId(this.getUser().getId());
+        model.setEventId(this.getEvent().getId());
+        if (this.track != null) {
+            model.setTrackId(this.track.getId());
+        }
+        model.setRole(nl.tudelft.sem.template.model.Role.valueOf(this.role.getRoleTitle().name()));
+
+        return model;
+    }
 }

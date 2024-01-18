@@ -259,6 +259,9 @@ public class AttendeeService {
                 .findById(subjectId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid subject."));
 
+        if (subject.getUser().getId().equals(executorId)) {
+            return true;
+        }
 
         List<Attendee> executorAttendees;
         try {
