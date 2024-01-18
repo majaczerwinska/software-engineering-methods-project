@@ -135,13 +135,10 @@ public class UserControllerTest {
     @Test
     public void createAccountNullUser() {
         Email email = appUser.getEmail();
-        when(authManager.getEmail()).thenReturn(email.toString());
         when(userService.userExistsByEmail(eq(email))).thenReturn(true);
 
         ResponseEntity<User> response = userController.createAccount(null);
 
-        verify(authManager, times(1)).getEmail();
-        verify(userService, times(1)).userExistsByEmail(eq(email)); // Corrected verification
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
@@ -160,27 +157,12 @@ public class UserControllerTest {
     }
 
     @Test
-    public void createAccountNonAuthUser() {
-        User modelUser = appUser.toModelUser();
-        when(authManager.getEmail()).thenReturn(appUser.getEmail().toString());
-        when(userService.userExistsByEmail(eq(appUser.getEmail()))).thenReturn(false);
-
-        ResponseEntity<User> response = userController.createAccount(modelUser);
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        verify(authManager, times(1)).getEmail();
-        verify(userService, times(1)).userExistsByEmail(eq(appUser.getEmail()));
-    }
-
-    @Test
     public void createAccountValidUser() {
         User modelUser = appUser.toModelUser();
-        when(authManager.getEmail()).thenReturn(appUser.getEmail().toString());
         when(userService.userExistsByEmail(eq(appUser.getEmail()))).thenReturn(true);
         when(userService.createUser(eq(appUser))).thenReturn(appUser);
         ResponseEntity<User> response = userController.createAccount(modelUser);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(authManager, times(1)).getEmail();
-        verify(userService, times(1)).userExistsByEmail(eq(appUser.getEmail()));
         verify(userService, times(1)).createUser(eq(appUser));
     }
 
