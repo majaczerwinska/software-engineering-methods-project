@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-18T12:08:47.520708484+01:00[Europe/Amsterdam]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2024-01-18T19:49:05.798727500+01:00[Europe/Berlin]")
 @Validated
 @Tag(name = "Event Management", description = "end-points for features that help users create and manage events when permitted by their assigned role.")
 public interface AttendeeApi {
@@ -234,7 +234,8 @@ public interface AttendeeApi {
      * @param attendee The attendee object to be updated. (optional)
      * @return successful operation (status code 200)
      *         or Invalid attendee object was provided. (status code 400)
-     *         or Unauthorized access. (status code 401)
+     *         or Unauthorized access; or no sufficient attendance permission. (status code 401)
+     *         or No sufficient number of general chairs to proceed with this operation. (status code 403)
      *         or No attendee with the provided ID exists. (status code 404)
      */
     @Operation(
@@ -247,7 +248,8 @@ public interface AttendeeApi {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = Attendee.class))
             }),
             @ApiResponse(responseCode = "400", description = "Invalid attendee object was provided."),
-            @ApiResponse(responseCode = "401", description = "Unauthorized access."),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access; or no sufficient attendance permission."),
+            @ApiResponse(responseCode = "403", description = "No sufficient number of general chairs to proceed with this operation."),
             @ApiResponse(responseCode = "404", description = "No attendee with the provided ID exists.")
         },
         security = {

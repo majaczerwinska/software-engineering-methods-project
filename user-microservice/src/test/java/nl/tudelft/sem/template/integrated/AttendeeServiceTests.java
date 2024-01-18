@@ -49,6 +49,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 // beans.
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@SuppressWarnings("checkstyle:variabledeclarationusagedistance")
 public class AttendeeServiceTests {
 
     @Autowired
@@ -70,6 +71,7 @@ public class AttendeeServiceTests {
 
     static AppUser user;
     static AppUser user2;
+    static AppUser user3;
     static Track track;
     static Track track2;
     static Event event;
@@ -83,12 +85,15 @@ public class AttendeeServiceTests {
         LocalDate date1 = LocalDate.parse("2024-01-10T19:26:47Z", DateTimeFormatter.ISO_DATE_TIME);
         user = new AppUser(new Email("test@test.test"), new Name("name"), new Name("name"), null, null, null);
         user2 = new AppUser(new Email("test2@test.test"), new Name("name3"), new Name("name4"), null, null, null);
+
         event = new Event(date0, date1, new IsCancelled(false), new EventName("name"), new EventDescription("desc"));
         track = new Track(new Title("title"), new Description("desc"), new PaperRequirement(PaperType.FULL_PAPER),
                 date0, date1, event);
 
         track2 = new Track(new Title("title132"), new Description("desc"), new PaperRequirement(PaperType.FULL_PAPER),
                 date0, date1, event);
+        user3 = new AppUser(new Email("test2@test.test5315"), new Name("na5me3"), new Name("na5me4"), null, null, null);
+
     }
 
     @Test
@@ -233,23 +238,73 @@ public class AttendeeServiceTests {
     public void modifyTitleTest() {
         // Given
         user = userRepository.save(user);
+
         event = eventRepository.save(event);
+        track2 = trackRepository.save(track2);
         track = trackRepository.save(track);
         RoleTitle roleTitle = RoleTitle.ATTENDEE;
-        var attendee = attendeeService.createAttendance(user.getId(), event.getId(), track.getId(), roleTitle, true);
+
 
         // Inexistent attendance
         assertThrows(NoSuchElementException.class, () -> {
-            attendeeService.modifyTitle(1212L, RoleTitle.ATTENDEE);
+            attendeeService.modifyTitle(user2.getId(), null, RoleTitle.ATTENDEE);
+        });
+        assertThrows(NoSuchElementException.class, () -> {
+            attendeeService.modifyTitle(user2.getId(), 1212L, RoleTitle.ATTENDEE);
+        });
+        var attendee = attendeeService.createAttendance(user.getId(),
+                event.getId(), track.getId(), roleTitle, true);
+
+        // Inexistent Executor
+        assertThrows(IllegalCallerException.class, () -> {
+            attendeeService.modifyTitle(1413L, attendee.getId(), RoleTitle.ATTENDEE);
         });
 
+        // Unattending Executor
+        user2 = userRepository.save(user2);
+        assertThrows(IllegalCallerException.class, () -> {
+            attendeeService.modifyTitle(user2.getId(), user.getId(), RoleTitle.ATTENDEE);
+        });
+        attendeeService.createAttendance(user2.getId(), event.getId(),
+                track2.getId(), roleTitle, true);
+        assertThrows(IllegalCallerException.class, () -> {
+            attendeeService.modifyTitle(user2.getId(),
+                    user.getId(), RoleTitle.ATTENDEE);
+        });
+        RoleTitle roleTitle1 = RoleTitle.GENERAL_CHAIR;
+        var attendee1 = attendeeService.createAttendance(user2.getId(),
+                event.getId(), null, roleTitle1, true);
+
+
+
         // Normal usage
-        var value = attendeeService.modifyTitle(attendee.getId(), RoleTitle.AUTHOR);
+        var value = attendeeService.modifyTitle(user2.getId(),
+                attendee.getId(), RoleTitle.AUTHOR);
         assertEquals(value.getRole().getRoleTitle(), RoleTitle.AUTHOR);
 
-        // Null identifier
-        assertThrows(NoSuchElementException.class, () -> {
-            attendeeService.modifyTitle(null, RoleTitle.ATTENDEE);
+
+        // Forbidden Executor
+        assertThrows(IllegalCallerException.class, () -> {
+            attendeeService.modifyTitle(user.getId(), attendee1.getId(),
+                    RoleTitle.ATTENDEE);
+        });
+
+        // Remove too Many General Chairs
+        assertThrows(IllegalArgumentException.class, () -> {
+            attendeeService.modifyTitle(user2.getId(), attendee1.getId(),
+                    RoleTitle.ATTENDEE);
+        });
+
+        // Adding Too Many General Chairs
+        attendeeService.modifyTitle(user2.getId(), attendee.getId(),
+                RoleTitle.GENERAL_CHAIR);
+        user3 = userRepository.save(user3);
+        var attendee2 = attendeeService.createAttendance(user3.getId(),
+                event.getId(), null, roleTitle, true);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            attendeeService.modifyTitle(user2.getId(), attendee2.getId(),
+                    RoleTitle.GENERAL_CHAIR);
         });
     }
 

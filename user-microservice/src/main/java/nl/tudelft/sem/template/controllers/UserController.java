@@ -1,6 +1,7 @@
 package nl.tudelft.sem.template.controllers;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
 import nl.tudelft.sem.template.api.UserApi;
@@ -137,7 +138,7 @@ public class UserController implements UserApi {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }
             AppUser user = userService.getUserByEmail(email);
-            if (user.getId() != userId) {
+            if (!Objects.equals(user.getId(), userId)) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
             }
             userService.deleteUser(userId);

@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 /**
  * A service Class handling attendance.
  */
-@SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.AvoidDuplicateLiterals"})
+@SuppressWarnings({"PMD.DataflowAnomalyAnalysis", "PMD.AvoidDuplicateLiterals", "PMD.CompareObjectsWithEquals"})
 @Service
 public class AttendeeService {
 
@@ -220,6 +220,7 @@ public class AttendeeService {
      * a {@link NoSuchElementException} is thrown to indicate that the attendance
      * does not exist.
      *
+     * @param executorId the initiator of the request
      * @param id         the attendance identifier
      * @param role       the new role
      * @throws NoSuchElementException indicates that no such attendance
@@ -227,8 +228,8 @@ public class AttendeeService {
      *                                can take place.
      */
     @Transactional
-    public Attendee modifyTitle(Long id, RoleTitle role)
-            throws NoSuchElementException {
+    public Attendee modifyTitle(Long executorId, Long id, RoleTitle role)
+            throws NoSuchElementException, IllegalArgumentException, IllegalCallerException {
         if (id == null) {
             throw new NoSuchElementException("No such attendance is found; cannot be modified.");
         }
@@ -238,8 +239,53 @@ public class AttendeeService {
         if (retrievedAttendance.isEmpty()) {
             throw new NoSuchElementException("No such attendance is found; cannot be modified.");
         }
-
         Attendee attendee = retrievedAttendance.get();
+
+        Optional<AppUser> retrievedUser = userRepository.findById(executorId);
+        if (retrievedUser.isEmpty()) {
+            throw new IllegalCallerException("Executor does not exist");
+        }
+        List<Attendee> executorList = null;
+        try {
+            executorList = this.getFilteredAttendance(executorId,
+                    attendee.getEvent().getId(),
+                    null,
+                    true);
+            executorList.removeIf((x) -> x.getTrack() != null
+                    && (attendee.getTrack() == null
+                    || (x.getTrack().getId() != attendee.getTrack().getId())));
+            if (executorList.isEmpty()) {
+                throw new NoSuchElementException();
+            }
+        } catch (NoSuchElementException e) {
+            throw new IllegalCallerException("Executor does not exist");
+        }
+
+        executorList.sort(Comparator
+                 .comparingInt(x -> x.getRole().getRoleTitle().getPermission()));
+
+
+        if (executorList
+                .get(0)
+                .getRole()
+                .getRoleTitle()
+                .getPermission() > attendee
+                .getRole()
+                .getRoleTitle()
+                .getPrecedence()) {
+            throw new IllegalCallerException("Executor has no permissions");
+        }
+
+        if (role == RoleTitle.GENERAL_CHAIR || attendee.getRole().getRoleTitle() == RoleTitle.GENERAL_CHAIR) {
+            var allAttendee = this.getFilteredAttendance(null, attendee.getEvent().getId(), null, true);
+            allAttendee.removeIf(x -> x.getRole().getRoleTitle() != RoleTitle.GENERAL_CHAIR);
+            if (!(role == RoleTitle.GENERAL_CHAIR && allAttendee.size() < 2)
+                    && !(attendee.getRole().getRoleTitle() == RoleTitle.GENERAL_CHAIR && allAttendee.size() > 1)) {
+                throw new IllegalArgumentException("No sufficient number of general chairs to proceed with this operation.");
+            }
+        }
+
+
 
         attendee.setRole(new Role(role));
 

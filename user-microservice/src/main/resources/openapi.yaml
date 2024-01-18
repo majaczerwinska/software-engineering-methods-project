@@ -114,7 +114,9 @@ paths:
         '400':
           description: Invalid attendee object was provided.
         '401':
-          description: Unauthorized access.
+          description: Unauthorized access; or no sufficient attendance permission.
+        '403':
+          description: No sufficient number of general chairs to proceed with this operation.
         '404':
           description: No attendee with the provided ID exists.
       security:
