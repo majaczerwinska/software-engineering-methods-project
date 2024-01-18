@@ -75,7 +75,7 @@ public class AppUser extends HasEvents {
 
     public AppUser(Long id) {
         this.id = id;
-        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerCreation(this);
+        LogFactory.loadFactory(LogType.USER).registerCreation(this);
     }
 
     /**
@@ -89,7 +89,7 @@ public class AppUser extends HasEvents {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
-        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerCreation(this);
+        LogFactory.loadFactory(LogType.USER).registerCreation(this);
     }
 
     /**
@@ -110,7 +110,7 @@ public class AppUser extends HasEvents {
         this.affiliation = affiliation;
         this.link = link;
         this.communication = communication;
-        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerCreation(this);
+        LogFactory.loadFactory(LogType.USER).registerCreation(this);
     }
 
     /**
@@ -129,7 +129,7 @@ public class AppUser extends HasEvents {
         this.affiliation = new UserAffiliation(user.getAffiliation());
         this.link = new Link(user.getPersonalWebsite());
         this.communication = new Communication(user.getPreferredCommunication());
-        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerCreation(this);
+        LogFactory.loadFactory(LogType.USER).registerCreation(this);
     }
 
     /**
@@ -153,7 +153,7 @@ public class AppUser extends HasEvents {
         this.affiliation = affiliation;
         this.link = link;
         this.communication = communication;
-        ((UserLogFactory) LogFactory.loadFactory(LogType.USER)).registerCreation(this);
+        LogFactory.loadFactory(LogType.USER).registerCreation(this);
     }
 
     public void setId(long id) {

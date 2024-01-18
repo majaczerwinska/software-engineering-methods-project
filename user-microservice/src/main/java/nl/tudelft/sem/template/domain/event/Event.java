@@ -86,7 +86,7 @@ public class Event extends HasEvents {
         this.isCancelled = isCancelled;
         this.name = name;
         this.description = description;
-        ((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerCreation(this);
+        LogFactory.loadFactory(LogType.EVENT).registerCreation(this);
     }
 
     /**
@@ -100,7 +100,7 @@ public class Event extends HasEvents {
         this.isCancelled = isCancelled;
         this.name = name;
         this.description = description;
-        ((EventLogFactory) LogFactory.loadFactory(LogType.EVENT)).registerCreation(this);
+        LogFactory.loadFactory(LogType.EVENT).registerCreation(this);
     }
 
     /**

@@ -11,8 +11,7 @@ import nl.tudelft.sem.template.enums.LogType;
  *
  * @param <T> the type of the subject of the log.
  */
-public interface Log<T> {
-
+public interface Log {
     LocalDateTime logDate = LocalDateTime.now();
 
     /**
@@ -35,13 +34,6 @@ public interface Log<T> {
      * @return A human-readable summary.
      */
     public String getLogSummary();
-
-    /**
-     * Returns the subject of the log.
-     *
-     * @return the subject.
-     */
-    public T getSubject();
 
     /**
      * Returns the creation time of the ```Log``` object.

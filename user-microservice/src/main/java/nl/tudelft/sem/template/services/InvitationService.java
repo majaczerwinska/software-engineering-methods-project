@@ -93,7 +93,6 @@ public class InvitationService {
 
         Attendee retrievedSubject = attendeeService.getAttendance(subjectId);
         retrievedSubject.setConfirmation(true);
-        attendeeLogFactory.registerConfirmationChange(retrievedSubject);
         return attendeeRepository.save(retrievedSubject);
     }
 

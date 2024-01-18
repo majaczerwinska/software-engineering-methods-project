@@ -249,7 +249,6 @@ public class UserTests {
                 "The affiliation of the User 1 has been successfully updated to \"New Affiliation\"."));
         assertEquals(eventLog.getLogType(), LogType.USER);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
-        assertEquals(eventLog.getSubject(), user1);
     }
 
     @Test
@@ -265,7 +264,6 @@ public class UserTests {
                 "The personal website (link) of the User 1 has been successfully updated to \"http://newlink.com\"."));
         assertEquals(eventLog.getLogType(), LogType.USER);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
-        assertEquals(eventLog.getSubject(), user1);
     }
 
     @Test
@@ -281,7 +279,6 @@ public class UserTests {
                 "The communication of the User 1 has been successfully updated to \"newemail@example.com\"."));
         assertEquals(eventLog.getLogType(), LogType.USER);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
-        assertEquals(eventLog.getSubject(), user1);
     }
 
     @Test
@@ -302,7 +299,6 @@ public class UserTests {
                 "The list of attendances of the User 1 has been successfully updated"));
         assertEquals(eventLog.getLogType(), LogType.USER);
         assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
-        assertEquals(eventLog.getSubject(), user1);
     }
 
     @Test
@@ -374,7 +370,6 @@ public class UserTests {
                 "User 1 has been successfully created!\n"));
         assertEquals(createdUserLog.getLogType(), LogType.USER);
         assertEquals(createdUserLog.getLogKind(), LogKind.CREATION);
-        assertEquals(createdUserLog.getSubject(), appUser);
     }
 
     @Test
@@ -389,7 +384,6 @@ public class UserTests {
                 "The email address of User 1 has been successfully updated to \""));
         assertEquals(changeUserLog.getLogType(), LogType.USER);
         assertEquals(changeUserLog.getLogKind(), LogKind.MODIFICATION);
-        assertEquals(changeUserLog.getSubject(), user1);
     }
 
     @Test
@@ -404,7 +398,6 @@ public class UserTests {
                 "The first name of User 1 has been successfully updated to \""));
         assertEquals(changeUserLog.getLogType(), LogType.USER);
         assertEquals(changeUserLog.getLogKind(), LogKind.MODIFICATION);
-        assertEquals(changeUserLog.getSubject(), user1);
     }
 
     @Test
@@ -419,6 +412,5 @@ public class UserTests {
                 "The last name of User 1 has been successfully updated to \""));
         assertEquals(changeUserLog.getLogType(), LogType.USER);
         assertEquals(changeUserLog.getLogKind(), LogKind.MODIFICATION);
-        assertEquals(changeUserLog.getSubject(), user1);
     }
 }

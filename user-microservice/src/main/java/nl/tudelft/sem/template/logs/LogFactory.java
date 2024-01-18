@@ -27,6 +27,5 @@ public abstract class LogFactory {
         };
     }
 
-
-
+    public abstract Log registerCreation(Object subject);
 }
