@@ -9,7 +9,7 @@ import nl.tudelft.sem.template.logs.Log;
  */
 public abstract class UserLog implements Log<AppUser> {
 
-    private transient AppUser subject;
+    transient AppUser subject;
 
     /**
      * Returns the type of the subject of the log.

@@ -1,10 +1,15 @@
 package nl.tudelft.sem.template.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+import nl.tudelft.sem.template.domain.attendee.Attendee;
 import nl.tudelft.sem.template.domain.user.AppUser;
 import nl.tudelft.sem.template.domain.user.Communication;
 import nl.tudelft.sem.template.domain.user.CommunicationAttributeConverter;
@@ -16,6 +21,16 @@ import nl.tudelft.sem.template.domain.user.Name;
 import nl.tudelft.sem.template.domain.user.NameAttributeConverter;
 import nl.tudelft.sem.template.domain.user.UserAffiliation;
 import nl.tudelft.sem.template.domain.user.UserAffiliationAttributeConverter;
+import nl.tudelft.sem.template.enums.LogKind;
+import nl.tudelft.sem.template.enums.LogType;
+import nl.tudelft.sem.template.logs.user.CreatedUserLog;
+import nl.tudelft.sem.template.logs.user.EmailChangedUserLog;
+import nl.tudelft.sem.template.logs.user.FirstNameChangedUserLog;
+import nl.tudelft.sem.template.logs.user.LastNameChangedUserLog;
+import nl.tudelft.sem.template.logs.user.UserAffiliationChangedUserLog;
+import nl.tudelft.sem.template.logs.user.UserAttendanceChangedUserLog;
+import nl.tudelft.sem.template.logs.user.UserCommunicationChangedUserLog;
+import nl.tudelft.sem.template.logs.user.UserLinkChangedUserLog;
 import nl.tudelft.sem.template.model.User;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -178,39 +193,116 @@ public class UserTests {
     }
 
     @Test
-    void settersAndGettersTest() {
-        // Check if setters and getters work as expected
+    void gettersTest() {
+        AppUser user5 = new AppUser(
+                1L,
+                new Email("user1@example.com"),
+                new Name("John"),
+                new Name("Doe"),
+                new UserAffiliation("Company A"),
+                new Link("http://user1.com"),
+                new Communication("user1@example.com")
+        );
+        assertEquals("user1@example.com", user5.getEmail().toString());
+        assertEquals(1L, user5.getId());
+        assertEquals("John", user5.getFirstName().toString());
+        assertEquals("Doe", user5.getLastName().toString());
+        assertEquals("Company A", user5.getAffiliation().toString());
+        assertEquals("http://user1.com", user5.getLink().toString());
+        assertEquals("user1@example.com", user5.getCommunication().toString());
+    }
 
-        // Check getEmail
-        assertEquals("user1@example.com", user1.getEmail().toString());
-
-        // Check setId
+    @Test
+    void setIdTest() {
         user1.setId(1L);
         assertEquals(1L, user1.getId());
+    }
 
-        // Check setEmail
-        user1.setEmail(new Email("email@gmail.com"));
-        assertEquals("email@gmail.com", user1.getEmail().toString());
+    @Test
+    void setEmailTest() {
+        user1.setEmail(new Email("abc@org.nl"));
+        assertEquals("abc@org.nl", user1.getEmail().toString());
+    }
 
-        // Check setFirstName
-        user1.setFirstName(new Name("New"));
-        assertEquals("New", user1.getFirstName().toString());
+    @Test
+    void setFirstNameTest() {
+        user1.setFirstName(new Name("Piet"));
+        assertEquals("Piet", user1.getFirstName().toString());
+    }
 
-        // Check setLastName
-        user1.setLastName(new Name("New"));
-        assertEquals("New", user1.getLastName().toString());
+    @Test
+    void setLastNameTest() {
+        user1.setLastName(new Name("Hein"));
+        assertEquals("Hein", user1.getLastName().toString());
+    }
 
-        // Check setAffiliation
+    @Test
+    void setAffiliationTest() {
         user1.setAffiliation(new UserAffiliation("New Affiliation"));
         assertEquals("New Affiliation", user1.getAffiliation().toString());
 
-        // Check setLink
+        assertFalse(user1.getDomainEvents().isEmpty());
+        Object domainEvent = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
+        assertTrue(domainEvent instanceof UserAffiliationChangedUserLog);
+        UserAffiliationChangedUserLog eventLog = (UserAffiliationChangedUserLog) domainEvent;
+        assertTrue(eventLog.getLogSummary().startsWith(
+                "The affiliation of the User 1 has been successfully updated to \"New Affiliation\"."));
+        assertEquals(eventLog.getLogType(), LogType.USER);
+        assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
+        assertEquals(eventLog.getSubject(), user1);
+    }
+
+    @Test
+    void setLinkTest() {
         user1.setLink(new Link("http://newlink.com"));
         assertEquals("http://newlink.com", user1.getLink().toString());
 
-        // Check setCommunication
+        assertFalse(user1.getDomainEvents().isEmpty());
+        Object domainEvent = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
+        assertTrue(domainEvent instanceof UserLinkChangedUserLog);
+        UserLinkChangedUserLog eventLog = (UserLinkChangedUserLog) domainEvent;
+        assertTrue(eventLog.getLogSummary().startsWith(
+                "The personal website (link) of the User 1 has been successfully updated to \"http://newlink.com\"."));
+        assertEquals(eventLog.getLogType(), LogType.USER);
+        assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
+        assertEquals(eventLog.getSubject(), user1);
+    }
+
+    @Test
+    void setCommunicationTest() {
         user1.setCommunication(new Communication("newemail@example.com"));
         assertEquals("newemail@example.com", user1.getCommunication().toString());
+
+        assertFalse(user1.getDomainEvents().isEmpty());
+        Object domainEvent = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
+        assertTrue(domainEvent instanceof UserCommunicationChangedUserLog);
+        UserCommunicationChangedUserLog eventLog = (UserCommunicationChangedUserLog) domainEvent;
+        assertTrue(eventLog.getLogSummary().startsWith(
+                "The communication of the User 1 has been successfully updated to \"newemail@example.com\"."));
+        assertEquals(eventLog.getLogType(), LogType.USER);
+        assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
+        assertEquals(eventLog.getSubject(), user1);
+    }
+
+    @Test
+    void setAttendanceTest() {
+        List<Attendee> attendance = new ArrayList<>();
+        Attendee attendee = new Attendee();
+        attendance.add(attendee);
+        user1.setAttendance(attendance);
+        assertEquals(attendee, user1.getAttendance().get(0));
+
+        assertEquals(attendance, user1.getAttendance());
+
+        assertFalse(user1.getDomainEvents().isEmpty());
+        Object domainEvent = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
+        assertTrue(domainEvent instanceof UserAttendanceChangedUserLog);
+        UserAttendanceChangedUserLog eventLog = (UserAttendanceChangedUserLog) domainEvent;
+        assertTrue(eventLog.getLogSummary().startsWith(
+                "The list of attendances of the User 1 has been successfully updated"));
+        assertEquals(eventLog.getLogType(), LogType.USER);
+        assertEquals(eventLog.getLogKind(), LogKind.MODIFICATION);
+        assertEquals(eventLog.getSubject(), user1);
     }
 
     @Test
@@ -271,6 +363,62 @@ public class UserTests {
         assertEquals(user1.getEmail().toString(), userModel.getEmail());
     }
 
+    @Test
+    void whenUserCreated_thenCreatedUserLogGenerated() {
+        AppUser appUser = new AppUser(1L);
+        assertFalse(appUser.getDomainEvents().isEmpty());
+        Object event = appUser.getDomainEvents().get(appUser.getDomainEvents().size() - 1);
+        assertTrue(event instanceof CreatedUserLog);
+        CreatedUserLog createdUserLog = (CreatedUserLog) event;
+        assertTrue(createdUserLog.getLogSummary().startsWith(
+                "User 1 has been successfully created!\n"));
+        assertEquals(createdUserLog.getLogType(), LogType.USER);
+        assertEquals(createdUserLog.getLogKind(), LogKind.CREATION);
+        assertEquals(createdUserLog.getSubject(), appUser);
+    }
 
+    @Test
+    void whenEmailChanged_thenEmailChangedUserLogGenerated() {
+        user1.setEmail(new Email("newemail@example.com"));
 
+        assertFalse(user1.getDomainEvents().isEmpty());
+        Object event = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
+        assertTrue(event instanceof EmailChangedUserLog);
+        EmailChangedUserLog changeUserLog = (EmailChangedUserLog) event;
+        assertTrue(changeUserLog.getLogSummary().startsWith(
+                "The email address of User 1 has been successfully updated to \""));
+        assertEquals(changeUserLog.getLogType(), LogType.USER);
+        assertEquals(changeUserLog.getLogKind(), LogKind.MODIFICATION);
+        assertEquals(changeUserLog.getSubject(), user1);
+    }
+
+    @Test
+    void whenFirstNameChanged_thenFirstNameChangedUserLogGenerated() {
+        user1.setFirstName(new Name("NewFirstName"));
+
+        assertFalse(user1.getDomainEvents().isEmpty());
+        Object event = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
+        assertTrue(event instanceof FirstNameChangedUserLog);
+        FirstNameChangedUserLog changeUserLog = (FirstNameChangedUserLog) event;
+        assertTrue(changeUserLog.getLogSummary().startsWith(
+                "The first name of User 1 has been successfully updated to \""));
+        assertEquals(changeUserLog.getLogType(), LogType.USER);
+        assertEquals(changeUserLog.getLogKind(), LogKind.MODIFICATION);
+        assertEquals(changeUserLog.getSubject(), user1);
+    }
+
+    @Test
+    void whenLastNameChanged_thenLastNameChangedUserLogGenerated() {
+        user1.setLastName(new Name("NewLastName"));
+
+        assertFalse(user1.getDomainEvents().isEmpty());
+        Object event = user1.getDomainEvents().get(user1.getDomainEvents().size() - 1);
+        assertTrue(event instanceof LastNameChangedUserLog);
+        LastNameChangedUserLog changeUserLog = (LastNameChangedUserLog) event;
+        assertTrue(changeUserLog.getLogSummary().startsWith(
+                "The last name of User 1 has been successfully updated to \""));
+        assertEquals(changeUserLog.getLogType(), LogType.USER);
+        assertEquals(changeUserLog.getLogKind(), LogKind.MODIFICATION);
+        assertEquals(changeUserLog.getSubject(), user1);
+    }
 }
